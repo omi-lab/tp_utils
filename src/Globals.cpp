@@ -5,55 +5,6 @@
 #include <boost/algorithm/string/finder.hpp>
 #include <boost/utility/string_view.hpp>
 
-#ifdef ANDROID
-#include <locale.h>
-
-//namespace std
-//{
-namespace
-{
-struct lconv initLconv()
-{
-  struct lconv l;
-  l.decimal_point      = (char*)"."; //char* decimal_point;
-  l.thousands_sep      = (char*)""; //char* thousands_sep;
-  l.grouping           = (char*)""; //char* grouping;
-  l.int_curr_symbol    = (char*)""; //char* int_curr_symbol;
-  l.currency_symbol    = (char*)""; //char* currency_symbol;
-  l.mon_decimal_point  = (char*)""; //char* mon_decimal_point;
-  l.mon_thousands_sep  = (char*)""; //char* mon_thousands_sep;
-  l.mon_grouping       = (char*)""; //char* mon_grouping;
-  l.positive_sign      = (char*)""; //char* positive_sign;
-  l.negative_sign      = (char*)""; //char* negative_sign;
-  l.int_frac_digits    = 	CHAR_MAX; //char int_frac_digits;
-  l.frac_digits        = 	CHAR_MAX; //char frac_digits;
-  l.p_cs_precedes      = 	CHAR_MAX; //char p_cs_precedes;
-  l.p_sep_by_space     = 	CHAR_MAX; //char p_sep_by_space;
-  l.n_cs_precedes      = 	CHAR_MAX; //char n_cs_precedes;
-  l.n_sep_by_space     = 	CHAR_MAX; //char n_sep_by_space;
-  l.p_sign_posn        = 	CHAR_MAX; //char p_sign_posn;
-  l.n_sign_posn        = 	CHAR_MAX; //char n_sign_posn;
-  l.int_p_cs_precedes  = 	CHAR_MAX; //char int_p_cs_precedes;
-  l.int_p_sep_by_space = 	CHAR_MAX; //char int_p_sep_by_space;
-  l.int_n_cs_precedes  = 	CHAR_MAX; //char int_n_cs_precedes;
-  l.int_n_sep_by_space = 	CHAR_MAX; //char int_n_sep_by_space;
-  l.int_p_sign_posn    = 	CHAR_MAX; //char int_p_sign_posn;
-  l.int_n_sign_posn    = 	CHAR_MAX; //char int_n_sign_posn;
-  return l;
-}
-}
-
-struct lconv* localeconv(void)
-{
-  static struct lconv androidHackLconv = initLconv();
-  return &androidHackLconv;
-}
-
-//}
-
-#endif
-
-
 //##################################################################################################
 bool tpStartsWith(const std::string& input, const std::string& s)
 {
@@ -91,6 +42,61 @@ void rightJustified(std::string& text, int maxLength, char padding)
     return;
 
   text = std::string(maxLength-text.size(), padding)+text;
+}
+
+
+//##################################################################################################
+bool parseColor(const std::string& color, uint8_t& r, uint8_t& g, uint8_t& b, uint8_t& a)
+{
+  r =   0;
+  g =   0;
+  b =   0;
+  a = 255;
+
+  if(color.size() != 7)
+    return false;
+
+  if(color.at(0)!='#')
+    return false;
+
+  uint32_t acc = 0;
+  for(int i=1; i<7; i++)
+  {
+    char c = color.at(i);
+
+    uint32_t v=0;
+    if(c>='0' && c<='9')
+      v = c-'0';
+
+    if(c>='A' && c<='F')
+      v = 10 + (c-'A');
+
+    if(c>='a' && c<='f')
+      v = 10 + (c-'a');
+
+    acc<<=4;
+    acc|=v;
+  }
+
+  b = acc; acc>>=8;
+  g = acc; acc>>=8;
+  r = acc;
+  return true;
+}
+
+//##################################################################################################
+bool parseColorF(const std::string& color, float& r, float& g, float& b, float& a)
+{
+  uint8_t r_;
+  uint8_t g_;
+  uint8_t b_;
+  uint8_t a_;
+  bool ret = parseColor(color, r_, g_, b_, a_);
+  r = float(r_) / 255.0f;
+  g = float(g_) / 255.0f;
+  b = float(b_) / 255.0f;
+  a = float(a_) / 255.0f;
+  return ret;
 }
 
 }

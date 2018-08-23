@@ -40,7 +40,7 @@ DebugMode::DebugMode(const std::string& classPath, DebugType debugType):
 DebugMode::~DebugMode()
 {
   TP_MUTEX_LOCKER(debugMutex);
-  removeOne(debugModeObjects, this);
+  tpRemoveOne(debugModeObjects, this);
 }
 
 //##################################################################################################
@@ -64,7 +64,7 @@ void DebugMode::setTable(const std::string& table)
 void DebugMode::installTableCallback(std::function<void(const std::string&, DebugType, const std::string&)> callback)
 {
   TP_MUTEX_LOCKER(debugMutex);
-  tableCallback = callback;
+  tableCallback = std::move(callback);
 }
 
 //##################################################################################################
@@ -108,7 +108,6 @@ int DebugBuffer::sync()
 
 //##################################################################################################
 DebugHelper::DebugHelper():
-  m_buffer(),
   m_stream(&m_buffer)
 {
 

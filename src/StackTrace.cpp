@@ -1,9 +1,10 @@
 #include "tp_utils/StackTrace.h"
 #include "tp_utils/DebugUtils.h"
 
-#if defined(Q_OS_ANDROID)
+//PLATFORM_ABSTRACTIONS
+#if defined(TDP_ANDROID)
 #define ANDROID_STACKTRACE
-#elif defined(Q_OS_DARWIN)
+#elif defined(TDP_OSX)
 #define GCC_STACKTRACE
 #elif defined(EMSCRIPTEN)
 #define EMSCRIPTEN_STACKTRACE
@@ -17,6 +18,7 @@
 #include <execinfo.h>
 #include <cxxabi.h>
 #include <ucontext.h>
+#include <cstring>
 #endif
 
 #if defined(ANDROID_STACKTRACE)
@@ -29,10 +31,7 @@
 #include <emscripten.h>
 #endif
 
-namespace
-{
-const int MAX_LEVELS = 100;
-}
+#define MAX_LEVELS 100
 
 //##################################################################################################
 #if defined(__mips)
@@ -227,7 +226,7 @@ static bool demangle(const char* symbol, char* output)
     // offset in [begin_offset, end_offset). now apply __cxa_demangle():
 
     int status = -1;
-    char* demangled = abi::__cxa_demangle(begin_name, 0, 0, &status);
+    char* demangled = abi::__cxa_demangle(begin_name, nullptr, nullptr, &status);
     if(demangled && !status)
       snprintf(output, MAX_TRACE_SIZE, "%s + %s", demangled, begin_offset);
     else
@@ -275,7 +274,7 @@ void TP_UTILS_SHARED_EXPORT printStackTrace()
     const char* symbol = strings[i];
 
     //Extract name and address
-    char demangled[MAX_TRACE_SIZE];
+    char demangled[MAX_TRACE_SIZE+1];
     if(demangle(symbol, demangled))
       tpWarning() << "Frame " << i << ": " << demangled;
     else

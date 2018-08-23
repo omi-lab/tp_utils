@@ -6,6 +6,7 @@
 #include "json.hpp"
 
 #include <string>
+#include <unordered_set>
 
 namespace tp_utils
 {
@@ -43,6 +44,19 @@ bool TP_UTILS_SHARED_EXPORT writeJSONFile(const std::string& fileName, const nlo
 //##################################################################################################
 bool TP_UTILS_SHARED_EXPORT writePrettyJSONFile(const std::string& fileName, const nlohmann::json& j);
 
+//##################################################################################################
+std::vector<std::string> TP_UTILS_SHARED_EXPORT listFiles(const std::string& path, const std::unordered_set<std::string>& extensions);
+
+//##################################################################################################
+std::vector<std::string> listDirectories(const std::string& path);
+
+//##################################################################################################
+int64_t fileTimeMS(const std::string& path);
+
+//##################################################################################################
+extern std::vector<std::string> (*listFilesCallback)(const std::string& path, const std::unordered_set<std::string>& extensions);
+extern std::vector<std::string> (*listDirectoriesCallback)(const std::string& path);
+extern int64_t (*fileTimeMSCallback)(const std::string& path);
 
 }
 

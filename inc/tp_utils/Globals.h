@@ -4,7 +4,6 @@
 #include <unordered_map>
 
 #include <boost/variant.hpp>
-#include <boost/core/ignore_unused.hpp>
 
 #include <functional>
 
@@ -23,7 +22,8 @@
 #define TP_CPP_VERSION 17
 #endif
 
-#define TP_UNUSED(var) boost::ignore_unused(var)
+#define TP_UNUSED(var) (void)(var)
+#define TP_NONCOPYABLE(T) T(const T&)=delete; T& operator=(const T&)=delete; T(T&&)=delete; T& operator=(T&&)=delete
 
 //##################################################################################################
 //TDP_NODISCARD
@@ -104,12 +104,125 @@ void tpRemoveChar(std::string& s, char c);
 
 //##################################################################################################
 template<typename T>
-void tpDeleteAll(T container)
+void tpDeleteAll(const T& container)
 {
-  auto const* i = container.data();
-  auto const* iMax = i+container.size();
-  for(; i<iMax; i++)
+  for(auto i : container)
     delete i;
+}
+
+//##################################################################################################
+template<typename T>
+typename T::value_type tpTakeLast(T& container)
+{
+  auto i = container.begin() + (container.size()-1);
+  typename T::value_type t = *i;
+  container.erase(i);
+  return t;
+}
+
+//##################################################################################################
+template<typename T>
+typename T::value_type tpTakeFirst(T& container)
+{
+  auto i = container.begin();
+  typename T::value_type t = *i;
+  container.erase(i);
+  return t;
+}
+
+//##################################################################################################
+template<typename T, typename I>
+typename T::value_type tpTakeAt(T& container, I index)
+{
+  auto i = container.begin() + index;
+  typename T::value_type t = *i;
+  container.erase(i);
+  return t;
+}
+
+//##################################################################################################
+template<typename T>
+bool tpContainsKey(const T& container, const typename T::key_type& key)
+{
+  return container.count(key)!=0;
+}
+
+//##################################################################################################
+template<typename T>
+bool tpContainsValue(const T& container, const typename T::mapped_type& value)
+{
+  return (std::find(container.begin(), container.end(), value) != container.end());
+}
+
+//##################################################################################################
+template<typename T>
+bool tpContains(const T& container, const typename T::value_type& value)
+{
+  return (std::find(container.begin(), container.end(), value) != container.end());
+}
+
+//##################################################################################################
+template<typename T>
+void tpRemoveOne(T& container, const typename T::value_type& value)
+{
+  auto i = std::find(container.begin(), container.end(), value);
+  if(i != container.end())
+    container.erase(i);
+}
+
+//##################################################################################################
+template<typename T, typename I>
+void tpRemoveAt(T& container, I index)
+{
+  container.erase(container.begin() + index);
+}
+
+//##################################################################################################
+template<typename T>
+int tpIndexOf(const T& container, const typename T::value_type& value)
+{
+  return (std::find(container.begin(), container.end(), value) - container.begin());
+}
+
+//##################################################################################################
+template<typename T, typename I>
+void tpInsert(T& container, I index, const typename T::value_type& value)
+{
+  container.insert(container.begin() + int(index), value);
+}
+
+//##################################################################################################
+template<typename T, typename I>
+void tpReplace(T& container, I index, const typename T::value_type& value)
+{
+  container.at(index) = value;
+}
+
+//##################################################################################################
+template<typename T>
+typename T::mapped_type tpGetMapValue(const T& map,
+                                      const typename T::key_type& key,
+                                      const typename T::mapped_type& defaultValue=typename T::mapped_type())
+{
+  auto i = map.find(key);
+  return (i != map.end())?(i->second):defaultValue;
+}
+
+namespace detail
+{
+//##################################################################################################
+template <typename T, std::size_t...Is>
+std::array<T, sizeof...(Is)> tpMakeArray(const T& value, std::index_sequence<Is...>)
+{
+  return {{(static_cast<void>(Is), value)...}};
+}
+}
+
+//##################################################################################################
+template <typename T, std::size_t N>
+std::array<T, N> tpMakeArray(const T& value)
+{
+  return detail::tpMakeArray(value, std::make_index_sequence<N>());
 }
 
 //##################################################################################################
@@ -130,14 +243,6 @@ namespace tp_utils
 {
 
 //##################################################################################################
-template<typename V, typename T, typename K>
-V getMapValue(const T& map, const K& key, const V& defaultValue=V())
-{
-  auto i = map.find(key);
-  return (i != map.end())?(i->second):defaultValue;
-}
-
-//##################################################################################################
 template<typename V, typename T>
 V getVariantValue(const T& variant, const V& defaultValue=V())
 {
@@ -146,63 +251,16 @@ V getVariantValue(const T& variant, const V& defaultValue=V())
 }
 
 //##################################################################################################
-template<typename V, typename T>
-bool contains(const T& container, const V& value)
-{
-  return (std::find(container.begin(), container.end(), value) != container.end());
-}
-
-//##################################################################################################
-template<typename V, typename T>
-void removeOne(T& container, const V& value)
-{
-  auto i = std::find(container.begin(), container.end(), value);
-  if(i != container.end())
-    container.erase(i);
-}
-
-//##################################################################################################
-template<typename V, typename T>
-int indexOf(const T& container, const V& value)
-{
-  return (std::find(container.begin(), container.end(), value) - container.begin());
-}
-
-//##################################################################################################
-template<typename V, typename T>
-V takeLast(T& container)
-{
-  auto i = container.begin() + (container.size()-1);
-  V t = *i;
-  container.erase(i);
-  return t;
-}
-
-//##################################################################################################
-template<typename V, typename T>
-V takeFirst(T& container)
-{
-  auto i = container.begin();
-  V t = *i;
-  container.erase(i);
-  return t;
-}
-
-//##################################################################################################
-template<typename V, typename T>
-V takeAt(T& container, int index)
-{
-  auto i = container.begin() + index;
-  V t = *i;
-  container.erase(i);
-  return t;
-}
-
-//##################################################################################################
 void leftJustified(std::string& text, int maxLength, char padding=' ');
 
 //##################################################################################################
 void rightJustified(std::string& text, int maxLength, char padding=' ');
+
+//##################################################################################################
+bool parseColor(const std::string& color, uint8_t& r, uint8_t& g, uint8_t& b, uint8_t& a);
+
+//##################################################################################################
+bool parseColorF(const std::string& color, float& r, float& g, float& b, float& a);
 
 }
 

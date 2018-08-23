@@ -65,6 +65,20 @@ bool TP_UTILS_SHARED_EXPORT writeBinaryFile(const std::string& fileName, const s
 }
 
 //##################################################################################################
+nlohmann::json TP_UTILS_SHARED_EXPORT readJSONFile(const std::string& fileName)
+{
+  try
+  {
+    std::string str = readTextFile(fileName);
+    return nlohmann::json::parse(str);
+  }
+  catch(...)
+  {
+    return nlohmann::json();
+  }
+}
+
+//##################################################################################################
 bool writeJSONFile(const std::string& fileName, const nlohmann::json& j)
 {
   try
@@ -93,17 +107,26 @@ bool writePrettyJSONFile(const std::string& fileName, const nlohmann::json& j)
 }
 
 //##################################################################################################
-nlohmann::json TP_UTILS_SHARED_EXPORT readJSONFile(const std::string& fileName)
+std::vector<std::string> (*listFilesCallback)(const std::string& path, const std::unordered_set<std::string>& extensions)=nullptr;
+std::vector<std::string> (*listDirectoriesCallback)(const std::string& path)=nullptr;
+int64_t (*fileTimeMSCallback)(const std::string& path)=nullptr;
+
+//##################################################################################################
+std::vector<std::string> listFiles(const std::string& path, const std::unordered_set<std::string>& extensions)
 {
-  try
-  {
-    std::string str = readTextFile(fileName);
-    return nlohmann::json::parse(str);
-  }
-  catch(...)
-  {
-    return nlohmann::json();
-  }
+  return listFilesCallback?listFilesCallback(path, extensions):std::vector<std::string>();
+}
+
+//##################################################################################################
+std::vector<std::string> listDirectories(const std::string& path)
+{
+  return listDirectoriesCallback?listDirectoriesCallback(path):std::vector<std::string>();
+}
+
+//##################################################################################################
+int64_t fileTimeMS(const std::string& path)
+{
+  return fileTimeMSCallback?fileTimeMSCallback(path):0;
 }
 
 }

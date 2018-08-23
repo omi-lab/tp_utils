@@ -22,14 +22,14 @@ struct StringID::StaticData
 struct StringID::SharedData
 {
   TPMutex mutex{TPM};
-  int referenceCount;
 
   std::string keyString;
   std::map<StringIDManager*, int64_t> keys;
 
-  SharedData(const boost::string_ref& keyString_):
-    referenceCount(0),
-    keyString(keyString_)
+  int referenceCount{0};
+
+  SharedData(std::string keyString_):
+    keyString(std::move(keyString_))
   {
   }
 };
@@ -78,7 +78,9 @@ StringID::StringID(StringIDManager* manager, int64_t key):
 
     if(!keyString.empty())
     {
-      sd = getMapValue(staticData.allKeys, keyString, static_cast<SharedData*>(nullptr));
+      //std::map<std::string, SharedData*> allKeys;
+
+      sd = tpGetMapValue(staticData.allKeys, keyString);
 
       if(!sd)
       {
@@ -112,7 +114,7 @@ StringID::StringID(const std::string& keyString):
   StaticData& staticData(StringID::staticData());
   staticData.mutex.lock();
 
-  sd = getMapValue(staticData.allKeys, keyString, static_cast<SharedData*>(nullptr));
+  sd = tpGetMapValue(staticData.allKeys, keyString);
 
   if(!sd)
   {
@@ -141,7 +143,7 @@ StringID::StringID(const char* keyString_):
   StaticData& staticData(StringID::staticData());
   staticData.mutex.lock();
 
-  sd = getMapValue(staticData.allKeys, keyString, static_cast<SharedData*>(nullptr));
+  sd = tpGetMapValue(staticData.allKeys, keyString);
 
   if(!sd)
   {
@@ -178,8 +180,8 @@ StringID& StringID::operator=(const StringID& other)
     {
       staticData.allKeys.erase(sd->keyString);
 
-      for (auto i=sd->keys.begin(); i!=sd->keys.end(); ++i)
-        staticData.managers[i->first].erase(i->second);
+      for (const auto& i : sd->keys)
+        staticData.managers[i.first].erase(i.second);
 
       sd->mutex.unlock(TPM);
       delete sd;
@@ -219,8 +221,8 @@ StringID::~StringID()
   {
     staticData.allKeys.erase(sd->keyString);
 
-    for(auto i=sd->keys.begin(); i!=sd->keys.end(); ++i)
-      staticData.managers[i->first].erase(i->second);
+    for(const auto& i : sd->keys)
+      staticData.managers[i.first].erase(i.second);
 
     sd->mutex.unlock(TPM);
     delete sd;
@@ -239,14 +241,14 @@ int64_t StringID::key(StringIDManager* manager)const
     return 0;
 
   sd->mutex.lock(TPM);
-  int64_t key = getMapValue(sd->keys, manager, 0);
+  int64_t key = tpGetMapValue(sd->keys, manager, 0);
   sd->mutex.unlock(TPM);
 
   if(!key)
   {
 
     sd->mutex.lock(TPM);
-    key = getMapValue(sd->keys, manager, 0);
+    key = tpGetMapValue(sd->keys, manager, 0);
 
     if(!key)
     {
@@ -293,9 +295,10 @@ bool StringID::isValid()const
 std::vector<std::string> StringID::toStringList(const std::vector<StringID>& stringIDs)
 {
   std::vector<std::string> stringList;
+  stringList.reserve(stringIDs.size());
 
   for(const StringID& stringID : stringIDs)
-    stringList.push_back(stringID.keyString());
+    stringList.emplace_back(stringID.keyString());
 
   return stringList;
 }
@@ -304,11 +307,12 @@ std::vector<std::string> StringID::toStringList(const std::vector<StringID>& str
 std::vector<StringID> StringID::fromStringList(const std::vector<std::string>& stringIDs)
 {
   std::vector<StringID> result;
+  result.reserve(stringIDs.size());
 
   const std::string* s = stringIDs.data();
   const std::string* sMax = s + stringIDs.size();
   for(; s<sMax; s++)
-    result.push_back(StringID(*s));
+    result.emplace_back(*s);
 
   return result;
 }

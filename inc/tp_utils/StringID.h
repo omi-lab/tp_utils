@@ -3,7 +3,6 @@
 
 #include "tp_utils/Globals.h"
 
-#include <boost/utility/string_ref.hpp>
 #include <unordered_map>
 
 #include <stdint.h>
@@ -35,7 +34,7 @@ class TP_UTILS_SHARED_EXPORT StringID
   friend class StringIDManager;
   friend bool TP_UTILS_SHARED_EXPORT operator==(const StringID& a, const StringID& b);
   friend bool TP_UTILS_SHARED_EXPORT operator!=(const StringID& a, const StringID& b);
-  friend class std::hash<tp_utils::StringID>;
+  friend struct std::hash<tp_utils::StringID>;
 
 public:
   //################################################################################################
@@ -174,7 +173,7 @@ namespace tp_utils
 //##################################################################################################
 inline unsigned TP_UTILS_SHARED_EXPORT qHash(const StringID& stringID)
 {
-  return std::hash<StringID>()(stringID);
+  return unsigned(std::hash<StringID>()(stringID));
 }
 }
 

@@ -1,7 +1,7 @@
 #include "tp_utils/MutexUtils.h"
 #include "tp_utils/DebugUtils.h"
 
-#include "lib_json/Android.hpp"
+#include "lib_platform/Polyfill.h"
 
 #include <condition_variable>
 #include <functional>
@@ -90,9 +90,8 @@ bool TPWaitCondition::wait(TPMutex& lockedMutex, int64_t ms)
 {
   if(ms<INT64_MAX)
     return d->cv.wait_for(lockedMutex, std::chrono::milliseconds(ms)) == std::cv_status::no_timeout;
-  else
-    d->cv.wait(lockedMutex);
 
+  d->cv.wait(lockedMutex);
   return true;
 }
 #endif
@@ -116,9 +115,9 @@ namespace
 {
 
 //##################################################################################################
-std::string fixedWidthKeepRight(std::string data, int len, char pad)
+std::string fixedWidthKeepRight(std::string data, size_t len, char pad)
 {
-  if(int(data.size())>=len)
+  if(data.size()>=len)
     return data.substr(data.size()-len);
 
   size_t missing = size_t(len) - size_t(data.size());
@@ -129,9 +128,9 @@ std::string fixedWidthKeepRight(std::string data, int len, char pad)
 }
 
 //##################################################################################################
-std::string fixedWidthKeepLeft(std::string data, int len, char pad)
+std::string fixedWidthKeepLeft(std::string data, size_t len, char pad)
 {
-  if(int(data.size())>=len)
+  if(data.size()>=len)
     return data.substr(0, len);
 
   size_t missing = size_t(len) - size_t(data.size());
@@ -146,59 +145,39 @@ std::string fixedWidthKeepLeft(std::string data, int len, char pad)
 //
 struct LockSiteDetails_lt
 {
-  int id;
-  std::string name;
-  int lockCount;
-  int wait;
   //locationID -> total elapsed time
   std::unordered_map<int, int> blockedBy;
-  int failCount;
-  int held;
 
-  LockSiteDetails_lt():
-    id(0),
-    lockCount(0),
-    wait(0),
-    failCount(0),
-    held(0)
-  {
-
-  }
+  std::string name;
+  int id{0};
+  int lockCount{0};
+  int wait{0};
+  int failCount{0};
+  int held{0};
 };
 
 //##################################################################################################
 //
 struct UnlockSiteDetails_lt
 {
-  int id;
   std::string name;
-  int unlockCount;
-  int held;
-  int heldMax;
+  int id{0};
+  int unlockCount{0};
+  int held{0};
+  int heldMax{0};
 
   //Reset each time takeResults is called
-  int heldRecent;
-  int unlockCountRecent;
-
-  UnlockSiteDetails_lt():
-    id(0),
-    unlockCount(0),
-    held(0),
-    heldMax(0),
-    heldRecent(0),
-    unlockCountRecent(0)
-  {
-
-  }
+  int heldRecent{0};
+  int unlockCountRecent{0};
 };
 
 //##################################################################################################
 //There is one of these for each instance of a mutex
 struct MutexInstanceDetails_ls
 {
-  int mutexDefinition;
+  size_t mutexDefinition{0};
 
-  int holder;
+  size_t holder{0};
   std::thread::id holderThread;
 
   std::vector<int> waiting;
@@ -207,48 +186,27 @@ struct MutexInstanceDetails_ls
   //The locationID is where the mutex was locked
   //thread -> list of (locationID, timer)
   std::unordered_map<std::thread::id, std::vector<std::pair<int, ElapsedTimer*> > > lockTimers;
-
-  MutexInstanceDetails_ls():
-    mutexDefinition(0),
-    holder(0),
-    holderThread()
-  {
-
-  }
 };
 
 //##################################################################################################
 //There is one of these for each location where the mutex is constructed
 struct MutexDefinitionDetails_lt
 {
-  const char* type;
-  const char* file;
-  int line;
-  std::string name;
-
-  int currentInstances;
-  int instances; //inst (Total not current)
-  int lockCount; //lck
-  int totalWait; //wt   in ms
-  int totalHold; //hld  in ms
-
   //locationID -> details
   std::unordered_map<int, LockSiteDetails_lt> lockSiteDetails;
   std::unordered_map<int, UnlockSiteDetails_lt> unlockSiteDetails;
 
-  MutexDefinitionDetails_lt():
-    type(nullptr),
-    file(nullptr),
-    line(0),
-    instances(0),
-    lockCount(0),
-    totalWait(0),
-    totalHold(0)
-  {
+  std::string name;
+  const char* type{nullptr};
+  const char* file{nullptr};
+  int line{0};
 
-  }
+  int currentInstances{0};
+  int instances{0}; //inst (Total not current)
+  int lockCount{0}; //lck
+  int totalWait{0}; //wt   in ms
+  int totalHold{0}; //hld  in ms
 };
-
 
 }
 
@@ -257,26 +215,19 @@ struct LockStats::Private
 {
   std::mutex mutex;
 
-  int mutexInstanceCount;
+  int mutexInstanceCount{0};
   std::unordered_map<int, MutexInstanceDetails_ls> mutexInstances;
 
   std::vector<MutexDefinitionDetails_lt> mutexDefinitions;
-  std::unordered_map<std::pair<const char*, int>, int> mutexDefinitionMap;
-  std::unordered_map<std::pair<const char*, int>, int> locationIDs;
-  int locationIDCount;
-
-  Private():
-    mutexInstanceCount(0),
-    locationIDCount(0)
-  {
-
-  }
+  std::unordered_map<std::pair<const char*, int>, size_t> mutexDefinitionMap;
+  std::unordered_map<std::pair<const char*, int>, size_t> locationIDs;
+  size_t locationIDCount{0};
 
   //##################################################################################################
-  int locationID(const char* file, int line)
+  size_t locationID(const char* file, int line)
   {
     std::pair<const char*, int> pair(file, line);
-    int locationID = tp_utils::getMapValue(locationIDs, pair, 0);
+    size_t locationID = tpGetMapValue(locationIDs, pair, 0);
 
     if(locationID==0)
     {
@@ -302,8 +253,8 @@ int LockStats::init(const char* type, const char* file, int line)
 
   //Find or create the definition for this mutex
   std::pair<const char*, int> pair(file, line);
-  mutexInstanceDetails.mutexDefinition = getMapValue(d->mutexDefinitionMap, pair, -1);
-  if(mutexInstanceDetails.mutexDefinition<0)
+  mutexInstanceDetails.mutexDefinition = tpGetMapValue(d->mutexDefinitionMap, pair, SIZE_MAX);
+  if(mutexInstanceDetails.mutexDefinition==SIZE_MAX)
   {
     mutexInstanceDetails.mutexDefinition = d->mutexDefinitionMap.size();
     MutexDefinitionDetails_lt mutexDefinition;
@@ -377,13 +328,13 @@ void LockStats::locked(int id, const char* file, int line, int elapsedWaiting, i
   mutexInstanceDetails.holderThread = threadID;
 
   //We have a list of timers to cope with recursive mutexes
-  ElapsedTimer* timer = new ElapsedTimer();
+  auto timer = new ElapsedTimer();
   timer->start();
 
   mutexInstanceDetails.lockTimers[threadID]
       .push_back(std::pair<int, ElapsedTimer*>(locationID, timer));
 
-  removeOne(mutexInstanceDetails.waiting, locationID);
+  tpRemoveOne(mutexInstanceDetails.waiting, locationID);
 
   {
     MutexDefinitionDetails_lt& mutexDefinition = d->mutexDefinitions[mutexInstanceDetails.mutexDefinition];
@@ -423,12 +374,12 @@ void LockStats::tryLock(int id, const char* file, int line, int elapsedWaiting, 
     mutexInstanceDetails.holderThread = threadID;
 
     //We have a list of timers to cope with recursive mutexes
-    ElapsedTimer* timer = new ElapsedTimer();
+    auto timer = new ElapsedTimer();
     timer->start();
     mutexInstanceDetails.lockTimers[threadID]
         .push_back(std::pair<int, ElapsedTimer*>(locationID, timer));
   }
-  removeOne(mutexInstanceDetails.waiting, locationID);
+  tpRemoveOne(mutexInstanceDetails.waiting, locationID);
 
   {
     MutexDefinitionDetails_lt& mutexDefinition = d->mutexDefinitions[mutexInstanceDetails.mutexDefinition];
@@ -473,14 +424,14 @@ void LockStats::unlock(int id, const char* file, int line)
 
   {
     MutexDefinitionDetails_lt& mutexDefinition = d->mutexDefinitions[mutexInstanceDetails.mutexDefinition];
-    int elapsed=0;
+    int64_t elapsed=0;
     bool empty=false;
     int lockLocationID=0;
     {
       std::vector<std::pair<int, ElapsedTimer*>>& timerList = mutexInstanceDetails.lockTimers[threadID];
       if(!timerList.empty())
       {
-        std::pair<int, ElapsedTimer*> timer = takeLast<std::pair<int, ElapsedTimer*>>(timerList);
+        const auto& timer = tpTakeLast(timerList);
         lockLocationID=timer.first;
         elapsed=timer.second->elapsed();
         delete timer.second;
@@ -520,7 +471,7 @@ void LockStats::unlock(int id, const char* file, int line)
       unlockSiteDetails.held+=elapsed;
 
       if(elapsed>unlockSiteDetails.heldMax)
-        unlockSiteDetails.heldMax=elapsed;
+        unlockSiteDetails.heldMax=int(elapsed);
 
       unlockSiteDetails.unlockCount++;
       unlockSiteDetails.heldRecent+=elapsed;
@@ -540,15 +491,13 @@ std::string LockStats::takeResults()
 
   //-- Sort the mutexes by wt ----------------------------------------------------------------------
   std::vector<MutexDefinitionDetails_lt*> sortedMutexDefinitions;
-  for(int i=0; i<int(d->mutexDefinitions.size()); i++)
+  for(MutexDefinitionDetails_lt& mutexDefinition : d->mutexDefinitions)
   {
-    MutexDefinitionDetails_lt* mutexDefinition = &(d->mutexDefinitions[i]);
-
     int c=0;
-    while(c<int(sortedMutexDefinitions.size()) && sortedMutexDefinitions.at(c)->totalWait>=mutexDefinition->totalWait)
+    while(c<int(sortedMutexDefinitions.size()) && sortedMutexDefinitions.at(c)->totalWait>=mutexDefinition.totalWait)
       c++;
 
-    sortedMutexDefinitions.insert(sortedMutexDefinitions.begin()+c, mutexDefinition);
+    sortedMutexDefinitions.insert(sortedMutexDefinitions.begin()+c, &mutexDefinition);
   }
 
   std::string titleLineLock = "+---+";

@@ -100,7 +100,11 @@ public:
   const tp_utils::StringID& m_type{getType()};\
   public:\
   _TDP_REF_COUNT_OBJECT_ (){tp_utils::RefCount::ref  (m_type);}\
+  _TDP_REF_COUNT_OBJECT_ (const _TDP_REF_COUNT_OBJECT_& other){TP_UNUSED(other);tp_utils::RefCount::ref  (m_type);}\
   ~_TDP_REF_COUNT_OBJECT_(){tp_utils::RefCount::unref(m_type);}\
+  _TDP_REF_COUNT_OBJECT_& operator=(const _TDP_REF_COUNT_OBJECT_&)=delete;\
+  _TDP_REF_COUNT_OBJECT_& operator=(_TDP_REF_COUNT_OBJECT_&&)=delete;\
+  _TDP_REF_COUNT_OBJECT_ (_TDP_REF_COUNT_OBJECT_&&)=delete;\
   }; _TDP_REF_COUNT_OBJECT_ _TDP_REF_COUNT_OBJECT_instance
 
 
