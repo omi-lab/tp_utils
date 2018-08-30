@@ -19,6 +19,7 @@
 #include <cxxabi.h>
 #include <ucontext.h>
 #include <cstring>
+#include <memory>
 #endif
 
 #if defined(ANDROID_STACKTRACE)
@@ -98,9 +99,9 @@ namespace tp_utils
 //-- GCC -------------------------------------------------------------------------------------------
 //##################################################################################################
 #if defined(GCC_STACKTRACE)
-static bool demangle(const char* symbol, char* output)
+static bool demangle(const char* symbol, std::string& output)
 {
-  char* symbol2 = strdup(symbol);
+  std::unique_ptr<char, decltype(&free)> symbol2(strdup(symbol), &free);
 
   // find parentheses and +address offset surrounding the mangled name:
   // ./module(function+0x15c) [0x8048a6d]
@@ -109,7 +110,7 @@ static bool demangle(const char* symbol, char* output)
   char* begin_offset = nullptr;
   char* end_offset = nullptr;
   char* p;
-  for(p = symbol2; *p; ++p)
+  for(p = symbol2.get(); *p; ++p)
   {
     if(*p == '(')
       begin_name = p;
@@ -148,7 +149,7 @@ static bool demangle(const char* symbol, char* output)
     };
 
     ParseState parse_state = ParseState::kInWhitespace1;
-    for(p = symbol2; *p; ++p)
+    for(p = symbol2.get(); *p; ++p)
     {
       switch(parse_state)
       {
@@ -226,22 +227,28 @@ static bool demangle(const char* symbol, char* output)
     // offset in [begin_offset, end_offset). now apply __cxa_demangle():
 
     int status = -1;
-    char* demangled = abi::__cxa_demangle(begin_name, nullptr, nullptr, &status);
+    std::unique_ptr<char, decltype(&free)> demangled(abi::__cxa_demangle(begin_name, nullptr, nullptr, &status), &free);
     if(demangled && !status)
-      snprintf(output, MAX_TRACE_SIZE, "%s + %s", demangled, begin_offset);
+    {
+      output += demangled.get();
+      output += " + ";
+      output += begin_offset;
+    }
     else
+    {
       // demangling failed. Output function name as a C function with no arguments.
-      snprintf(output, MAX_TRACE_SIZE, "%s() + %s", begin_name, begin_offset);
-    free(demangled);
+      output += begin_name;
+      output += "() + ";
+      output += begin_offset;
+    }
   }
   else
   {
     // couldn't parse the line? Just print the whole line.
-    strncpy(output, symbol, MAX_TRACE_SIZE);
+    output += symbol;
     output[MAX_TRACE_SIZE-1] = '\0';
   }
 
-  free(symbol2);
   return true;
 }
 
@@ -249,7 +256,8 @@ static bool demangle(const char* symbol, char* output)
 void TP_UTILS_SHARED_EXPORT printStackTrace()
 {
   //Get the backtrace
-  void* array[MAX_LEVELS];
+  std::array<void*, MAX_LEVELS> array = tpMakeArray<void*, MAX_LEVELS>(nullptr);
+
   int startOffset = 1;   // don't include printStackTrace() in the output
 #if defined(__mips)
   int size = backtraceMIPS(array, MAX_LEVELS);
@@ -265,41 +273,39 @@ void TP_UTILS_SHARED_EXPORT printStackTrace()
     startOffset = 0;
   }
 #else
-  int size = backtrace(array, MAX_LEVELS);
+  int size = backtrace(array.data(), MAX_LEVELS);
 #endif
-  char** strings = backtrace_symbols(array, size);
+  std::unique_ptr<char*, decltype(&free)> strings(backtrace_symbols(array.data(), size), &free);
   tpWarning() << "Stack frames: " << size - startOffset;
   for(int i = startOffset; i < size; ++i)
   {
-    const char* symbol = strings[i];
+    const char* symbol = strings.get()[i];
 
     //Extract name and address
-    char demangled[MAX_TRACE_SIZE+1];
+    std::string demangled;
     if(demangle(symbol, demangled))
       tpWarning() << "Frame " << i << ": " << demangled;
     else
       tpWarning() << "Frame " << i << ": " << symbol;
   }
-
-  free(strings);
 }
 
 //##################################################################################################
 std::string TP_UTILS_SHARED_EXPORT formatStackTrace()
 {
   //Get the backtrace
-  void* array[MAX_LEVELS];
+  std::array<void*, MAX_LEVELS> array = tpMakeArray<void*, MAX_LEVELS>(nullptr);
+
   int startOffset = 1;   // don't include printStackTrace() in the output
-  int size = backtrace(array, MAX_LEVELS);
+  int size = backtrace(array.data(), MAX_LEVELS);
 
   //Convert the backtrace to strings
-  char** strings = backtrace_symbols(array, size);
+  std::unique_ptr<char*, decltype(&free)> strings(backtrace_symbols(array.data(), size), &free);
 
   std::string results = std::string("Stack frames: ") + std::to_string(size - startOffset) + '\n';
   for(int i = startOffset; i < size; ++i)
-    results.append(std::string("Frame ") + std::to_string(i) +": " + strings[i]) + '\n';
+    results.append(std::string("Frame ") + std::to_string(i) +": " + strings.get()[i]) + '\n';
 
-  free(strings);
   return results;
 }
 
@@ -338,7 +344,7 @@ static _Unwind_Reason_Code android_unwind_callback(struct _Unwind_Context* conte
 //##################################################################################################
 void TP_UTILS_SHARED_EXPORT printStackTrace()
 {
-  tpWarning("\nandroid stack dump");
+  tpWarning() << "\nandroid stack dump";
 
   const int max = 100;
   void* buffer[max];
@@ -364,13 +370,13 @@ void TP_UTILS_SHARED_EXPORT printStackTrace()
     char* demangled = __cxxabiv1::__cxa_demangle(symbol, 0, 0, &status);
 
     sprintf(traceString, "%03d: 0x%p %s", idx, addr, (demangled && !status) ? demangled : symbol);
-    tpWarning(traceString);
+    tpWarning() << traceString;
 
     if(!status)
       free(demangled);
   }
 
-  tpWarning("android stack dump done\n");
+  tpWarning() << "android stack dump done\n";
 }
 
 std::string TP_UTILS_SHARED_EXPORT formatStackTrace()

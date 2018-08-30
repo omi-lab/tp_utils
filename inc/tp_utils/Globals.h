@@ -3,12 +3,11 @@
 
 #include <unordered_map>
 
-#include <boost/variant.hpp>
-
 #include <functional>
 
 #include <string>
 #include <vector>
+#include <algorithm>
 
 #ifndef TP_UTILS_SHARED_EXPORT
 #if defined(TP_UTILS_LIBRARY)
@@ -97,6 +96,10 @@ bool tpStartsWith(const std::string& input, const std::string& s);
 //##################################################################################################
 //! Split a string on a delimiter
 void tpSplit(std::vector<std::string>& result, const std::string& input, const std::string& del);
+
+//##################################################################################################
+//! Split a string on a delimiter
+void tpSplit(std::vector<std::string>& result, const std::string& input, char del);
 
 //##################################################################################################
 //! Remove all instances of a character from a string.
@@ -243,18 +246,10 @@ namespace tp_utils
 {
 
 //##################################################################################################
-template<typename V, typename T>
-V getVariantValue(const T& variant, const V& defaultValue=V())
-{
-  const V* v = boost::get<V>(&variant);
-  return v?*v:defaultValue;
-}
+void leftJustified(std::string& text, size_t maxLength, char padding=' ');
 
 //##################################################################################################
-void leftJustified(std::string& text, int maxLength, char padding=' ');
-
-//##################################################################################################
-void rightJustified(std::string& text, int maxLength, char padding=' ');
+void rightJustified(std::string& text, size_t maxLength, char padding=' ');
 
 //##################################################################################################
 bool parseColor(const std::string& color, uint8_t& r, uint8_t& g, uint8_t& b, uint8_t& a);

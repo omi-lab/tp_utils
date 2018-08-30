@@ -1,10 +1,5 @@
 #include "tp_utils/Globals.h"
 
-#include <boost/algorithm/string.hpp>
-#include <boost/algorithm/string/iter_find.hpp>
-#include <boost/algorithm/string/finder.hpp>
-#include <boost/utility/string_view.hpp>
-
 //##################################################################################################
 bool tpStartsWith(const std::string& input, const std::string& s)
 {
@@ -14,7 +9,31 @@ bool tpStartsWith(const std::string& input, const std::string& s)
 //##################################################################################################
 void tpSplit(std::vector<std::string>& result, const std::string& input, const std::string& del)
 {
-  boost::iter_split(result, input, boost::algorithm::first_finder(del));
+  std::string::size_type start = 0;
+  auto end = input.find(del);
+  while (end != std::string::npos)
+  {
+      result.push_back(input.substr(start, end - start));
+      start = end + del.length();
+      end = input.find(del, start);
+  }
+
+  result.push_back(input.substr(start, end));
+}
+
+//##################################################################################################
+void tpSplit(std::vector<std::string>& result, const std::string& input, char del)
+{
+  std::string::size_type start = 0;
+  auto end = input.find(del);
+  while (end != std::string::npos)
+  {
+      result.push_back(input.substr(start, end - start));
+      start = end+1;
+      end = input.find(del, start);
+  }
+
+  result.push_back(input.substr(start, end));
 }
 
 //##################################################################################################
@@ -27,18 +46,18 @@ namespace tp_utils
 {
 
 //##################################################################################################
-void leftJustified(std::string& text, int maxLength, char padding)
+void leftJustified(std::string& text, size_t maxLength, char padding)
 {
-  if(int(text.size()) >= maxLength)
+  if(text.size() >= maxLength)
     return;
 
   text+=std::string(maxLength-text.size(), padding);
 }
 
 //##################################################################################################
-void rightJustified(std::string& text, int maxLength, char padding)
+void rightJustified(std::string& text, size_t maxLength, char padding)
 {
-  if(int(text.size()) >= maxLength)
+  if(text.size() >= maxLength)
     return;
 
   text = std::string(maxLength-text.size(), padding)+text;
@@ -60,7 +79,7 @@ bool parseColor(const std::string& color, uint8_t& r, uint8_t& g, uint8_t& b, ui
     return false;
 
   uint32_t acc = 0;
-  for(int i=1; i<7; i++)
+  for(size_t i=1; i<7; i++)
   {
     char c = color.at(i);
 
@@ -78,9 +97,9 @@ bool parseColor(const std::string& color, uint8_t& r, uint8_t& g, uint8_t& b, ui
     acc|=v;
   }
 
-  b = acc; acc>>=8;
-  g = acc; acc>>=8;
-  r = acc;
+  b = uint8_t(acc); acc>>=8;
+  g = uint8_t(acc); acc>>=8;
+  r = uint8_t(acc);
   return true;
 }
 
