@@ -93,13 +93,30 @@ T tpMax(T a, T b)
 //! Returns true if input starts with the string in s
 bool tpStartsWith(const std::string& input, const std::string& s);
 
+
 //##################################################################################################
-//! Split a string on a delimiter
-void tpSplit(std::vector<std::string>& result, const std::string& input, const std::string& del);
+namespace tp_utils
+{
+enum class SplitBehavior
+{
+  KeepEmptyParts,
+  SkipEmptyParts
+};
+}
 
 //##################################################################################################
 //! Split a string on a delimiter
-void tpSplit(std::vector<std::string>& result, const std::string& input, char del);
+void tpSplit(std::vector<std::string>& result,
+             const std::string& input,
+             const std::string& del,
+             tp_utils::SplitBehavior behavior=tp_utils::SplitBehavior::KeepEmptyParts);
+
+//##################################################################################################
+//! Split a string on a delimiter
+void tpSplit(std::vector<std::string>& result,
+             const std::string& input,
+             char del,
+             tp_utils::SplitBehavior behavior=tp_utils::SplitBehavior::KeepEmptyParts);
 
 //##################################################################################################
 //! Remove all instances of a character from a string.

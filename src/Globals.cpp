@@ -7,33 +7,51 @@ bool tpStartsWith(const std::string& input, const std::string& s)
 }
 
 //##################################################################################################
-void tpSplit(std::vector<std::string>& result, const std::string& input, const std::string& del)
+namespace
+{
+void addPart(std::vector<std::string>& result, const std::string& input, size_t pos, size_t n, tp_utils::SplitBehavior behavior)
+{
+  if(behavior==tp_utils::SplitBehavior::SkipEmptyParts && n==0)
+    return;
+
+  result.push_back(input.substr(pos, n));
+}
+}
+
+//##################################################################################################
+void tpSplit(std::vector<std::string>& result,
+             const std::string& input,
+             const std::string& del,
+             tp_utils::SplitBehavior behavior)
 {
   std::string::size_type start = 0;
   auto end = input.find(del);
   while (end != std::string::npos)
   {
-      result.push_back(input.substr(start, end - start));
+    addPart(result, input, start, end - start, behavior);
       start = end + del.length();
       end = input.find(del, start);
   }
 
-  result.push_back(input.substr(start, end));
+  addPart(result, input, start, end, behavior);
 }
 
 //##################################################################################################
-void tpSplit(std::vector<std::string>& result, const std::string& input, char del)
+void tpSplit(std::vector<std::string>& result,
+             const std::string& input,
+             char del,
+             tp_utils::SplitBehavior behavior)
 {
   std::string::size_type start = 0;
   auto end = input.find(del);
   while (end != std::string::npos)
   {
-      result.push_back(input.substr(start, end - start));
+    addPart(result, input, start, end - start, behavior);
       start = end+1;
       end = input.find(del, start);
   }
 
-  result.push_back(input.substr(start, end));
+  addPart(result, input, start, end, behavior);
 }
 
 //##################################################################################################
@@ -85,13 +103,13 @@ bool parseColor(const std::string& color, uint8_t& r, uint8_t& g, uint8_t& b, ui
 
     uint32_t v=0;
     if(c>='0' && c<='9')
-      v = c-'0';
+      v = uint32_t(c-'0');
 
     if(c>='A' && c<='F')
-      v = 10 + (c-'A');
+      v = uint32_t(10 + (c-'A'));
 
     if(c>='a' && c<='f')
-      v = 10 + (c-'a');
+      v = uint32_t(10 + (c-'a'));
 
     acc<<=4;
     acc|=v;
