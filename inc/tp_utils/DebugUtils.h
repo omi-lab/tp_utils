@@ -12,6 +12,17 @@
 #define tpWarning tp_utils::DebugHelper()
 #define tpDebug tp_utils::DebugHelper()
 
+//##################################################################################################
+template<typename T>
+std::ostream& operator<<(std::ostream& os, const std::vector<T>& v)
+{
+  os << "( ";
+  for(const auto& i : v)
+    os << i << ' ';
+  os << ')';
+  return os;
+}
+
 namespace tp_utils
 {
 

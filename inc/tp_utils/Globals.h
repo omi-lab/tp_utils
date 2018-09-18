@@ -7,6 +7,7 @@
 
 #include <string>
 #include <vector>
+#include <variant>
 #include <algorithm>
 
 #ifndef TP_UTILS_SHARED_EXPORT
@@ -243,6 +244,14 @@ template <typename T, std::size_t N>
 std::array<T, N> tpMakeArray(const T& value)
 {
   return detail::tpMakeArray(value, std::make_index_sequence<N>());
+}
+
+//##################################################################################################
+template<typename V, typename T>
+V tpGetVariantValue(const T& variant, const V& defaultValue=V())
+{
+  const V* v = std::get_if<V>(&variant);
+  return v?*v:defaultValue;
 }
 
 //##################################################################################################
