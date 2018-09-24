@@ -3,13 +3,13 @@
 
 //PLATFORM_ABSTRACTIONS
 #if defined(TDP_ANDROID)
-#define ANDROID_STACKTRACE
+#  define ANDROID_STACKTRACE
 #elif defined(TDP_OSX)
-#define GCC_STACKTRACE
+#  define OSX_STACKTRACE
 #elif defined(EMSCRIPTEN)
-#define EMSCRIPTEN_STACKTRACE
+#  define EMSCRIPTEN_STACKTRACE
 #elif defined(__GLIBC__) && (!defined(__UCLIBC__) || defined(__UCLIBC_HAS_BACKTRACE__))
-#define GCC_STACKTRACE
+#  define GCC_STACKTRACE
 #endif
 
 #ifdef GCC_STACKTRACE
