@@ -7,8 +7,11 @@
 
 #include <string>
 #include <vector>
-#include <variant>
 #include <algorithm>
+
+#ifndef TDP_ANDROID
+#include <variant>
+#endif
 
 #ifndef TP_UTILS_SHARED_EXPORT
 #if defined(TP_UTILS_LIBRARY)
@@ -247,12 +250,14 @@ std::array<T, N> tpMakeArray(const T& value)
 }
 
 //##################################################################################################
+#ifndef TDP_ANDROID
 template<typename V, typename T>
 V tpGetVariantValue(const T& variant, const V& defaultValue=V())
 {
   const V* v = std::get_if<V>(&variant);
   return v?*v:defaultValue;
 }
+#endif
 
 //##################################################################################################
 class TPCleanUp
