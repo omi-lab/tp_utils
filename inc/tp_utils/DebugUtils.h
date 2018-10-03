@@ -10,8 +10,8 @@
 #include <vector>
 #include <unordered_set>
 
-#define tpWarning tp_utils::DebugHelper()
-#define tpDebug tp_utils::DebugHelper()
+#define tpWarning tp_utils::DebugHelper(tp_utils::DBGManager::instance().produceWarning())
+#define tpDebug tp_utils::DebugHelper(tp_utils::DBGManager::instance().produceDebug())
 
 //##################################################################################################
 template<typename T>
@@ -95,20 +95,86 @@ public:
 };
 
 //##################################################################################################
-struct DebugHelper
+struct DBGBase
 {
+  TP_NONCOPYABLE(DBGBase);
+
+  DBGBase()=default;
+  virtual ~DBGBase()=default;
+  virtual std::ostream& operator()()=0;
+};
+
+//##################################################################################################
+struct DBGFactoryBase
+{
+  TP_NONCOPYABLE(DBGFactoryBase);
+
+  DBGFactoryBase()=default;
+  virtual ~DBGFactoryBase()=default;
+  virtual DBGBase* produce()=0;
+};
+
+//##################################################################################################
+template<typename T>
+struct DBGFactoryTemplate : public DBGFactoryBase
+{
+  TP_NONCOPYABLE(DBGFactoryTemplate);
+
+  DBGFactoryTemplate()=default;
+  ~DBGFactoryTemplate() override = default;
+  DBGBase* produce() override
+  {
+    return new T();
+  }
+};
+
+//##################################################################################################
+struct DefaultDBG : public DBGBase
+{
+  TP_NONCOPYABLE(DefaultDBG);
+
+  DefaultDBG();
+  ~DefaultDBG()override;
+  std::ostream& operator()()override;
+
   DebugBuffer m_buffer;
   std::ostream m_stream;
-
-  //################################################################################################
-  DebugHelper();
-
-  //################################################################################################
-  ~DebugHelper();
-
-  //################################################################################################
-  std::ostream& operator()();
 };
+
+using DefaultDBGFactory = DBGFactoryTemplate<DefaultDBG>;
+
+//##################################################################################################
+struct DebugHelper
+{
+  TP_NONCOPYABLE(DebugHelper);
+
+  DebugHelper(DBGBase* dbg);
+  ~DebugHelper();
+  std::ostream& operator()();
+
+  DBGBase* m_dbg;
+};
+
+//##################################################################################################
+struct DBGManager
+{
+  DBGManager();
+  ~DBGManager();
+
+  void setWarning(DBGFactoryBase* warningFactory);
+  DBGBase* produceWarning();
+
+  void setDebug(DBGFactoryBase* debugFactory);
+  DBGBase* produceDebug();
+
+  static DBGManager& instance();
+
+  struct Private;
+  Private* d;
+};
+
+//##################################################################################################
+void installDefaultMessageHandler();
 
 }
 

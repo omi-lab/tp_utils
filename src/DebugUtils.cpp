@@ -1,6 +1,10 @@
 #include "tp_utils/DebugUtils.h"
 #include "tp_utils/MutexUtils.h"
 
+#ifdef TDP_ANDROID
+#include <android/log.h>
+#endif
+
 namespace tp_utils
 {
 namespace
@@ -107,8 +111,27 @@ int DebugBuffer::sync()
 }
 
 //##################################################################################################
-DebugHelper::DebugHelper():
+DefaultDBG::DefaultDBG():
   m_stream(&m_buffer)
+{
+
+}
+
+//##################################################################################################
+DefaultDBG::~DefaultDBG()
+{
+  m_stream << std::endl;
+}
+
+//##################################################################################################
+std::ostream& DefaultDBG::operator()()
+{
+  return m_stream;
+}
+
+//##################################################################################################
+DebugHelper::DebugHelper(DBGBase* dbg):
+  m_dbg(dbg)
 {
 
 }
@@ -116,13 +139,104 @@ DebugHelper::DebugHelper():
 //##################################################################################################
 DebugHelper::~DebugHelper()
 {
-  m_stream << std::endl;
+  delete m_dbg;
 }
 
 //##################################################################################################
 std::ostream& DebugHelper::operator()()
 {
-  return m_stream;
+  return (*m_dbg)();
+}
+
+//##################################################################################################
+struct DBGManager::Private
+{
+  std::mutex mutex;
+  DBGFactoryBase* warningFactory{new DefaultDBGFactory()};
+  DBGFactoryBase* debugFactory{new DefaultDBGFactory()};
+};
+
+//##################################################################################################
+DBGManager::DBGManager():
+  d(new Private())
+{
+
+}
+
+//##################################################################################################
+DBGManager::~DBGManager()
+{
+  delete d;
+}
+
+//##################################################################################################
+void DBGManager::setWarning(DBGFactoryBase* warningFactory)
+{
+  std::lock_guard<std::mutex> lg(d->mutex);
+  TP_UNUSED(lg);
+  delete d->warningFactory;
+  d->warningFactory = warningFactory;
+}
+
+//##################################################################################################
+DBGBase* DBGManager::produceWarning()
+{
+  std::lock_guard<std::mutex> lg(d->mutex);
+  TP_UNUSED(lg);
+  return d->warningFactory->produce();
+}
+
+//##################################################################################################
+void DBGManager::setDebug(DBGFactoryBase* debugFactory)
+{
+  std::lock_guard<std::mutex> lg(d->mutex);
+  TP_UNUSED(lg);
+  delete d->debugFactory;
+  d->debugFactory = debugFactory;
+}
+
+//##################################################################################################
+DBGBase* DBGManager::produceDebug()
+{
+  std::lock_guard<std::mutex> lg(d->mutex);
+  TP_UNUSED(lg);
+  return d->debugFactory->produce();
+}
+
+//##################################################################################################
+DBGManager& DBGManager::instance()
+{
+  static DBGManager instance;
+  return instance;
+}
+
+//##################################################################################################
+//## Platform Abstractions #########################################################################
+//##################################################################################################
+
+#ifdef TDP_ANDROID
+namespace
+{
+//##################################################################################################
+void messageHandler(tp_utils::MessageType messageType, const std::string& message)
+{
+  const char* tag="tpDebug";
+  switch(messageType)
+  {
+  case tp_utils::MessageType::Debug:   tag="tpDebug";   break;
+  case tp_utils::MessageType::Warning: tag="tpWarning"; break;
+  }
+  __android_log_print(ANDROID_LOG_DEBUG, tag, "%s", message.c_str());
+}
+}
+#endif
+
+//##################################################################################################
+void installDefaultMessageHandler()
+{
+#ifdef __ANDROID_API__
+  tp_utils::installMessageHandler(messageHandler);
+#endif
 }
 
 }
