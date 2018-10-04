@@ -54,9 +54,17 @@ std::vector<std::string> listDirectories(const std::string& path);
 int64_t fileTimeMS(const std::string& path);
 
 //##################################################################################################
+bool copyFile(const std::string& pathFrom, const std::string& pathTo);
+
+//##################################################################################################
+bool mkdir(const std::string& path, bool createFullPath);
+
+//##################################################################################################
 extern std::vector<std::string> (*listFilesCallback)(const std::string& path, const std::unordered_set<std::string>& extensions);
 extern std::vector<std::string> (*listDirectoriesCallback)(const std::string& path);
 extern int64_t (*fileTimeMSCallback)(const std::string& path);
+extern bool (*copyFileCallback)(const std::string& pathFrom, const std::string& pathTo);
+extern bool (*mkdirCallback)(const std::string& path, bool createFullPath);
 
 }
 

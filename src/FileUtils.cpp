@@ -110,6 +110,8 @@ bool writePrettyJSONFile(const std::string& fileName, const nlohmann::json& j)
 std::vector<std::string> (*listFilesCallback)(const std::string& path, const std::unordered_set<std::string>& extensions)=nullptr;
 std::vector<std::string> (*listDirectoriesCallback)(const std::string& path)=nullptr;
 int64_t (*fileTimeMSCallback)(const std::string& path)=nullptr;
+bool (*copyFileCallback)(const std::string& pathFrom, const std::string& pathTo)=nullptr;
+bool (*mkdirCallback)(const std::string& path, bool createFullPath)=nullptr;
 
 //##################################################################################################
 std::vector<std::string> listFiles(const std::string& path, const std::unordered_set<std::string>& extensions)
@@ -127,6 +129,18 @@ std::vector<std::string> listDirectories(const std::string& path)
 int64_t fileTimeMS(const std::string& path)
 {
   return fileTimeMSCallback?fileTimeMSCallback(path):0;
+}
+
+//##################################################################################################
+bool copyFile(const std::string& pathFrom, const std::string& pathTo)
+{
+  return copyFileCallback?copyFileCallback(pathFrom, pathTo):false;
+}
+
+//##################################################################################################
+bool mkdir(const std::string& path, bool createFullPath)
+{
+  return mkdirCallback?mkdirCallback(path, createFullPath):false;
 }
 
 }
