@@ -1,5 +1,9 @@
 #include "tp_utils/DebugUtils.h"
 #include "tp_utils/MutexUtils.h"
+#include "tp_utils/StackTrace.h"
+
+#include <csignal>
+#include <cstdlib>
 
 #ifdef TDP_ANDROID
 #include <android/log.h>
@@ -9,12 +13,24 @@ namespace tp_utils
 {
 namespace
 {
-
 TPMutex debugMutex{TPM};
 std::function<void(MessageType, const std::string&)> debugCallback;
 std::function<void(const std::string&, DebugType, const std::string&)> tableCallback;
 std::unordered_map<std::string, std::unordered_map<int, bool>> enabledDebugModeObjects;
 std::vector<DebugMode*> debugModeObjects;
+
+//##################################################################################################
+void handleSignal(int signum)
+{
+  tpWarning() << "Signal caught: " << signum;
+  printStackTrace();
+}
+}
+
+//##################################################################################################
+void installSignalHandler()
+{
+  signal(SIGABRT, &handleSignal);
 }
 
 //##################################################################################################
