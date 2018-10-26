@@ -67,6 +67,12 @@ template<int s> struct __TDP_SIZEOF;
 //! Use this to show the size of objects at compile time, will fail at the line it is used.
 #define TDP_SIZEOF(o)__TDP_SIZEOF<sizeof(o)> __tdp_sizeof;
 
+//##################################################################################################
+//TDP_LINE_STRING
+#define TDP_STRINGIZE(x) TDP_STRINGIZE2(x)
+#define TDP_STRINGIZE2(x) #x
+#define TDP_LINE_STRING TDP_STRINGIZE(__LINE__)
+
 
 //##################################################################################################
 //! Return a const object
