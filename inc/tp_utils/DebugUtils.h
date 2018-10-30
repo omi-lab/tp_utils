@@ -3,15 +3,11 @@
 
 #include "tp_utils/Globals.h"
 
-#include <iostream>
 #include <sstream>
-#include <functional>
-#include <atomic>
-#include <vector>
 #include <unordered_set>
 
-#define tpWarning tp_utils::DebugHelper(tp_utils::DBGManager::instance().produceWarning())
-#define tpDebug tp_utils::DebugHelper(tp_utils::DBGManager::instance().produceDebug())
+#define tpWarning tp_utils::DebugHelper(tp_utils::DBG::Manager::instance().produceWarning())
+#define tpDebug tp_utils::DebugHelper(tp_utils::DBG::Manager::instance().produceDebug())
 
 //##################################################################################################
 template<typename T>
@@ -61,11 +57,6 @@ void installMessageHandler(const std::function<void(MessageType, const std::stri
 //##################################################################################################
 class DebugMode
 {
-  const std::string& m_classPath;
-  DebugType m_debugType;
-  std::atomic_bool m_enabled{false};
-public:
-
   //################################################################################################
   DebugMode(const std::string& classPath, DebugType debugType=DebugType::Console);
 
@@ -87,6 +78,11 @@ public:
 
   //################################################################################################
   static std::vector<std::string> classPaths(DebugType debugType);
+
+private:
+  struct Private;
+  friend struct Private;
+  Private* d;
 };
 
 //##################################################################################################
@@ -97,83 +93,71 @@ public:
     int sync() override;
 };
 
-//##################################################################################################
-struct DBGBase
+namespace DBG
 {
-  TP_NONCOPYABLE(DBGBase);
+//##################################################################################################
+struct Base
+{
+  TP_NONCOPYABLE(Base);
 
-  DBGBase()=default;
-  virtual ~DBGBase()=default;
+  Base()=default;
+  virtual ~Base()=default;
   virtual std::ostream& operator()()=0;
 };
 
 //##################################################################################################
-struct DBGFactoryBase
+struct FactoryBase
 {
-  TP_NONCOPYABLE(DBGFactoryBase);
+  TP_NONCOPYABLE(FactoryBase);
 
-  DBGFactoryBase()=default;
-  virtual ~DBGFactoryBase()=default;
-  virtual DBGBase* produce()=0;
+  FactoryBase()=default;
+  virtual ~FactoryBase()=default;
+  virtual Base* produce()=0;
 };
 
 //##################################################################################################
 template<typename T>
-struct DBGFactoryTemplate : public DBGFactoryBase
+struct FactoryTemplate : public FactoryBase
 {
-  TP_NONCOPYABLE(DBGFactoryTemplate);
+  TP_NONCOPYABLE(FactoryTemplate);
 
-  DBGFactoryTemplate()=default;
-  ~DBGFactoryTemplate() override = default;
-  DBGBase* produce() override
+  FactoryTemplate()=default;
+  ~FactoryTemplate() override = default;
+  Base* produce() override
   {
     return new T();
   }
 };
 
 //##################################################################################################
-struct DefaultDBG : public DBGBase
+struct Manager
 {
-  TP_NONCOPYABLE(DefaultDBG);
+  Manager();
+  ~Manager();
 
-  DefaultDBG();
-  ~DefaultDBG()override;
-  std::ostream& operator()()override;
+  void setWarning(FactoryBase* warningFactory);
+  Base* produceWarning();
 
-  DebugBuffer m_buffer;
-  std::ostream m_stream;
+  void setDebug(FactoryBase* debugFactory);
+  Base* produceDebug();
+
+  static Manager& instance();
+
+  struct Private;
+  Private* d;
 };
-
-using DefaultDBGFactory = DBGFactoryTemplate<DefaultDBG>;
+}
 
 //##################################################################################################
 struct DebugHelper
 {
   TP_NONCOPYABLE(DebugHelper);
 
-  DebugHelper(DBGBase* dbg);
+  DebugHelper(DBG::Base* dbg);
   ~DebugHelper();
   std::ostream& operator()();
 
-  DBGBase* m_dbg;
-};
-
-//##################################################################################################
-struct DBGManager
-{
-  DBGManager();
-  ~DBGManager();
-
-  void setWarning(DBGFactoryBase* warningFactory);
-  DBGBase* produceWarning();
-
-  void setDebug(DBGFactoryBase* debugFactory);
-  DBGBase* produceDebug();
-
-  static DBGManager& instance();
-
-  struct Private;
-  Private* d;
+  DBG::Base* m_dbg;
 };
 
 //##################################################################################################

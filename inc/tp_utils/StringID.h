@@ -3,11 +3,6 @@
 
 #include "tp_utils/Globals.h"
 
-#include <unordered_map>
-
-#include <stdint.h>
-#include <vector>
-
 namespace tp_utils
 {
 class StringIDManager;

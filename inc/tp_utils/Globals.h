@@ -1,8 +1,6 @@
 #ifndef tp_utils_Globals_h
 #define tp_utils_Globals_h
 
-#include <unordered_map>
-
 #include <functional>
 
 #include <string>

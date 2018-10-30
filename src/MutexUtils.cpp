@@ -1,5 +1,6 @@
 #include "tp_utils/MutexUtils.h"
 #include "tp_utils/DebugUtils.h"
+#include "tp_utils/TimeUtils.h"
 
 #include "lib_platform/Polyfill.h"
 
