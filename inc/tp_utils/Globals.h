@@ -239,6 +239,12 @@ typename T::mapped_type tpGetMapValue(const T& map,
   return (i != map.end())?(i->second):defaultValue;
 }
 
+//##################################################################################################
+std::string tpToUTF8(const std::u16string& source);
+
+//##################################################################################################
+std::u16string tpFromUTF8(const std::string& source);
+
 namespace detail
 {
 //##################################################################################################

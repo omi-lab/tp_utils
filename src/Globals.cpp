@@ -1,5 +1,8 @@
 #include "tp_utils/Globals.h"
 
+#include <codecvt>
+#include <locale>
+
 //##################################################################################################
 bool tpStartsWith(const std::string& input, const std::string& s)
 {
@@ -58,6 +61,18 @@ void tpSplit(std::vector<std::string>& result,
 void tpRemoveChar(std::string& s, char c)
 {
   s.erase(std::remove_if(s.begin(), s.end(), [c](int a){return a==c;}), s.end());
+}
+
+//##################################################################################################
+std::string tpToUTF8(const std::u16string& source)
+{
+  return std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t>().to_bytes(source);
+}
+
+//##################################################################################################
+std::u16string tpFromUTF8(const std::string& source)
+{
+  return std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t>().from_bytes(source);
 }
 
 namespace tp_utils
