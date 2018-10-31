@@ -5,6 +5,7 @@
 #include <csignal>
 #include <cstdlib>
 #include <iostream>
+#include <unordered_map>
 #include <atomic>
 
 #ifdef TDP_ANDROID
