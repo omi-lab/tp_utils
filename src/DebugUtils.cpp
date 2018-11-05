@@ -287,7 +287,7 @@ void messageHandler(tp_utils::MessageType messageType, const std::string& messag
 //##################################################################################################
 void installDefaultMessageHandler()
 {
-#ifdef __ANDROID_API__
+#ifdef TDP_ANDROID
   tp_utils::installMessageHandler(messageHandler);
 #endif
 }
