@@ -1,4 +1,5 @@
 #include "tp_utils/TimeUtils.h"
+#include "tp_utils/DebugUtils.h"
 
 #include <chrono>
 
@@ -20,11 +21,19 @@ int64_t currentTimeMS()
 struct ElapsedTimer::Private
 {
   std::chrono::steady_clock::time_point start;
+  int64_t smallTime;
+
+  //################################################################################################
+  Private(int64_t smallTime_):
+    smallTime(smallTime_)
+  {
+
+  }
 };
 
 //##################################################################################################
-ElapsedTimer::ElapsedTimer():
-  d(new Private())
+ElapsedTimer::ElapsedTimer(int64_t smallTime):
+  d(new Private(smallTime))
 {
 
 }
@@ -55,6 +64,14 @@ int64_t ElapsedTimer::elapsed()const
 {
   std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
   return std::chrono::duration_cast<std::chrono::milliseconds>(now - d->start).count();
+}
+
+//##################################################################################################
+void ElapsedTimer::printTime(const char* msg)
+{
+  auto e = restart();
+  if(e>d->smallTime)
+    tpWarning() << msg << " (" << e << ")";
 }
 
 }

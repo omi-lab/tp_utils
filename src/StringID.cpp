@@ -13,7 +13,7 @@ namespace tp_utils
 //##################################################################################################
 struct StringID::StaticData
 {
-  std::mutex mutex;
+  TPMutex mutex{TPM};
   std::map<StringIDManager*, std::map<int64_t, SharedData*>> managers;
   std::map<std::string, SharedData*> allKeys;
 };
@@ -61,7 +61,7 @@ StringID::StringID(StringIDManager* manager, int64_t key):
     return;
 
   StaticData& staticData(StringID::staticData());
-  staticData.mutex.lock();
+  staticData.mutex.lock(TPM);
 
   std::map<int64_t, SharedData*>& managerKeys = staticData.managers[manager];
   {
@@ -72,9 +72,9 @@ StringID::StringID(StringIDManager* manager, int64_t key):
   if(!sd)
   {
     //This can involve a call to the db so we unlock here to avoid tying things up
-    staticData.mutex.unlock();
+    staticData.mutex.unlock(TPM);
     std::string keyString = manager->keyString(key);
-    staticData.mutex.lock();
+    staticData.mutex.lock(TPM);
 
     if(!keyString.empty())
     {
@@ -101,7 +101,7 @@ StringID::StringID(StringIDManager* manager, int64_t key):
     else
       sd->referenceCount++;
   }
-  staticData.mutex.unlock();
+  staticData.mutex.unlock(TPM);
 }
 
 //##################################################################################################
@@ -112,7 +112,7 @@ StringID::StringID(const std::string& keyString):
     return;
 
   StaticData& staticData(StringID::staticData());
-  staticData.mutex.lock();
+  staticData.mutex.lock(TPM);
 
   sd = tpGetMapValue(staticData.allKeys, keyString);
 
@@ -129,7 +129,7 @@ StringID::StringID(const std::string& keyString):
     sd->mutex.unlock(TPM);
   }
 
-  staticData.mutex.unlock();
+  staticData.mutex.unlock(TPM);
 }
 
 //##################################################################################################
@@ -141,7 +141,7 @@ StringID::StringID(const char* keyString_):
     return;
 
   StaticData& staticData(StringID::staticData());
-  staticData.mutex.lock();
+  staticData.mutex.lock(TPM);
 
   sd = tpGetMapValue(staticData.allKeys, keyString);
 
@@ -158,7 +158,7 @@ StringID::StringID(const char* keyString_):
     sd->mutex.unlock(TPM);
   }
 
-  staticData.mutex.unlock();
+  staticData.mutex.unlock(TPM);
 }
 
 //##################################################################################################
@@ -168,7 +168,7 @@ StringID& StringID::operator=(const StringID& other)
     return *this;
 
   StaticData& staticData(StringID::staticData());
-  staticData.mutex.lock();
+  staticData.mutex.lock(TPM);
 
   if(sd)
   {
@@ -199,7 +199,7 @@ StringID& StringID::operator=(const StringID& other)
     sd->mutex.unlock(TPM);
   }
 
-  staticData.mutex.unlock();
+  staticData.mutex.unlock(TPM);
 
   return *this;
 }
@@ -211,7 +211,7 @@ StringID::~StringID()
     return;
 
   StaticData& staticData(StringID::staticData());
-  staticData.mutex.lock();
+  staticData.mutex.lock(TPM);
 
   sd->mutex.lock(TPM);
   sd->referenceCount--;
@@ -231,7 +231,7 @@ StringID::~StringID()
     sd->mutex.unlock(TPM);
 
 
-  staticData.mutex.unlock();
+  staticData.mutex.unlock(TPM);
 }
 
 //##################################################################################################
@@ -260,12 +260,12 @@ int64_t StringID::key(StringIDManager* manager)const
       if(key)
       {
         StaticData& staticData(StringID::staticData());
-        staticData.mutex.lock();
+        staticData.mutex.lock(TPM);
         sd->mutex.lock(TPM);
         sd->keys[manager] = key;
         staticData.managers[manager][key] = sd;
         sd->mutex.unlock(TPM);
-        staticData.mutex.unlock();
+        staticData.mutex.unlock(TPM);
       }
     }
     else
@@ -321,7 +321,7 @@ std::vector<StringID> StringID::fromStringList(const std::vector<std::string>& s
 void StringID::managerDestroyed(StringIDManager* manager)
 {
   StaticData& staticData(StringID::staticData());
-  staticData.mutex.lock();
+  staticData.mutex.lock(TPM);
 
   for(const auto& p : tpConst(staticData.managers[manager]))
   {
@@ -332,7 +332,7 @@ void StringID::managerDestroyed(StringIDManager* manager)
   }
 
   staticData.managers.erase(manager);
-  staticData.mutex.unlock();
+  staticData.mutex.unlock(TPM);
 }
 
 //##################################################################################################

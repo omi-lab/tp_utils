@@ -3,6 +3,10 @@
 
 #include "tp_utils/Globals.h"
 
+#ifdef TP_ENABLE_MUTEX_TIME
+#include "tp_utils/TimeUtils.h"
+#endif
+
 #include <mutex>
 
 namespace tp_utils
@@ -123,7 +127,7 @@ public:
     timer.start();
     int blockingID=tp_utils::LockStats::waiting(m_id, file, line);
     std::timed_mutex::lock();
-    tp_utils::LockStats::locked(m_id, file, line, timer.elapsed(), blockingID);
+    tp_utils::LockStats::locked(m_id, file, line, int(timer.elapsed()), blockingID);
   }
 
   //################################################################################################
@@ -133,7 +137,7 @@ public:
     timer.start();
     int blockingID=tp_utils::LockStats::waiting(m_id, file, line);
     bool got=std::timed_mutex::try_lock_for(std::chrono::milliseconds(timeout));
-    tp_utils::LockStats::tryLock(m_id, file, line, timer.elapsed(), blockingID, got);
+    tp_utils::LockStats::tryLock(m_id, file, line, int(timer.elapsed()), blockingID, got);
     return got;
   }
 

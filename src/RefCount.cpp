@@ -30,13 +30,13 @@ public:
     mutex.lock();
 
     std::string title = "Class";
-    int maxLength = title.size();
-    int maxDigits = 1;
+    size_t maxLength = title.size();
+    size_t maxDigits = 1;
 
     for(auto i : instances)
     {
-      maxLength = tpMax(maxLength, int(i.first.keyString().size()));
-      maxDigits = tpMax(maxDigits, int(std::to_string(i.second.total).size()));
+      maxLength = tpMax(maxLength, i.first.keyString().size());
+      maxDigits = tpMax(maxDigits, std::to_string(i.second.total).size());
     }
 
     {

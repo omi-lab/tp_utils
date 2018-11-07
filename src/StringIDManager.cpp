@@ -1,17 +1,17 @@
 #include "tp_utils/StringIDManager.h"
 #include "tp_utils/StringID.h"
+#include "tp_utils/MutexUtils.h"
 
 #include "json.hpp"
 
 #include <map>
-#include <mutex>
 
 namespace tp_utils
 {
 //##################################################################################################
 struct StringIDManager::Private
 {
-  std::mutex mutex;
+  TPMutex mutex{TPM};
 
   std::map<std::string, int64_t> keys;
   std::map<int64_t, std::string> stringKeys;
@@ -57,7 +57,7 @@ int64_t StringIDManager::key(const std::string& keyString)
   if(keyString.empty())
     return 0;
 
-  d->mutex.lock();
+  d->mutex.lock(TPM);
   int64_t key = tpGetMapValue(d->keys, keyString, 0ll);
 
   if(!key)
@@ -67,7 +67,7 @@ int64_t StringIDManager::key(const std::string& keyString)
     d->stringKeys[key] = keyString;
   }
 
-  d->mutex.unlock();
+  d->mutex.unlock(TPM);
 
   return key;
 }
@@ -75,9 +75,9 @@ int64_t StringIDManager::key(const std::string& keyString)
 //##################################################################################################
 std::string StringIDManager::keyString(int64_t key)
 {
-  d->mutex.lock();
+  d->mutex.lock(TPM);
   std::string keyString = tpGetMapValue(d->stringKeys, key, std::string());
-  d->mutex.unlock();
+  d->mutex.unlock(TPM);
 
   return keyString;
 }
