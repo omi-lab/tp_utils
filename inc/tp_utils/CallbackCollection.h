@@ -88,6 +88,14 @@ class Callback<R(Args...)>
     collection.addCallback(&m_callback);
   }
 
+  //################################################################################################
+  R operator()(Args... args) const
+  {
+    if(m_callback)
+      m_callback(args...);
+    return; //Force void
+  }
+
   private:
   std::function<T> m_callback;
   std::vector<C> m_collections;
