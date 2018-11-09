@@ -14,12 +14,10 @@
 #define TP_EXPORT
 #define TP_IMPORT
 
-#ifndef TP_UTILS_SHARED_EXPORT
 #if defined(TP_UTILS_LIBRARY)
 #  define TP_UTILS_SHARED_EXPORT TP_EXPORT
 #else
 #  define TP_UTILS_SHARED_EXPORT TP_IMPORT
-#endif
 #endif
 
 #ifndef TP_CPP_VERSION
