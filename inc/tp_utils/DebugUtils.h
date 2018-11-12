@@ -57,6 +57,7 @@ void installMessageHandler(const std::function<void(MessageType, const std::stri
 //##################################################################################################
 class DebugMode
 {
+public:
   //################################################################################################
   DebugMode(const std::string& classPath, DebugType debugType=DebugType::Console);
 
