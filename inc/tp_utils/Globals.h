@@ -20,55 +20,64 @@
 #  define TP_UTILS_SHARED_EXPORT TP_IMPORT
 #endif
 
-#ifndef TP_CPP_VERSION
-#define TP_CPP_VERSION 17
-#endif
-
+//##################################################################################################
+//TP_UNUSED
 #define TP_UNUSED(var) (void)(var)
+
+//##################################################################################################
+//TP_NONCOPYABLE
 #define TP_NONCOPYABLE(T) T(const T&)=delete; T& operator=(const T&)=delete; T(T&&)=delete; T& operator=(T&&)=delete
 
 //##################################################################################################
-//TDP_NODISCARD
-#define TDP_NODISCARD __attribute__((warn_unused_result))
+//TP_NODISCARD
+#define TP_NODISCARD __attribute__((warn_unused_result))
 
 //##################################################################################################
-//TDP_DEPRECATED
-#if TDP_CPP_VERSION>=14
-#define TDP_DEPRECATED(typ, func) [[deprecated]] typ func
+//TP_DEPRECATED
+#if TP_CPP_VERSION>=14
+#define TP_DEPRECATED(typ, func) [[deprecated]] typ func
 #else
 #ifdef __GNUC__
-#define TDP_DEPRECATED(typ, func) typ func __attribute__ ((deprecated))
+#define TP_DEPRECATED(typ, func) typ func __attribute__ ((deprecated))
 #elif defined(_MSC_VER)
-#define TDP_DEPRECATED(typ, func) typ __declspec(deprecated) func
+#define TP_DEPRECATED(typ, func) typ __declspec(deprecated) func
 #else
-#define TDP_DEPRECATED(typ, func) typ func
+#define TP_DEPRECATED(typ, func) typ func
 #endif
 #endif
 
 //##################################################################################################
-//TDP_FALLTHROUGH
-#if TDP_CPP_VERSION>=17
-#  define TDP_FALLTHROUGH [[fallthrough]]
+//TP_FALLTHROUGH
+#if TP_CPP_VERSION>=17
+#  define TP_FALLTHROUGH [[fallthrough]]
 #elif __GNUC__>=7
-#  define TDP_FALLTHROUGH [[gnu::fallthrough]]
+#  define TP_FALLTHROUGH [[gnu::fallthrough]]
 #elif defined __CLANG__
-#  define TDP_FALLTHROUGH [[clang::fallthrough]]
+#  define TP_FALLTHROUGH [[clang::fallthrough]]
 #else
-#  define TDP_FALLTHROUGH
+#  define TP_FALLTHROUGH
 #endif
 
 //##################################################################################################
-//TDP_SIZEOF
-template<int s> struct __TDP_SIZEOF;
+//TP_SIZEOF
+template<int s> struct __TP_SIZEOF;
 //! Use this to show the size of objects at compile time, will fail at the line it is used.
-#define TDP_SIZEOF(o)__TDP_SIZEOF<sizeof(o)> __tdp_sizeof;
+#define TP_SIZEOF(o)__TP_SIZEOF<sizeof(o)> __tdp_sizeof;
 
 //##################################################################################################
-//TDP_LINE_STRING
-#define TDP_STRINGIZE(x) TDP_STRINGIZE2(x)
-#define TDP_STRINGIZE2(x) #x
-#define TDP_LINE_STRING TDP_STRINGIZE(__LINE__)
+//TP_LINE_STRING
+#define TP_STRINGIZE(x) TP_STRINGIZE2(x)
+#define TP_STRINGIZE2(x) #x
+#define TP_LINE_STRING TP_STRINGIZE(__LINE__)
 
+//##################################################################################################
+//TP_CONCAT
+#define TP_CONCAT_(s1, s2) s1##s2
+#define TP_CONCAT(s1, s2) TP_CONCAT_(s1, s2)
+
+//##################################################################################################
+//TP_CLEANUP
+#define TP_CLEANUP(cleanup) TPCleanUp TP_CONCAT(tpCleanUp, __LINE__)(cleanup); TP_UNUSED(TP_CONCAT(tpCleanUp, __LINE__))
 
 //##################################################################################################
 //! Return a const object
@@ -271,11 +280,12 @@ V tpGetVariantValue(const T& variant, const V& defaultValue=V())
 #endif
 
 //##################################################################################################
+template<typename T>
 class TPCleanUp
 {
-  std::function<void()> m_cleanup;
+  T m_cleanup;
 public:
-  TPCleanUp(std::function<void()> cleanup):m_cleanup(cleanup){}
+  TPCleanUp(const T& cleanup):m_cleanup(cleanup){}
   ~TPCleanUp(){m_cleanup();}
 };
 
