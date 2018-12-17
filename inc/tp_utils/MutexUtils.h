@@ -99,7 +99,7 @@ typedef std::mutex TPMutex;
 #define TPMc TPM,
 #define TPM_Ac TPM_A,
 #define TPM_Bc TPM_B,
-#define TP_MUTEX_LOCKER(mutex)TPMutexLocker locker(&mutex, TPM); TP_UNUSED(locker)
+#define TP_MUTEX_LOCKER(mutex)TPMutexLocker TP_CONCAT(locker, __LINE__)(&mutex, TPM); TP_UNUSED(TP_CONCAT(locker, __LINE__))
 
 //##################################################################################################
 class TPMutex: public std::timed_mutex
