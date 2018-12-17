@@ -89,7 +89,7 @@ private:
 #define TPM_Ac
 #define TPM_Bc
 typedef std::mutex TPMutex;
-#define TP_MUTEX_LOCKER(m)std::lock_guard<std::mutex> locker(m); TP_UNUSED(locker)
+#define TP_MUTEX_LOCKER(m)std::lock_guard<std::mutex> TP_CONCAT(locker, __LINE__)(m); TP_UNUSED(TP_CONCAT(locker, __LINE__))
 
 #else
 
