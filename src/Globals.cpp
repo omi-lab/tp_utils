@@ -2,6 +2,60 @@
 
 #include <codecvt>
 #include <locale>
+#include <algorithm>
+
+//##################################################################################################
+std::string tpToHex(const std::string& input)
+{
+  static const char* const lut = "0123456789ABCDEF";
+
+  size_t len = input.length();
+  const uint8_t* s = reinterpret_cast<const uint8_t*>(input.data());
+  const uint8_t* sMax = s + len;
+
+  std::string output;
+  output.reserve(2 * len);
+
+  for (; s<sMax; s++)
+  {
+    const unsigned char c = *s;
+    output.push_back(lut[c >> 4]);
+    output.push_back(lut[c & 15]);
+  }
+
+  return output;
+}
+
+//##################################################################################################
+std::string tpFromHEX(const std::string& input)
+{
+  static const char* const lut = "0123456789ABCDEF";
+  size_t len = input.length();
+  if(len & 1)
+    return std::string();
+
+  std::string output;
+  output.resize(len / 2);
+
+  uint8_t* o = reinterpret_cast<uint8_t*>(output.data());
+
+  for (size_t i = 0; i < len; i+=2, o++)
+  {
+    char a = input[i];
+    const char* p = std::lower_bound(lut, lut + 16, a);
+    if(*p != a)
+        return std::string();
+
+    char b = input[i + 1];
+    const char* q = std::lower_bound(lut, lut + 16, b);
+    if(*q != b)
+      return std::string();
+
+    (*o) = uint8_t(((p - lut) << 4) | (q - lut));
+  }
+
+  return output;
+}
 
 //##################################################################################################
 bool tpStartsWith(const std::string& input, const std::string& s)
@@ -32,8 +86,8 @@ void tpSplit(std::vector<std::string>& result,
   while (end != std::string::npos)
   {
     addPart(result, input, start, end - start, behavior);
-      start = end + del.length();
-      end = input.find(del, start);
+    start = end + del.length();
+    end = input.find(del, start);
   }
 
   addPart(result, input, start, end, behavior);
@@ -50,8 +104,8 @@ void tpSplit(std::vector<std::string>& result,
   while (end != std::string::npos)
   {
     addPart(result, input, start, end - start, behavior);
-      start = end+1;
-      end = input.find(del, start);
+    start = end+1;
+    end = input.find(del, start);
   }
 
   addPart(result, input, start, end, behavior);

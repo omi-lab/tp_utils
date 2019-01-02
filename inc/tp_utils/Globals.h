@@ -108,6 +108,12 @@ T tpMax(T a, T b)
 }
 
 //##################################################################################################
+std::string tpFromHEX(const std::string& input);
+
+//##################################################################################################
+std::string tpToHex(const std::string& input);
+
+//##################################################################################################
 //! Returns true if input starts with the string in s
 bool tpStartsWith(const std::string& input, const std::string& s);
 
