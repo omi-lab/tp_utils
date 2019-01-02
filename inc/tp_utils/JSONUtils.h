@@ -3,8 +3,6 @@
 
 #include "json.hpp"
 
-#include "tp_utils/DebugUtils.h"
-
 #define TPJSON       tp_utils::getJSONValue<nlohmann::json>
 #define TPJSONString tp_utils::getJSONValue<std::string>
 #define TPJSONInt    tp_utils::getJSONValue<int>

@@ -25,8 +25,16 @@ std::string TP_UTILS_SHARED_EXPORT readBinaryFile(const std::string& fileName)
 {
   try
   {
-    std::ifstream in(fileName, std::ios::binary);
-    return std::string((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
+    std::ifstream in(fileName, std::ios::binary | std::ios::ate);
+    std::string results;
+    auto size = in.tellg();
+    if(size>0)
+    {
+      results.resize(size_t(size));
+      in.seekg(0);
+      in.read(results.data(), size);
+    }
+    return results;
   }
   catch(...)
   {
