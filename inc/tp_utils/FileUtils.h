@@ -45,6 +45,12 @@ bool TP_UTILS_SHARED_EXPORT writeJSONFile(const std::string& fileName, const nlo
 bool TP_UTILS_SHARED_EXPORT writePrettyJSONFile(const std::string& fileName, const nlohmann::json& j);
 
 //##################################################################################################
+//!
+/*!
+\param path The directory to list file in.
+\param extensions File extensions to search in the format "*.png".
+\return A list of absolute paths.
+*/
 std::vector<std::string> TP_UTILS_SHARED_EXPORT listFiles(const std::string& path, const std::unordered_set<std::string>& extensions);
 
 //##################################################################################################

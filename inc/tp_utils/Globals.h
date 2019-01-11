@@ -117,6 +117,10 @@ std::string tpToHex(const std::string& input);
 //! Returns true if input starts with the string in s
 bool tpStartsWith(const std::string& input, const std::string& s);
 
+//##################################################################################################
+//! Returns true if input ends with the string in s
+bool tpEndsWith(const std::string& input, const std::string& s);
+
 
 //##################################################################################################
 namespace tp_utils

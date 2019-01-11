@@ -64,6 +64,12 @@ bool tpStartsWith(const std::string& input, const std::string& s)
 }
 
 //##################################################################################################
+bool tpEndsWith(const std::string& input, const std::string& s)
+{
+  return input.size() >= s.size() && std::equal(s.begin(), s.end(), input.end()-int(s.size()));
+}
+
+//##################################################################################################
 namespace
 {
 void addPart(std::vector<std::string>& result, const std::string& input, size_t pos, size_t n, tp_utils::SplitBehavior behavior)
