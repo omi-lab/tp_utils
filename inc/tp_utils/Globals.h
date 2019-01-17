@@ -1,6 +1,8 @@
 #ifndef tp_utils_Globals_h
 #define tp_utils_Globals_h
 
+#include "lib_platform/Warnings.h"
+
 #include <functional>
 
 #include <string>
