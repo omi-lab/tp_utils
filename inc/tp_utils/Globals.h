@@ -7,6 +7,7 @@
 
 #include <string>
 #include <vector>
+#include <random>
 #include <algorithm>
 
 #ifndef TDP_ANDROID
@@ -123,6 +124,14 @@ bool tpStartsWith(const std::string& input, const std::string& s);
 //! Returns true if input ends with the string in s
 bool tpEndsWith(const std::string& input, const std::string& s);
 
+//##################################################################################################
+template<class B, class E>
+void tpRandomShuffle(B begin, E end)
+{
+  std::random_device rd;
+  std::mt19937 g(rd());
+  std::shuffle(begin, end, g);
+}
 
 //##################################################################################################
 namespace tp_utils
