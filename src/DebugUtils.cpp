@@ -7,6 +7,7 @@
 #include <iostream>
 #include <unordered_map>
 #include <atomic>
+#include <memory>
 
 #ifdef TDP_ANDROID
 #include <android/log.h>
@@ -185,8 +186,8 @@ std::ostream& Default::operator()()
 struct Manager::Private
 {
   std::mutex mutex;
-  FactoryBase* warningFactory{new DefaultFactory()};
-  FactoryBase* debugFactory{new DefaultFactory()};
+  std::unique_ptr<FactoryBase> warningFactory{new DefaultFactory()};
+  std::unique_ptr<FactoryBase> debugFactory{new DefaultFactory()};
 };
 
 //##################################################################################################
@@ -207,8 +208,7 @@ void Manager::setWarning(FactoryBase* warningFactory)
 {
   std::lock_guard<std::mutex> lg(d->mutex);
   TP_UNUSED(lg);
-  delete d->warningFactory;
-  d->warningFactory = warningFactory;
+  d->warningFactory.reset(warningFactory);
 }
 
 //##################################################################################################
@@ -224,8 +224,7 @@ void Manager::setDebug(FactoryBase* debugFactory)
 {
   std::lock_guard<std::mutex> lg(d->mutex);
   TP_UNUSED(lg);
-  delete d->debugFactory;
-  d->debugFactory = debugFactory;
+  d->debugFactory.reset(debugFactory);
 }
 
 //##################################################################################################
