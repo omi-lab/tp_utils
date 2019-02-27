@@ -41,3 +41,5 @@ HEADERS += inc/tp_utils/CallbackCollection.h
 HEADERS += inc/tp_utils/Interface.h
 
 HEADERS += inc/tp_utils/TPPixel.h
+
+HEADERS += inc/tp_utils/PageSize.h
