@@ -119,7 +119,7 @@ std::vector<std::string> (*listFilesCallback)(const std::string& path, const std
 std::vector<std::string> (*listDirectoriesCallback)(const std::string& path)=nullptr;
 int64_t (*fileTimeMSCallback)(const std::string& path)=nullptr;
 bool (*copyFileCallback)(const std::string& pathFrom, const std::string& pathTo)=nullptr;
-bool (*mkdirCallback)(const std::string& path, bool createFullPath)=nullptr;
+bool (*mkdirCallback)(const std::string& path, CreateFullPath createFullPath)=nullptr;
 bool (*rmCallback)(const std::string& path, bool recursive)=nullptr;
 
 //##################################################################################################
@@ -147,7 +147,7 @@ bool copyFile(const std::string& pathFrom, const std::string& pathTo)
 }
 
 //##################################################################################################
-bool mkdir(const std::string& path, bool createFullPath)
+bool mkdir(const std::string& path, CreateFullPath createFullPath)
 {
   return mkdirCallback?mkdirCallback(path, createFullPath):false;
 }
