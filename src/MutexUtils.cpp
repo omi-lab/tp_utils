@@ -1,6 +1,7 @@
 #include "tp_utils/MutexUtils.h"
 #include "tp_utils/DebugUtils.h"
 #include "tp_utils/TimeUtils.h"
+#include "tp_utils/FileUtils.h"
 
 #include "lib_platform/Polyfill.h"
 
@@ -603,6 +604,50 @@ std::string LockStats::takeResults()
   }
 
   return result;
+}
+
+//##################################################################################################
+struct SaveLockStatsTimer::Private
+{
+  TPMutex mutex{TPM};
+  TPWaitCondition waitCondition;
+  bool finish{false};
+  std::thread thread;
+};
+
+//##################################################################################################
+SaveLockStatsTimer::SaveLockStatsTimer(const std::string& path, int64_t intervalMS):
+  d(new  Private)
+{
+  d->thread = std::thread([=]
+  {
+    d->mutex.lock(TPM);
+    while(!d->finish)
+    {
+      d->waitCondition.wait(TPMc d->mutex, intervalMS);
+      if(!d->finish)
+      {
+        d->mutex.unlock(TPM);
+        writeTextFile(path, LockStats::takeResults());
+        d->mutex.lock(TPM);
+      }
+    }
+    d->mutex.unlock(TPM);
+  });
+}
+
+//##################################################################################################
+SaveLockStatsTimer::~SaveLockStatsTimer()
+{
+  {
+    TP_MUTEX_LOCKER(d->mutex);
+    d->finish = true;
+    d->waitCondition.wakeAll();
+  }
+
+  d->thread.join();
+
+  delete d;
 }
 
 //##################################################################################################

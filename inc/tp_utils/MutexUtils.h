@@ -77,6 +77,20 @@ private:
   static Private* instance();
 };
 
+//##################################################################################################
+//! Manages a timer thread that writes mutex stats to file.
+struct SaveLockStatsTimer
+{
+  //################################################################################################
+  SaveLockStatsTimer(const std::string& path, int64_t intervalMS);
+
+  //################################################################################################
+  ~SaveLockStatsTimer();
+private:
+  struct Private;
+  Private* d;
+};
+
 }
 
 //#define TP_ENABLE_MUTEX_TIME
