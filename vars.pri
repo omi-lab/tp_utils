@@ -36,6 +36,9 @@ HEADERS += inc/tp_utils/TimeUtils.h
 SOURCES += src/AbstractCrossThreadCallback.cpp
 HEADERS += inc/tp_utils/AbstractCrossThreadCallback.h
 
+SOURCES += src/Resources.cpp
+HEADERS += inc/tp_utils/Resources.h
+
 HEADERS += inc/tp_utils/CallbackCollection.h
 
 HEADERS += inc/tp_utils/Interface.h
