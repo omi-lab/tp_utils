@@ -266,7 +266,7 @@ int LockStats::init(const char* type, const char* file, int line)
 
     mutexDefinition.name =
         std::string(type) + ":" +
-        fixedWidthKeepRight(file + std::to_string(line),
+        fixedWidthKeepRight(std::string(file) + ":" + std::to_string(line),
                             MUTEX_NAME_LEN-(std::string(type).size()+1),
                             ' ');
 
@@ -347,7 +347,7 @@ void LockStats::locked(int id, const char* file, int line, int elapsedWaiting, i
       LockSiteDetails_lt& lockSiteDetails = mutexDefinition.lockSiteDetails[locationID];
       lockSiteDetails.id = locationID;
 
-      lockSiteDetails.name = fixedWidthKeepRight(std::string(file) + std::to_string(line),
+      lockSiteDetails.name = fixedWidthKeepRight(std::string(file) + ":" + std::to_string(line),
                                                  SITE_NAME_LEN,
                                                  ' ');
       lockSiteDetails.lockCount++;
@@ -392,7 +392,7 @@ void LockStats::tryLock(int id, const char* file, int line, int elapsedWaiting, 
     {
       LockSiteDetails_lt& lockSiteDetails = mutexDefinition.lockSiteDetails[locationID];
       lockSiteDetails.id = locationID;
-      lockSiteDetails.name = fixedWidthKeepRight(std::string(file) + std::to_string(line),
+      lockSiteDetails.name = fixedWidthKeepRight(std::string(file) + ":" + std::to_string(line),
                                                  SITE_NAME_LEN,
                                                  ' ');
       if(got)
@@ -467,7 +467,7 @@ void LockStats::unlock(int id, const char* file, int line)
     {
       UnlockSiteDetails_lt& unlockSiteDetails = mutexDefinition.unlockSiteDetails[locationID];
       unlockSiteDetails.id = locationID;
-      unlockSiteDetails.name = fixedWidthKeepRight(std::string(file) + std::to_string(line),
+      unlockSiteDetails.name = fixedWidthKeepRight(std::string(file) + ":" + std::to_string(line),
                                                    SITE_NAME_LEN,
                                                    ' ');
       unlockSiteDetails.held+=elapsed;
