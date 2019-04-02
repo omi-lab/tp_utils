@@ -3,6 +3,7 @@
 
 #include "tp_utils/Globals.h"
 
+#include <unordered_map>
 #include <sstream>
 
 namespace tp_utils
