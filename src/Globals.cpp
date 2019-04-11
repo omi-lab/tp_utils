@@ -96,7 +96,7 @@ void tpSplit(std::vector<std::string>& result,
     end = input.find(del, start);
   }
 
-  addPart(result, input, start, end, behavior);
+  addPart(result, input, start, input.size()-start, behavior);
 }
 
 //##################################################################################################
@@ -114,7 +114,7 @@ void tpSplit(std::vector<std::string>& result,
     end = input.find(del, start);
   }
 
-  addPart(result, input, start, end, behavior);
+  addPart(result, input, start, input.size()-start, behavior);
 }
 
 //##################################################################################################
