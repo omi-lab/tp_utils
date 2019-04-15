@@ -63,6 +63,13 @@ class Callback<R(Args...)>
   using T = R(Args...);
 
   //################################################################################################
+  Callback():
+    m_unrefCallback([&](C c){tpRemoveOne(m_collections, c);})
+  {
+
+  }
+
+  //################################################################################################
   Callback(const std::function<T>& callback):
     m_callback(callback),
     m_unrefCallback([&](C c){tpRemoveOne(m_collections, c);})
@@ -78,6 +85,12 @@ class Callback<R(Args...)>
       tpRemoveOne(c->m_unrefCallbacks, &m_unrefCallback);
       c->removeCallback(&m_callback);
     }
+  }
+
+  //################################################################################################
+  void setCallback(const std::function<T>& callback)
+  {
+    m_callback = callback;
   }
 
   //################################################################################################
