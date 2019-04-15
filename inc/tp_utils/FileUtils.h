@@ -69,12 +69,16 @@ bool mkdir(const std::string& path, CreateFullPath createFullPath);
 bool rm(const std::string& path, bool recursive);
 
 //##################################################################################################
+bool exists(const std::string& path);
+
+//##################################################################################################
 extern std::vector<std::string> (*listFilesCallback)(const std::string& path, const std::unordered_set<std::string>& extensions);
 extern std::vector<std::string> (*listDirectoriesCallback)(const std::string& path);
 extern int64_t (*fileTimeMSCallback)(const std::string& path);
 extern bool (*copyFileCallback)(const std::string& pathFrom, const std::string& pathTo);
 extern bool (*mkdirCallback)(const std::string& path, CreateFullPath createFullPath);
 extern bool (*rmCallback)(const std::string& path, bool recursive);
+extern bool (*existsCallback)(const std::string& path);
 
 }
 

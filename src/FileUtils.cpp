@@ -121,6 +121,7 @@ int64_t (*fileTimeMSCallback)(const std::string& path)=nullptr;
 bool (*copyFileCallback)(const std::string& pathFrom, const std::string& pathTo)=nullptr;
 bool (*mkdirCallback)(const std::string& path, CreateFullPath createFullPath)=nullptr;
 bool (*rmCallback)(const std::string& path, bool recursive)=nullptr;
+bool (*existsCallback)(const std::string& path)=nullptr;
 
 //##################################################################################################
 std::vector<std::string> listFiles(const std::string& path, const std::unordered_set<std::string>& extensions)
@@ -156,6 +157,12 @@ bool mkdir(const std::string& path, CreateFullPath createFullPath)
 bool rm(const std::string& path, bool recursive)
 {
   return rmCallback?rmCallback(path, recursive):false;
+}
+
+//##################################################################################################
+bool exists(const std::string& path)
+{
+  return existsCallback?existsCallback(path):false;
 }
 
 }
