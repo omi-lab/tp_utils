@@ -1,7 +1,7 @@
 #ifndef tp_utils_AbstractCrossThreadCallback_h
 #define tp_utils_AbstractCrossThreadCallback_h
 
-#include "tp_utils/Globals.h"
+#include "tp_utils/CallbackCollection.h"
 
 namespace tp_utils
 {
@@ -42,6 +42,7 @@ public:
   virtual AbstractCrossThreadCallback* produce(const std::function<void()>& callback) const = 0;
 };
 
+//##################################################################################################
 template<typename T>
 class CrossThreadCallbackFactoryTemplate : public AbstractCrossThreadCallbackFactory
 {
@@ -49,6 +50,23 @@ class CrossThreadCallbackFactoryTemplate : public AbstractCrossThreadCallbackFac
   {
     return new T(callback);
   }
+};
+
+//##################################################################################################
+class PolledCrossThreadCallbackFactory: public AbstractCrossThreadCallbackFactory
+{
+public:
+  //################################################################################################
+  PolledCrossThreadCallbackFactory();
+
+  //################################################################################################
+  AbstractCrossThreadCallback* produce(const std::function<void()>& callback) const override;
+
+  //################################################################################################
+  Callback<void()> poll;
+
+private:
+  mutable CallbackCollection<void()> m_pollAll;
 };
 
 }

@@ -102,7 +102,18 @@ private:
 #define TPMc
 #define TPM_Ac
 #define TPM_Bc
-typedef std::mutex TPMutex;
+class TPMutex: public std::mutex
+{
+public:
+  //################################################################################################
+  template<typename T>
+  auto locked(TPM_Ac const T& callback)
+  {
+    lock(TPM_B);
+    TP_CLEANUP([&]{unlock(TPM_B);});
+    return callback();
+  }
+};
 #define TP_MUTEX_LOCKER(m)std::lock_guard<std::mutex> TP_CONCAT(locker, __LINE__)(m); TP_UNUSED(TP_CONCAT(locker, __LINE__))
 
 #else
@@ -160,6 +171,15 @@ public:
   {
     tp_utils::LockStats::unlock(m_id, file, line);
     std::timed_mutex::unlock();
+  }
+
+  //################################################################################################
+  template<typename T>
+  auto locked(TPM_Ac const T& callback)
+  {
+    lock(TPM_B);
+    TP_CLEANUP([&]{unlock(TPM_B);});
+    return callback();
   }
 };
 
