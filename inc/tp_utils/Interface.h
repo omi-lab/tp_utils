@@ -3,6 +3,8 @@
 
 #include "tp_utils/StringID.h"
 
+#include <unordered_map>
+
 #if defined(TDP_WIN32)
 #undef interface
 #endif
@@ -37,7 +39,7 @@ public:
   }
 
 private:
-std::unordered_map<tp_utils::StringID, void*> m_interfaces;
+  std::unordered_map<tp_utils::StringID, void*> m_interfaces;
 };
 
 }

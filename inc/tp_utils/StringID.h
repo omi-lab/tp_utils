@@ -173,7 +173,7 @@ inline unsigned TP_UTILS_SHARED_EXPORT qHash(const StringID& stringID)
 }
 
 //##################################################################################################
-//! Define a global string id
+//! Declare a global string id
 /*!
 StringID's created in this way should have a capital letter at the start, spaces between each word,
 and all other letters should be lower case.
@@ -188,7 +188,7 @@ the first letter of each word, followed by SID at the end.
 #define TDP_DECLARE_ID(methodName, idString)const tp_utils::StringID& methodName();
 
 //##################################################################################################
-//! Declare a global string id
+//! Define a global string id
 /*!
 StringID's created in this way should have a capital letter at the start, spaces between each word,
 and all other letters should be lower case.
