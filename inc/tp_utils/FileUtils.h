@@ -39,7 +39,7 @@ bool TP_UTILS_SHARED_EXPORT writeBinaryFile(const std::string& fileName, const s
 nlohmann::json TP_UTILS_SHARED_EXPORT readJSONFile(const std::string& fileName);
 
 //##################################################################################################
-bool TP_UTILS_SHARED_EXPORT writeJSONFile(const std::string& fileName, const nlohmann::json& j);
+bool TP_UTILS_SHARED_EXPORT writeJSONFile(const std::string& fileName, const nlohmann::json& j, int indent = -1);
 
 //##################################################################################################
 bool TP_UTILS_SHARED_EXPORT writePrettyJSONFile(const std::string& fileName, const nlohmann::json& j);

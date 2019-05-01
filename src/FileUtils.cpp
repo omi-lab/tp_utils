@@ -87,11 +87,11 @@ nlohmann::json TP_UTILS_SHARED_EXPORT readJSONFile(const std::string& fileName)
 }
 
 //##################################################################################################
-bool writeJSONFile(const std::string& fileName, const nlohmann::json& j)
+bool writeJSONFile(const std::string& fileName, const nlohmann::json& j, int indent)
 {
   try
   {
-    std::string s = j.dump();
+    std::string s = j.dump(indent);
     return writeTextFile(fileName, s);
   }
   catch(...)
