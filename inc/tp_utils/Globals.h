@@ -9,10 +9,7 @@
 #include <vector>
 #include <random>
 #include <algorithm>
-
-#ifndef TDP_ANDROID
 #include <variant>
-#endif
 
 #define TP_EXPORT
 #define TP_IMPORT
@@ -299,14 +296,12 @@ std::array<T, N> tpMakeArray(const T& value)
 }
 
 //##################################################################################################
-#ifndef TDP_ANDROID
 template<typename V, typename T>
 V tpGetVariantValue(const T& variant, const V& defaultValue=V())
 {
   const V* v = std::get_if<V>(&variant);
   return v?*v:defaultValue;
 }
-#endif
 
 //##################################################################################################
 template<typename T>
