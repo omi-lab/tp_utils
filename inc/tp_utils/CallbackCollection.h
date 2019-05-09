@@ -32,12 +32,16 @@ class CallbackCollection<R(Args...)>
   //################################################################################################
   void addCallback(std::function<T>* callback)
   {
+    assert(callback);
+    assert(*callback);
     m_callbacks.push_back(callback);
   }
 
   //################################################################################################
   void removeCallback(std::function<T>* callback)
   {
+    assert(callback);
+    assert(*callback);
     tpRemoveOne(m_callbacks, callback);
   }
 
