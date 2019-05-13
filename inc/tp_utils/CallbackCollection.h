@@ -3,6 +3,8 @@
 
 #include "tp_utils/Globals.h"
 
+#include <cassert>
+
 namespace tp_utils
 {
 
