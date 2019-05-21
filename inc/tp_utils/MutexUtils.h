@@ -102,6 +102,9 @@ private:
 #define TPMc
 #define TPM_Ac
 #define TPM_Bc
+#define TP_MUTEX_LOCKER(m)std::lock_guard<std::mutex> TP_CONCAT(locker, __LINE__)(m); TP_UNUSED(TP_CONCAT(locker, __LINE__))
+#define TP_MUTEX_UNLOCKER(mutex)TPMutexUnlocker TP_CONCAT(locker, __LINE__)(&mutex); TP_UNUSED(TP_CONCAT(locker, __LINE__))
+
 class TPMutex: public std::mutex
 {
 public:
@@ -114,7 +117,26 @@ public:
     return callback();
   }
 };
-#define TP_MUTEX_LOCKER(m)std::lock_guard<std::mutex> TP_CONCAT(locker, __LINE__)(m); TP_UNUSED(TP_CONCAT(locker, __LINE__))
+
+//##################################################################################################
+class TPMutexUnlocker
+{
+  TPMutex* m_mutex;
+public:
+
+  //################################################################################################
+  TPMutexUnlocker(TPMutex* mutex):
+    m_mutex(mutex)
+  {
+    m_mutex->unlock();
+  }
+
+  //################################################################################################
+  ~TPMutexUnlocker()
+  {
+    m_mutex->lock();
+  }
+};
 
 #else
 
@@ -125,6 +147,7 @@ public:
 #define TPM_Ac TPM_A,
 #define TPM_Bc TPM_B,
 #define TP_MUTEX_LOCKER(mutex)TPMutexLocker TP_CONCAT(locker, __LINE__)(&mutex, TPM); TP_UNUSED(TP_CONCAT(locker, __LINE__))
+#define TP_MUTEX_UNLOCKER(mutex)TPMutexUnlocker TP_CONCAT(locker, __LINE__)(&mutex, TPM); TP_UNUSED(TP_CONCAT(locker, __LINE__))
 
 //##################################################################################################
 class TPMutex: public std::timed_mutex
@@ -204,6 +227,30 @@ public:
   ~TPMutexLocker()
   {
     m_mutex->unlock(m_file, m_line);
+  }
+};
+
+//##################################################################################################
+class TPMutexUnlocker
+{
+  TPMutex* m_mutex;
+  const char* m_file;
+  int m_line;
+public:
+
+  //################################################################################################
+  TPMutexUnlocker(TPMutex* mutex, const char* file="", int line=0):
+    m_mutex(mutex),
+    m_file(file),
+    m_line(line)
+  {
+    m_mutex->unlock(m_file, m_line);
+  }
+
+  //################################################################################################
+  ~TPMutexUnlocker()
+  {
+    m_mutex->lock(m_file, m_line);
   }
 };
 
