@@ -47,29 +47,40 @@ bool TP_UTILS_SHARED_EXPORT writePrettyJSONFile(const std::string& fileName, con
 //##################################################################################################
 //!
 /*!
-\param path The directory to list file in.
+\param path The directory to list files in.
 \param extensions File extensions to search in the format "*.png".
 \return A list of absolute paths.
 */
 std::vector<std::string> TP_UTILS_SHARED_EXPORT listFiles(const std::string& path, const std::unordered_set<std::string>& extensions);
 
 //##################################################################################################
-std::vector<std::string> listDirectories(const std::string& path);
+//!
+/*!
+\param path The directory to list directories in.
+\return A list of absolute paths.
+*/
+std::vector<std::string> TP_UTILS_SHARED_EXPORT listDirectories(const std::string& path);
 
 //##################################################################################################
-int64_t fileTimeMS(const std::string& path);
+int64_t TP_UTILS_SHARED_EXPORT fileTimeMS(const std::string& path);
 
 //##################################################################################################
-bool copyFile(const std::string& pathFrom, const std::string& pathTo);
+bool TP_UTILS_SHARED_EXPORT copyFile(const std::string& pathFrom, const std::string& pathTo);
 
 //##################################################################################################
-bool mkdir(const std::string& path, CreateFullPath createFullPath);
+bool TP_UTILS_SHARED_EXPORT mkdir(const std::string& path, CreateFullPath createFullPath);
 
 //##################################################################################################
-bool rm(const std::string& path, bool recursive);
+bool TP_UTILS_SHARED_EXPORT rm(const std::string& path, bool recursive);
 
 //##################################################################################################
-bool exists(const std::string& path);
+bool TP_UTILS_SHARED_EXPORT exists(const std::string& path);
+
+//##################################################################################################
+std::string TP_UTILS_SHARED_EXPORT fileName(const std::string& path);
+
+//##################################################################################################
+std::string TP_UTILS_SHARED_EXPORT pathAppend(const std::string& path, const std::string& part);
 
 //##################################################################################################
 extern std::vector<std::string> (*listFilesCallback)(const std::string& path, const std::unordered_set<std::string>& extensions);

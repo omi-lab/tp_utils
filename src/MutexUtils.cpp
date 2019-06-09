@@ -245,7 +245,7 @@ struct LockStats::Private
 //##################################################################################################
 int LockStats::init(const char* type, const char* file, int line)
 {
-  Private* d = instance();
+  auto* d = instance();
   std::lock_guard<std::mutex> lk(d->mutex);
   TP_UNUSED(lk);
 
@@ -286,7 +286,7 @@ int LockStats::init(const char* type, const char* file, int line)
 //##################################################################################################
 void LockStats::destroy(int id)
 {
-  Private* d = instance();
+  auto* d = instance();
   std::lock_guard<std::mutex> lk(d->mutex);
   TP_UNUSED(lk);
 
@@ -305,7 +305,7 @@ void LockStats::destroy(int id)
 //##################################################################################################
 int LockStats::waiting(int id, const char* file, int line)
 {
-  Private* d = instance();
+  auto* d = instance();
   std::lock_guard<std::mutex> lk(d->mutex);
   TP_UNUSED(lk);
 
@@ -317,7 +317,7 @@ int LockStats::waiting(int id, const char* file, int line)
 //##################################################################################################
 void LockStats::locked(int id, const char* file, int line, int elapsedWaiting, int blockingID)
 {
-  Private* d = instance();
+  auto* d = instance();
   std::lock_guard<std::mutex> lk(d->mutex);
   TP_UNUSED(lk);
 
@@ -361,7 +361,7 @@ void LockStats::locked(int id, const char* file, int line, int elapsedWaiting, i
 //##################################################################################################
 void LockStats::tryLock(int id, const char* file, int line, int elapsedWaiting, int blockingID, bool got)
 {
-  Private* d = instance();
+  auto* d = instance();
   std::lock_guard<std::mutex> lk(d->mutex);
   TP_UNUSED(lk);
 
@@ -409,7 +409,7 @@ void LockStats::tryLock(int id, const char* file, int line, int elapsedWaiting, 
 //##################################################################################################
 void LockStats::unlock(int id, const char* file, int line)
 {
-  Private* d = instance();
+  auto* d = instance();
   std::lock_guard<std::mutex> lk(d->mutex);
   TP_UNUSED(lk);
 
@@ -485,7 +485,7 @@ void LockStats::unlock(int id, const char* file, int line)
 //##################################################################################################
 std::string LockStats::takeResults()
 {
-  Private* d = instance();
+  auto* d = instance();
   std::lock_guard<std::mutex> lk(d->mutex);
   TP_UNUSED(lk);
 

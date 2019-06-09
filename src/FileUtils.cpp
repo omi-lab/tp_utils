@@ -165,4 +165,31 @@ bool exists(const std::string& path)
   return existsCallback?existsCallback(path):false;
 }
 
+namespace
+{
+#ifdef TDP_WIN32
+  char del = '\\';
+#else
+char del = '/';
+#endif
+}
+
+//##################################################################################################
+std::string fileName(const std::string& path)
+{
+  std::vector<std::string> results;
+  tpSplit(results, path, del, SplitBehavior::SkipEmptyParts);
+  return results.empty()?"":results.back();
+}
+
+//##################################################################################################
+std::string pathAppend(const std::string& path, const std::string& part)
+{
+  auto result = path;
+  if(!tpEndsWith(result, std::string(1, del)))
+    result.push_back(del);
+
+  return result + part;
+}
+
 }

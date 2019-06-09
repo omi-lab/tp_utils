@@ -273,6 +273,28 @@ typename T::mapped_type tpGetMapValue(const T& map,
 }
 
 //##################################################################################################
+template<typename T>
+typename T::key_type tpGetMapKey(const T& map,
+                                    const typename T::mapped_type& value,
+                                    const typename T::key_type& defaultKey=typename T::key_type())
+{
+  for(const auto& i : map)
+    if(i.second == value)
+      return i.first;
+  return defaultKey;
+}
+
+//##################################################################################################
+template<typename T>
+typename std::vector<typename T::key_type> tpKeys(const T& map)
+{
+  std::vector<typename T::key_type> keys;
+  for(const auto& i : map)
+    keys.push_back(i.first);
+  return keys;
+}
+
+//##################################################################################################
 std::string tpToUTF8(const std::u16string& source);
 
 //##################################################################################################
