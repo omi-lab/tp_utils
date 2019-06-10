@@ -130,6 +130,9 @@ void tpRandomShuffle(B begin, E end)
   std::shuffle(begin, end, g);
 }
 
+//##################################################################################################
+void* tpVoidLiteral(size_t value);
+
 namespace tp_utils
 {
 

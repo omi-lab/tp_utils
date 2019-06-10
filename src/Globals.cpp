@@ -10,7 +10,7 @@ std::string tpToHex(const std::string& input)
   static const char* const lut = "0123456789ABCDEF";
 
   size_t len = input.length();
-  const uint8_t* s = reinterpret_cast<const uint8_t*>(input.data());
+  const auto* s = reinterpret_cast<const uint8_t*>(input.data());
   const uint8_t* sMax = s + len;
 
   std::string output;
@@ -37,7 +37,7 @@ std::string tpFromHEX(const std::string& input)
   std::string output;
   output.resize(len / 2);
 
-  uint8_t* o = reinterpret_cast<uint8_t*>(output.data());
+  auto* o = reinterpret_cast<uint8_t*>(output.data());
 
   for (size_t i = 0; i < len; i+=2, o++)
   {
@@ -67,6 +67,12 @@ bool tpStartsWith(const std::string& input, const std::string& s)
 bool tpEndsWith(const std::string& input, const std::string& s)
 {
   return input.size() >= s.size() && std::equal(s.begin(), s.end(), input.end()-int(s.size()));
+}
+
+//##################################################################################################
+void* tpVoidLiteral(size_t value)
+{
+  return reinterpret_cast<void*>(value);
 }
 
 //##################################################################################################
