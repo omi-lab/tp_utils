@@ -5,8 +5,8 @@ namespace tp_utils
 {
 
 //##################################################################################################
-AbstractTimerCallback::AbstractTimerCallback(const std::function<void()>& callback, int64_t timeOutMS):
-  m_callback(callback),
+AbstractTimerCallback::AbstractTimerCallback(std::function<void()> callback, int64_t timeOutMS):
+  m_callback(std::move(callback)),
   m_timeOutMS(timeOutMS)
 {
 
@@ -34,10 +34,7 @@ void AbstractTimerCallback::callback() const
 }
 
 //##################################################################################################
-AbstractTimerCallbackFactory::~AbstractTimerCallbackFactory()
-{
-
-}
+AbstractTimerCallbackFactory::~AbstractTimerCallbackFactory() = default;
 
 namespace
 {
@@ -61,7 +58,7 @@ public:
   }
 
   //################################################################################################
-  void setTimeOutMS(int64_t timeOutMS)
+  void setTimeOutMS(int64_t timeOutMS) final
   {
     AbstractTimerCallback::setTimeOutMS(timeOutMS);
     m_nextCall = currentTimeMS() + timeOutMS;

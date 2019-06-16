@@ -88,7 +88,7 @@ bool TPWaitCondition::wait(TPM_Ac TPMutex& lockedMutex, int64_t ms)
   return true;
 }
 #else
-bool TPWaitCondition::wait(TPMutex& lockedMutex, int64_t ms)
+bool TPWaitCondition::wait(TPMutex& lockedMutex, int64_t ms) noexcept
 {
   if(ms<INT64_MAX)
     return d->cv.wait_for(lockedMutex, std::chrono::milliseconds(ms)) == std::cv_status::no_timeout;
@@ -526,7 +526,17 @@ std::string LockStats::takeResults()
       std::string lck  = fixedWidthKeepRight(std::to_string(mutexDefinition->lockCount), 10, '0');
       std::string wt   = fixedWidthKeepRight(std::to_string(mutexDefinition->totalWait), 10, '0');
       std::string hld  = fixedWidthKeepRight(std::to_string(mutexDefinition->totalHold), 10, '0');
-      result+="\n"+name+" Totals(inst:"+inst+",lck:"+lck+",wt:"+wt+",hld:"+hld+")\n";
+      result+='\n';
+      result+=name;
+      result+=" Totals(inst:";
+      result+=inst;
+      result+=",lck:";
+      result+=lck;
+      result+=",wt:";
+      result+=wt;
+      result+=",hld:";
+      result+=hld;
+      result+=")\n";
     }
 
     //.. Lock sites ................................................................................
@@ -559,7 +569,21 @@ std::string LockStats::takeResults()
         std::string held      = fixedWidthKeepRight(std::to_string(lockSite.held),      10, '0');
         std::string heldAvg   = fixedWidthKeepRight(std::to_string(heldAverage),        10, '0');
         std::string blockedBy = fixedWidthKeepLeft(blockedByString,                      28, ' ');
-        result+="|"+id+"|"+name+"|"+lockCount+"|"+wait+"|"+held+"|"+heldAvg+"|"+blockedBy+"|\n";
+        result+='|';
+        result+=id;
+        result+='|';
+        result+=name;
+        result+='|';
+        result+=lockCount;
+        result+='|';
+        result+=wait;
+        result+='|';
+        result+=held;
+        result+='|';
+        result+=heldAvg;
+        result+='|';
+        result+=blockedBy;
+        result+="|\n";
       }
       result.append(titleLineLock);
     }
@@ -597,7 +621,25 @@ std::string LockStats::takeResults()
 
         unlockSite.heldRecent = 0;
         unlockSite.unlockCountRecent = 0;
-        result+="|"+id+"|"+name+"|"+lockCount+"|"+waitinCnt+"|"+held+"|"+heldAvg+"|"+heldMax+"|"+heldRc+"|"+countRc+"|\n";
+        result+='|';
+        result+=id;
+        result+='|';
+        result+=name;
+        result+='|';
+        result+=lockCount;
+        result+='|';
+        result+=waitinCnt;
+        result+='|';
+        result+=held;
+        result+='|';
+        result+=heldAvg;
+        result+='|';
+        result+=heldMax;
+        result+='|';
+        result+=heldRc;
+        result+='|';
+        result+=countRc;
+        result+="|\n";
       }
       result.append(titleLineUnlock);
     }

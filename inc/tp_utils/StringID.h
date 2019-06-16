@@ -41,6 +41,10 @@ public:
   StringID(const StringID& other);
 
   //################################################################################################
+  //! Move another string id
+  StringID(StringID&& other) noexcept;
+
+  //################################################################################################
   //! Fetch a string id from a manager
   /*!
   This is how StringID's are stored in databases and in files, it will use the key to get the full

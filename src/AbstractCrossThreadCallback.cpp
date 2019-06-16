@@ -5,8 +5,8 @@ namespace tp_utils
 {
 
 //##################################################################################################
-AbstractCrossThreadCallback::AbstractCrossThreadCallback(const std::function<void()>& callback):
-  m_callback(callback),
+AbstractCrossThreadCallback::AbstractCrossThreadCallback(std::function<void()> callback):
+  m_callback(std::move(callback)),
   m_callFunctor([this]{call();})
 {
 
@@ -25,10 +25,7 @@ void AbstractCrossThreadCallback::callback() const
 }
 
 //##################################################################################################
-AbstractCrossThreadCallbackFactory::~AbstractCrossThreadCallbackFactory()
-{
-
-}
+AbstractCrossThreadCallbackFactory::~AbstractCrossThreadCallbackFactory() = default;
 
 namespace
 {

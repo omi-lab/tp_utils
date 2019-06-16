@@ -47,10 +47,16 @@ StringID::StringID(const StringID& other):
 {
   if(sd)
   {
-    sd->mutex.lock(TPM);
+    TP_MUTEX_LOCKER(sd->mutex);
     sd->referenceCount++;
-    sd->mutex.unlock(TPM);
   }
+}
+
+//##################################################################################################
+StringID::StringID(StringID&& other) noexcept:
+  sd(other.sd)
+{
+  other.sd = nullptr;
 }
 
 //##################################################################################################

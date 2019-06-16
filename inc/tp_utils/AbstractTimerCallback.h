@@ -11,7 +11,7 @@ class AbstractTimerCallback
 {
 public:
   //################################################################################################
-  AbstractTimerCallback(const std::function<void()>& callback, int64_t timeOutMS);
+  AbstractTimerCallback(std::function<void()> callback, int64_t timeOutMS);
 
   //################################################################################################
   virtual ~AbstractTimerCallback();

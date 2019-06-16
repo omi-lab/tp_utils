@@ -11,7 +11,7 @@ class AbstractCrossThreadCallback
 {
 public:
   //################################################################################################
-  AbstractCrossThreadCallback(const std::function<void()>& callback);
+  AbstractCrossThreadCallback(std::function<void()> callback);
 
   //################################################################################################
   virtual ~AbstractCrossThreadCallback()=default;

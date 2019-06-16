@@ -267,7 +267,7 @@ public:
   ~TPWaitCondition();
 
   //################################################################################################
-  bool wait(TPM_Ac TPMutex& lockedMutex, int64_t ms = INT64_MAX);
+  bool wait(TPM_Ac TPMutex& lockedMutex, int64_t ms = INT64_MAX) noexcept;
 
   //################################################################################################
   void wakeOne();

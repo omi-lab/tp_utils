@@ -33,7 +33,7 @@ public:
     size_t maxLength = title.size();
     size_t maxDigits = 1;
 
-    for(auto i : instances)
+    for(const auto& i : instances)
     {
       maxLength = tpMax(maxLength, i.first.keyString().size());
       maxDigits = tpMax(maxDigits, std::to_string(i.second.total).size());
@@ -51,7 +51,7 @@ public:
       results.push_back(line);
     }
 
-    for(auto i : instances)
+    for(const auto& i : instances)
     {
       title = i.first.keyString();
       std::string count = std::to_string(i.second.count);
@@ -61,7 +61,12 @@ public:
       rightJustified(count, maxDigits);
       rightJustified(total, maxDigits);
 
-      const std::string line = title + ' ' + count + ' ' + total;
+      std::string line = title;
+      line += ' ';
+      line += count;
+      line += ' ';
+      line += total;
+
       results.push_back(line);
     }
 
