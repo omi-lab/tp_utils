@@ -4,6 +4,19 @@ namespace tp_utils
 {
 
 //##################################################################################################
+nlohmann::json jsonFromString(const std::string& json)
+{
+  try
+  {
+    return nlohmann::json::parse(json);
+  }
+  catch(...)
+  {
+    return nlohmann::json();
+  }
+}
+
+//##################################################################################################
 std::vector<std::string> getJSONStringList(const nlohmann::json& j,
                                            const std::string& key)
 {

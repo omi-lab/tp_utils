@@ -18,6 +18,9 @@ namespace tp_utils
 {
 
 //##################################################################################################
+nlohmann::json jsonFromString(const std::string& json);
+
+//##################################################################################################
 template<typename T>
 T getJSONValue(const nlohmann::json& j,
                const std::string& key,
