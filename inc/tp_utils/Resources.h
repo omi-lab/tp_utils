@@ -4,20 +4,21 @@
 #include "tp_utils/Globals.h"
 
 #include <unordered_map>
+#include <string>
 #include <sstream>
 
 namespace tp_utils
 {
 
 //##################################################################################################
-struct Resource
+struct TP_UTILS_SHARED_EXPORT Resource
 {
   const char* data{nullptr};
   size_t size{0};
 };
 
 //##################################################################################################
-struct ResourceStream :public std::istringstream
+struct TP_UTILS_SHARED_EXPORT ResourceStream :public std::istringstream
 {
   //################################################################################################
   ResourceStream(const Resource& resource);
@@ -27,10 +28,10 @@ struct ResourceStream :public std::istringstream
 std::unordered_map<std::string, Resource>& resources();
 
 //##################################################################################################
-Resource resource(const std::string& name);
+Resource TP_UTILS_SHARED_EXPORT resource(const std::string& name);
 
 //##################################################################################################
-void addResource(const std::string& name,  const char* data, size_t size);
+void TP_UTILS_SHARED_EXPORT addResource(const std::string& name,  const char* data, size_t size);
 
 }
 

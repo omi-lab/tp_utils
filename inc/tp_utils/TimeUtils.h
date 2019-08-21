@@ -21,7 +21,7 @@ int64_t TP_UTILS_SHARED_EXPORT currentTime();
 int64_t TP_UTILS_SHARED_EXPORT currentTimeMS();
 
 //##################################################################################################
-class ElapsedTimer
+class TP_UTILS_SHARED_EXPORT ElapsedTimer
 {
 public:
   //################################################################################################

@@ -7,7 +7,7 @@ namespace tp_utils
 {
 
 //##################################################################################################
-class AbstractTimerCallback
+class TP_UTILS_SHARED_EXPORT AbstractTimerCallback
 {
 public:
   //################################################################################################
@@ -32,7 +32,7 @@ private:
 };
 
 //##################################################################################################
-class AbstractTimerCallbackFactory
+class TP_UTILS_SHARED_EXPORT AbstractTimerCallbackFactory
 {
 public:
   //################################################################################################
@@ -53,7 +53,7 @@ class TimerCallbackFactoryTemplate : public AbstractTimerCallbackFactory
 };
 
 //##################################################################################################
-class PolledTimerCallbackFactory: public AbstractTimerCallbackFactory
+class TP_UTILS_SHARED_EXPORT PolledTimerCallbackFactory: public AbstractTimerCallbackFactory
 {
 public:
   //################################################################################################

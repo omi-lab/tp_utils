@@ -18,7 +18,7 @@ namespace tp_utils
 
 //################################################################################################
 //! This holds the count for a single type
-struct InstanceDetails
+struct TP_UTILS_SHARED_EXPORT InstanceDetails
 {
   int count;     //!< The current count of live objects.
   int64_t total; //!< The total count including instances that have been deleted.

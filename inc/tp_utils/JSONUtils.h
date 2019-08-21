@@ -1,6 +1,8 @@
 #ifndef tp_utils_JSONUtils_h
 #define tp_utils_JSONUtils_h
 
+#include "tp_utils/Globals.h"
+
 #include "json.hpp"
 
 #define TPJSON       tp_utils::getJSONValue<nlohmann::json>
@@ -18,7 +20,7 @@ namespace tp_utils
 {
 
 //##################################################################################################
-nlohmann::json jsonFromString(const std::string& json);
+nlohmann::json TP_UTILS_SHARED_EXPORT jsonFromString(const std::string& json);
 
 //##################################################################################################
 template<typename T>
@@ -26,26 +28,26 @@ T getJSONValue(const nlohmann::json& j,
                const std::string& key,
                const T& defaultValue=T())
 {
-  T result=defaultValue;
+    T result=defaultValue;
 
-  try
-  {
-    result = j.value<T>(key, defaultValue);
-  }
-  catch(...)
-  {
-  }
+    try
+    {
+        result = j.value<T>(key, defaultValue);
+    }
+    catch(...)
+    {
+    }
 
-  return result;
+    return result;
 }
 
 //##################################################################################################
-std::vector<std::string> getJSONStringList(const nlohmann::json& j,
-                                           const std::string& key);
+std::vector<std::string> TP_UTILS_SHARED_EXPORT getJSONStringList(const nlohmann::json& j,
+                                                                  const std::string& key);
 
 //##################################################################################################
-std::vector<nlohmann::json> getJSONArray(const nlohmann::json& j,
-                                         const std::string& key);
+std::vector<nlohmann::json> TP_UTILS_SHARED_EXPORT getJSONArray(const nlohmann::json& j,
+                                                                const std::string& key);
 }
 
 #endif

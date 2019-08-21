@@ -49,13 +49,13 @@ enum class DebugType
 };
 
 //##################################################################################################
-void installSignalHandler();
+void TP_UTILS_SHARED_EXPORT installSignalHandler();
 
 //##################################################################################################
-void installMessageHandler(const std::function<void(MessageType, const std::string&)>& callback);
+void TP_UTILS_SHARED_EXPORT installMessageHandler(const std::function<void(MessageType, const std::string&)>& callback);
 
 //##################################################################################################
-class DebugMode
+class TP_UTILS_SHARED_EXPORT DebugMode
 {
 public:
   //################################################################################################
@@ -87,7 +87,7 @@ private:
 };
 
 //##################################################################################################
-class DebugBuffer : public std::stringbuf
+class TP_UTILS_SHARED_EXPORT DebugBuffer : public std::stringbuf
 {
 public:
   //################################################################################################
@@ -97,7 +97,7 @@ public:
 namespace DBG
 {
 //##################################################################################################
-struct Base
+struct TP_UTILS_SHARED_EXPORT Base
 {
   TP_NONCOPYABLE(Base);
 
@@ -107,7 +107,7 @@ struct Base
 };
 
 //##################################################################################################
-struct FactoryBase
+struct TP_UTILS_SHARED_EXPORT FactoryBase
 {
   TP_NONCOPYABLE(FactoryBase);
 
@@ -131,7 +131,7 @@ struct FactoryTemplate : public FactoryBase
 };
 
 //##################################################################################################
-struct Manager
+struct TP_UTILS_SHARED_EXPORT Manager
 {
   Manager();
   ~Manager();
@@ -150,7 +150,7 @@ struct Manager
 }
 
 //##################################################################################################
-struct DebugHelper
+struct TP_UTILS_SHARED_EXPORT DebugHelper
 {
   TP_NONCOPYABLE(DebugHelper);
 
@@ -162,7 +162,7 @@ struct DebugHelper
 };
 
 //##################################################################################################
-void installDefaultMessageHandler();
+void TP_UTILS_SHARED_EXPORT installDefaultMessageHandler();
 
 }
 

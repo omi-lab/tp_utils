@@ -85,8 +85,10 @@ union TPPixel
   }
 
   uint32_t i;
+#ifndef TDP_WIN32
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpedantic"
+#endif
   struct
   {
     uint8_t r;
@@ -94,7 +96,9 @@ union TPPixel
     uint8_t b;
     uint8_t a;
   };
+#ifndef TDP_WIN32
 #pragma GCC diagnostic pop
+#endif
 };
 
 //##################################################################################################

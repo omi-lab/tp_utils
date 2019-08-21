@@ -10,7 +10,7 @@ namespace tp_utils
 {
 
 //##################################################################################################
-class Test
+class TP_UTILS_SHARED_EXPORT Test
 {
 public:
 

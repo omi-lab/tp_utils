@@ -7,7 +7,7 @@ namespace tp_utils
 {
 
 //##################################################################################################
-class AbstractCrossThreadCallback
+class TP_UTILS_SHARED_EXPORT AbstractCrossThreadCallback
 {
 public:
   //################################################################################################
@@ -32,7 +32,7 @@ private:
 };
 
 //##################################################################################################
-class AbstractCrossThreadCallbackFactory
+class TP_UTILS_SHARED_EXPORT AbstractCrossThreadCallbackFactory
 {
 public:
   //################################################################################################
@@ -53,7 +53,7 @@ class CrossThreadCallbackFactoryTemplate : public AbstractCrossThreadCallbackFac
 };
 
 //##################################################################################################
-class PolledCrossThreadCallbackFactory: public AbstractCrossThreadCallbackFactory
+class TP_UTILS_SHARED_EXPORT PolledCrossThreadCallbackFactory: public AbstractCrossThreadCallbackFactory
 {
 public:
   //################################################################################################

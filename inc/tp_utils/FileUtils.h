@@ -83,13 +83,13 @@ std::string TP_UTILS_SHARED_EXPORT fileName(const std::string& path);
 std::string TP_UTILS_SHARED_EXPORT pathAppend(const std::string& path, const std::string& part);
 
 //##################################################################################################
-extern std::vector<std::string> (*listFilesCallback)(const std::string& path, const std::unordered_set<std::string>& extensions);
-extern std::vector<std::string> (*listDirectoriesCallback)(const std::string& path);
-extern int64_t (*fileTimeMSCallback)(const std::string& path);
-extern bool (*copyFileCallback)(const std::string& pathFrom, const std::string& pathTo);
-extern bool (*mkdirCallback)(const std::string& path, CreateFullPath createFullPath);
-extern bool (*rmCallback)(const std::string& path, bool recursive);
-extern bool (*existsCallback)(const std::string& path);
+extern std::vector<std::string> TP_UTILS_SHARED_EXPORT (*listFilesCallback)(const std::string& path, const std::unordered_set<std::string>& extensions);
+extern std::vector<std::string> TP_UTILS_SHARED_EXPORT (*listDirectoriesCallback)(const std::string& path);
+extern int64_t TP_UTILS_SHARED_EXPORT (*fileTimeMSCallback)(const std::string& path);
+extern bool TP_UTILS_SHARED_EXPORT (*copyFileCallback)(const std::string& pathFrom, const std::string& pathTo);
+extern bool TP_UTILS_SHARED_EXPORT (*mkdirCallback)(const std::string& path, CreateFullPath createFullPath);
+extern bool TP_UTILS_SHARED_EXPORT (*rmCallback)(const std::string& path, bool recursive);
+extern bool TP_UTILS_SHARED_EXPORT (*existsCallback)(const std::string& path);
 
 }
 

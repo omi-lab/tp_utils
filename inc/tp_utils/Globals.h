@@ -27,7 +27,11 @@
 
 //##################################################################################################
 //TP_NODISCARD
-#define TP_NODISCARD __attribute__((warn_unused_result))
+#ifdef TDP_WIN32
+#  define TP_NODISCARD
+#else
+#  define TP_NODISCARD __attribute__((warn_unused_result))
+#endif
 
 //##################################################################################################
 //TP_DEPRECATED
@@ -105,18 +109,18 @@ T tpMax(T a, T b)
 }
 
 //##################################################################################################
-std::string tpFromHEX(const std::string& input);
+std::string TP_UTILS_SHARED_EXPORT tpFromHEX(const std::string& input);
 
 //##################################################################################################
-std::string tpToHex(const std::string& input);
+std::string TP_UTILS_SHARED_EXPORT tpToHex(const std::string& input);
 
 //##################################################################################################
 //! Returns true if input starts with the string in s
-bool tpStartsWith(const std::string& input, const std::string& s);
+bool TP_UTILS_SHARED_EXPORT tpStartsWith(const std::string& input, const std::string& s);
 
 //##################################################################################################
 //! Returns true if input ends with the string in s
-bool tpEndsWith(const std::string& input, const std::string& s);
+bool TP_UTILS_SHARED_EXPORT tpEndsWith(const std::string& input, const std::string& s);
 
 //##################################################################################################
 template<class B, class E>
@@ -128,7 +132,7 @@ void tpRandomShuffle(B begin, E end)
 }
 
 //##################################################################################################
-void* tpVoidLiteral(size_t value);
+void TP_UTILS_SHARED_EXPORT* tpVoidLiteral(size_t value);
 
 namespace tp_utils
 {
@@ -150,21 +154,21 @@ enum class CreateFullPath
 
 //##################################################################################################
 //! Split a string on a delimiter
-void tpSplit(std::vector<std::string>& result,
-             const std::string& input,
-             const std::string& del,
-             tp_utils::SplitBehavior behavior=tp_utils::SplitBehavior::KeepEmptyParts);
+void TP_UTILS_SHARED_EXPORT tpSplit(std::vector<std::string>& result,
+                                    const std::string& input,
+                                    const std::string& del,
+                                    tp_utils::SplitBehavior behavior=tp_utils::SplitBehavior::KeepEmptyParts);
 
 //##################################################################################################
 //! Split a string on a delimiter
-void tpSplit(std::vector<std::string>& result,
-             const std::string& input,
-             char del,
-             tp_utils::SplitBehavior behavior=tp_utils::SplitBehavior::KeepEmptyParts);
+void TP_UTILS_SHARED_EXPORT tpSplit(std::vector<std::string>& result,
+                                    const std::string& input,
+                                    char del,
+                                    tp_utils::SplitBehavior behavior=tp_utils::SplitBehavior::KeepEmptyParts);
 
 //##################################################################################################
 //! Remove all instances of a character from a string.
-void tpRemoveChar(std::string& s, char c);
+void TP_UTILS_SHARED_EXPORT tpRemoveChar(std::string& s, char c);
 
 //##################################################################################################
 template<typename T>
@@ -275,8 +279,8 @@ typename T::mapped_type tpGetMapValue(const T& map,
 //##################################################################################################
 template<typename T>
 typename T::key_type tpGetMapKey(const T& map,
-                                    const typename T::mapped_type& value,
-                                    const typename T::key_type& defaultKey=typename T::key_type())
+                                 const typename T::mapped_type& value,
+                                 const typename T::key_type& defaultKey=typename T::key_type())
 {
   for(const auto& i : map)
     if(i.second == value)
@@ -295,10 +299,10 @@ typename std::vector<typename T::key_type> tpKeys(const T& map)
 }
 
 //##################################################################################################
-std::string tpToUTF8(const std::u16string& source);
+std::string TP_UTILS_SHARED_EXPORT tpToUTF8(const std::u16string& source);
 
 //##################################################################################################
-std::u16string tpFromUTF8(const std::string& source);
+std::u16string TP_UTILS_SHARED_EXPORT tpFromUTF8(const std::string& source);
 
 namespace detail
 {
@@ -344,16 +348,16 @@ namespace tp_utils
 {
 
 //##################################################################################################
-void leftJustified(std::string& text, size_t maxLength, char padding=' ');
+void TP_UTILS_SHARED_EXPORT leftJustified(std::string& text, size_t maxLength, char padding=' ');
 
 //##################################################################################################
-void rightJustified(std::string& text, size_t maxLength, char padding=' ');
+void TP_UTILS_SHARED_EXPORT rightJustified(std::string& text, size_t maxLength, char padding=' ');
 
 //##################################################################################################
-bool parseColor(const std::string& color, uint8_t& r, uint8_t& g, uint8_t& b, uint8_t& a);
+bool TP_UTILS_SHARED_EXPORT parseColor(const std::string& color, uint8_t& r, uint8_t& g, uint8_t& b, uint8_t& a);
 
 //##################################################################################################
-bool parseColorF(const std::string& color, float& r, float& g, float& b, float& a);
+bool TP_UTILS_SHARED_EXPORT parseColorF(const std::string& color, float& r, float& g, float& b, float& a);
 
 }
 

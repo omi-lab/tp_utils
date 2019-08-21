@@ -79,7 +79,7 @@ private:
 
 //##################################################################################################
 //! Manages a timer thread that writes mutex stats to file.
-struct SaveLockStatsTimer
+struct TP_UTILS_SHARED_EXPORT SaveLockStatsTimer
 {
   //################################################################################################
   SaveLockStatsTimer(const std::string& path, int64_t intervalMS);
@@ -105,7 +105,7 @@ private:
 #define TP_MUTEX_LOCKER(m)std::lock_guard<std::mutex> TP_CONCAT(locker, __LINE__)(m); TP_UNUSED(TP_CONCAT(locker, __LINE__))
 #define TP_MUTEX_UNLOCKER(mutex)TPMutexUnlocker TP_CONCAT(locker, __LINE__)(&mutex); TP_UNUSED(TP_CONCAT(locker, __LINE__))
 
-class TPMutex: public std::mutex
+class TP_UTILS_SHARED_EXPORT TPMutex: public std::mutex
 {
 public:
   //################################################################################################
@@ -119,7 +119,7 @@ public:
 };
 
 //##################################################################################################
-class TPMutexUnlocker
+class TP_UTILS_SHARED_EXPORT TPMutexUnlocker
 {
   TPMutex* m_mutex;
 public:
@@ -150,7 +150,7 @@ public:
 #define TP_MUTEX_UNLOCKER(mutex)TPMutexUnlocker TP_CONCAT(locker, __LINE__)(&mutex, TPM); TP_UNUSED(TP_CONCAT(locker, __LINE__))
 
 //##################################################################################################
-class TPMutex: public std::timed_mutex
+class TP_UTILS_SHARED_EXPORT TPMutex: public std::timed_mutex
 {
   int m_id;
 public:
@@ -231,7 +231,7 @@ public:
 };
 
 //##################################################################################################
-class TPMutexUnlocker
+class TP_UTILS_SHARED_EXPORT TPMutexUnlocker
 {
   TPMutex* m_mutex;
   const char* m_file;
@@ -257,7 +257,7 @@ public:
 #endif
 
 //##################################################################################################
-class TPWaitCondition
+class TP_UTILS_SHARED_EXPORT TPWaitCondition
 {
 public:
   //################################################################################################
