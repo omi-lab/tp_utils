@@ -37,7 +37,7 @@ std::string tpFromHEX(const std::string& input)
   std::string output;
   output.resize(len / 2);
 
-  auto* o = reinterpret_cast<uint8_t*>(output.data());
+  auto* o = reinterpret_cast<uint8_t*>(output[0]);
 
   for (size_t i = 0; i < len; i+=2, o++)
   {
