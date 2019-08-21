@@ -44,7 +44,7 @@ std::string tpFromHEX(const std::string& input)
     char a = input[i];
     const char* p = std::lower_bound(lut, lut + 16, a);
     if(*p != a)
-        return std::string();
+      return std::string();
 
     char b = input[i + 1];
     const char* q = std::lower_bound(lut, lut + 16, b);
@@ -132,13 +132,23 @@ void tpRemoveChar(std::string& s, char c)
 //##################################################################################################
 std::string tpToUTF8(const std::u16string& source)
 {
+#if _MSC_VER >= 1900
+  auto p = reinterpret_cast<const int16_t *>(source.data());
+  return std::wstring_convert<std::codecvt_utf8_utf16<int16_t>, int16_t>().to_bytes(p, p + source.size());
+#else
   return std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t>().to_bytes(source);
+#endif
 }
 
 //##################################################################################################
 std::u16string tpFromUTF8(const std::string& source)
 {
+#if _MSC_VER >= 1900
+  TP_UNUSED(source);
+  return std::u16string();
+#else
   return std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t>().from_bytes(source);
+#endif
 }
 
 namespace tp_utils

@@ -29,7 +29,7 @@ public:
   static void destroy(int id);
 
   //################################################################################################
-  static int waiting(int id, const char* file, int line);
+  static size_t waiting(int id, const char* file, int line);
 
   //################################################################################################
   static void locked(int id, const char* file, int line, int elapsedWaiting, int blockingID);
