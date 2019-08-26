@@ -50,7 +50,7 @@ TPWaitCondition::~TPWaitCondition()
 
 //##################################################################################################
 #ifdef TP_ENABLE_MUTEX_TIME
-bool TPWaitCondition::wait(TPM_Ac TPMutex& lockedMutex, int64_t ms)
+bool TPWaitCondition::wait(TPM_Ac TPMutex& lockedMutex, int64_t ms) noexcept
 {
   struct MutexW
   {
