@@ -42,6 +42,9 @@ HEADERS += inc/tp_utils/AbstractTimerCallback.h
 SOURCES += src/Resources.cpp
 HEADERS += inc/tp_utils/Resources.h
 
+SOURCES += src/SignalHandler.cpp
+HEADERS += inc/tp_utils/SignalHandler.h
+
 HEADERS += inc/tp_utils/CallbackCollection.h
 
 HEADERS += inc/tp_utils/Interface.h
