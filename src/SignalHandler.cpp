@@ -6,11 +6,17 @@
 namespace tp_utils
 {
 
+#ifdef TDP_WIN32
+using SignalHandlerT = _crt_signal_t;
+#else
+using SignalHandlerT = __sighandler_t;
+#endif
+
 //##################################################################################################
 struct SignalHandler::Private
 {
-  __sighandler_t signt;
-  __sighandler_t sigterm;
+  SignalHandlerT signt;
+  SignalHandlerT sigterm;
 
   TPMutex mutex{TPM};
   TPWaitCondition waitCondition;
