@@ -189,7 +189,7 @@ the first letter of each word, followed by SID at the end.
 \param methodName - The name to give the method that this macro will create.
 \param idString - The string that the method will return.
 */
-#define TDP_DECLARE_ID(methodName, idString)const tp_utils::StringID& methodName();
+#define TDP_DECLARE_ID(methodName, idString)const tp_utils::StringID& methodName()
 
 //##################################################################################################
 //! Define a global string id
@@ -204,7 +204,12 @@ the first letter of each word, followed by SID at the end.
 \param methodName - The name to give the method that this macro will create.
 \param idString - The string that the method will return.
 */
-#define TDP_DEFINE_ID(methodName, idString)const tp_utils::StringID& methodName(){static const tp_utils::StringID id(idString); return id;}
+#define TDP_DEFINE_ID(methodName, idString)     \
+  const tp_utils::StringID& methodName() {      \
+  static const tp_utils::StringID id(idString); \
+  return id;                                    \
+  }                                             \
+  void ANONYMOUS_FUNCTION()
 
 #include "tp_utils/Globals.h"
 
