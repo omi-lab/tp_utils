@@ -6,10 +6,10 @@
 namespace tp_utils
 {
 
-#if defined tp_qt_WIN32
+#if defined TP_WIN32
 using SignalHandlerT = _crt_signal_t;
 #define
-#elif defined tp_qt_EMSCRIPTEN
+#elif defined TP_EMSCRIPTEN
 using SignalHandlerT = sighandler_t;
 #else
 using SignalHandlerT = __sighandler_t;

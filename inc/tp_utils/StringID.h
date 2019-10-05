@@ -11,7 +11,7 @@ class StringIDManager;
 /*!
 \defgroup StringIDs StringID's
 
-StringID's are the most important part of Tdp Toolkit, they are used for tying components together,
+StringID's are the most important part of tp Toolkit, they are used for tying components together,
 as enums, as names, and to describe types. They are designed to be easy to use, and fast to compare.
 See \link StringID \endlink for more details of how StringID's should be used.
 
@@ -21,7 +21,7 @@ Here I will try to document the StringID's that are currently in use.
 //##################################################################################################
 //! A class that implements efficent string based identifiers
 /*!
-This is probably the most important class in Tdp Toolkit, a majority of the other components are
+This is probably the most important class in tp Toolkit, a majority of the other components are
 linked together by strings, and this class is used to make this efficent.
 */
 class TP_UTILS_SHARED_EXPORT StringID
@@ -60,7 +60,7 @@ public:
   //! Construct a StringID from a string
   /*!
   If you are declaring a StringID's to be used in your application or across a module, it is
-  recommended that you use \link tp_qt_DECLARE_ID \endlink and \link tp_qt_DEFINE_ID \endlink. First
+  recommended that you use \link TP_DECLARE_ID \endlink and \link TP_DEFINE_ID \endlink. First
   declare the id in a public header file in your modules namespace, and them define them in a source
   file again in your modules namespace.
   \param keyString - The string to generate the StringID from.
@@ -71,7 +71,7 @@ public:
   //! Construct a StringID from a string
   /*!
   If you are declaring a StringID's to be used in your application or across a module, it is
-  recommended that you use \link tp_qt_DECLARE_ID \endlink and \link tp_qt_DEFINE_ID \endlink. First
+  recommended that you use \link TP_DECLARE_ID \endlink and \link TP_DEFINE_ID \endlink. First
   declare the id in a public header file in your modules namespace, and them define them in a source
   file again in your modules namespace.
 
@@ -185,11 +185,11 @@ and all other letters should be lower case.
 The method should match the string text exactly, but with lower case first letter and upper case for
 the first letter of each word, followed by SID at the end.
 
-\def tp_qt_DECLARE_ID(methodName, idString)
+\def TP_DECLARE_ID(methodName, idString)
 \param methodName - The name to give the method that this macro will create.
 \param idString - The string that the method will return.
 */
-#define tp_qt_DECLARE_ID(methodName, idString)const tp_utils::StringID& methodName()
+#define TP_DECLARE_ID(methodName, idString)const tp_utils::StringID& methodName()
 
 //##################################################################################################
 //! Define a global string id
@@ -200,11 +200,11 @@ and all other letters should be lower case.
 The method should match the string text exactly, but with lower case first letter and upper case for
 the first letter of each word, followed by SID at the end.
 
-\def tp_qt_DEFINE_ID(methodName, idString)
+\def TP_DEFINE_ID(methodName, idString)
 \param methodName - The name to give the method that this macro will create.
 \param idString - The string that the method will return.
 */
-#define tp_qt_DEFINE_ID(methodName, idString)     \
+#define TP_DEFINE_ID(methodName, idString)      \
   const tp_utils::StringID& methodName() {      \
   static const tp_utils::StringID id(idString); \
   return id;                                    \

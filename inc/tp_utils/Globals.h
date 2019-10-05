@@ -27,7 +27,7 @@
 
 //##################################################################################################
 //TP_NODISCARD
-#ifdef tp_qt_WIN32
+#ifdef TP_WIN32
 #  define TP_NODISCARD
 #else
 #  define TP_NODISCARD __attribute__((warn_unused_result))
@@ -63,7 +63,7 @@
 //TP_SIZEOF
 template<int s> struct __TP_SIZEOF;
 //! Use this to show the size of objects at compile time, will fail at the line it is used.
-#define TP_SIZEOF(o)__TP_SIZEOF<sizeof(o)> __tp_qt_sizeof;
+#define TP_SIZEOF(o)__TP_SIZEOF<sizeof(o)> __TP_sizeof;
 
 //##################################################################################################
 //TP_LINE_STRING
@@ -340,9 +340,9 @@ public:
 };
 
 //##################################################################################################
-//! Classes used throughout the rest of Tdp Toolkit.
+//! Classes used throughout the rest of tp Toolkit.
 /*!
-This module provides a set of general purpose classes that form the core of Tdp Toolkit.
+This module provides a set of general purpose classes that form the core of tp Toolkit.
 */
 namespace tp_utils
 {

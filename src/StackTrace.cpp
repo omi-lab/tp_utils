@@ -2,9 +2,9 @@
 #include "tp_utils/DebugUtils.h"
 
 //PLATFORM_ABSTRACTIONS
-#if defined(tp_qt_ANDROID)
+#if defined(TP_ANDROID)
 #  define ANDROID_STACKTRACE
-#elif defined(tp_qt_OSX)
+#elif defined(TP_OSX)
 #  define OSX_STACKTRACE
 #elif defined(EMSCRIPTEN)
 #  define EMSCRIPTEN_STACKTRACE

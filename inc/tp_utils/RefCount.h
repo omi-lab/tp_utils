@@ -11,7 +11,7 @@
 \file RefCount.h
 */
 
-#define tp_qt_REF_COUNT true
+#define TP_REF_COUNT true
 
 namespace tp_utils
 {
@@ -31,15 +31,15 @@ struct TP_UTILS_SHARED_EXPORT InstanceDetails
 
 }
 
-#ifdef tp_qt_REF_COUNT
+#ifdef TP_REF_COUNT
 namespace tp_utils
 {
 //##################################################################################################
 //! A class for counting instances of different types
 /*!
 This class is used as a debug tool to count the number of instances of different types as the
-program runs. To count the number of instances of any given class call \link #tp_qt_REF(type) \endlink
-in the constructor and \link #tp_qt_UNREF(type) \endlink in the destructor, do not call ref() and
+program runs. To count the number of instances of any given class call \link #TP_REF(type) \endlink
+in the constructor and \link #TP_UNREF(type) \endlink in the destructor, do not call ref() and
 unref() directly. The type should be the namespace::class of your class.
 */
 class TP_UTILS_SHARED_EXPORT RefCount
@@ -49,7 +49,7 @@ public:
   //################################################################################################
   //! Increments the count for type
   /*!
-  \warning Don't call this directly, use tp_qt_UNREF
+  \warning Don't call this directly, use TP_UNREF
   \param type - The type to increment
   */
   static void ref(const tp_utils::StringID& type);
@@ -57,7 +57,7 @@ public:
   //################################################################################################
   //! Decrements the count for type
   /*!
-  \warning Don't call this directly, use tp_qt_UNREF
+  \warning Don't call this directly, use TP_UNREF
   \param type - The type to decrement
   */
   static void unref(const tp_utils::StringID& type);
@@ -89,8 +89,8 @@ public:
 }
 
 //##################################################################################################
-#define tp_qt_REF_COUNT_OBJECTS(type)\
-  class _tp_qt_REF_COUNT_OBJECT_\
+#define TP_REF_COUNT_OBJECTS(type)\
+  class _TP_REF_COUNT_OBJECT_\
   {\
   static const tp_utils::StringID& getType()\
   {\
@@ -99,41 +99,41 @@ public:
   }\
   const tp_utils::StringID& m_type{getType()};\
   public:\
-  _tp_qt_REF_COUNT_OBJECT_ (){tp_utils::RefCount::ref  (m_type);}\
-  _tp_qt_REF_COUNT_OBJECT_ (const _tp_qt_REF_COUNT_OBJECT_& other){TP_UNUSED(other);tp_utils::RefCount::ref  (m_type);}\
-  ~_tp_qt_REF_COUNT_OBJECT_(){tp_utils::RefCount::unref(m_type);}\
-  _tp_qt_REF_COUNT_OBJECT_& operator=(const _tp_qt_REF_COUNT_OBJECT_&)=delete;\
-  _tp_qt_REF_COUNT_OBJECT_& operator=(_tp_qt_REF_COUNT_OBJECT_&&)=delete;\
-  _tp_qt_REF_COUNT_OBJECT_ (_tp_qt_REF_COUNT_OBJECT_&&)=delete;\
-  }; _tp_qt_REF_COUNT_OBJECT_ _tp_qt_REF_COUNT_OBJECT_instance
+  _TP_REF_COUNT_OBJECT_ (){tp_utils::RefCount::ref  (m_type);}\
+  _TP_REF_COUNT_OBJECT_ (const _TP_REF_COUNT_OBJECT_& other){TP_UNUSED(other);tp_utils::RefCount::ref  (m_type);}\
+  ~_TP_REF_COUNT_OBJECT_(){tp_utils::RefCount::unref(m_type);}\
+  _TP_REF_COUNT_OBJECT_& operator=(const _TP_REF_COUNT_OBJECT_&)=delete;\
+  _TP_REF_COUNT_OBJECT_& operator=(_TP_REF_COUNT_OBJECT_&&)=delete;\
+  _TP_REF_COUNT_OBJECT_ (_TP_REF_COUNT_OBJECT_&&)=delete;\
+  }; _TP_REF_COUNT_OBJECT_ _TP_REF_COUNT_OBJECT_instance
 
 
 //##################################################################################################
 //! Increment the ref count for type
 /*!
-\def tp_qt_REF(type)
+\def TP_REF(type)
 \param type - The type of the class to ref count as a string
 */
-#define tp_qt_REF(type){\
-  static const tp_utils::StringID tp_qt_REF_TYPE(type);\
-  tp_utils::RefCount::ref(tp_qt_REF_TYPE);}
+#define TP_REF(type){\
+  static const tp_utils::StringID TP_REF_TYPE(type);\
+  tp_utils::RefCount::ref(TP_REF_TYPE);}
 
 
 //##################################################################################################
 //! Increment the ref count for type
 /*!
-\def tp_qt_UNREF(type)
+\def TP_UNREF(type)
 \param type - The type of the class to ref count as a string
 */
-#define tp_qt_UNREF(type){\
-  static const tp_utils::StringID tp_qt_REF_TYPE(type);\
-  tp_utils::RefCount::unref(tp_qt_REF_TYPE);}
+#define TP_UNREF(type){\
+  static const tp_utils::StringID TP_REF_TYPE(type);\
+  tp_utils::RefCount::unref(TP_REF_TYPE);}
 
 #else
 
-#define tp_qt_REF_COUNT_OBJECTS(type)
-#define tp_qt_REF(type)
-#define tp_qt_UNREF(type)
+#define TP_REF_COUNT_OBJECTS(type)
+#define TP_REF(type)
+#define TP_UNREF(type)
 
 #endif
 
