@@ -116,7 +116,7 @@ public:
 */
 #define TP_REF(type){\
   static const tp_utils::StringID TP_REF_TYPE(type);\
-  tp_utils::RefCount::ref(TP_REF_TYPE);}
+  tp_utils::RefCount::ref(TP_REF_TYPE);}do{}while(0)
 
 
 //##################################################################################################
@@ -127,7 +127,7 @@ public:
 */
 #define TP_UNREF(type){\
   static const tp_utils::StringID TP_REF_TYPE(type);\
-  tp_utils::RefCount::unref(TP_REF_TYPE);}
+  tp_utils::RefCount::unref(TP_REF_TYPE);}do{}while(0)
 
 #else
 
