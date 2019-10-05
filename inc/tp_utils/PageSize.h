@@ -12,7 +12,7 @@ size_t TP_UTILS_SHARED_EXPORT pageSize();
 
 }
 
-#ifdef TDP_LINUX //=================================================================================
+#ifdef tp_qt_LINUX //=================================================================================
 
 #include <sys/mman.h>
 namespace tp_utils

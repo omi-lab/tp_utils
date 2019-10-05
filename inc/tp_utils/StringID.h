@@ -60,7 +60,7 @@ public:
   //! Construct a StringID from a string
   /*!
   If you are declaring a StringID's to be used in your application or across a module, it is
-  recommended that you use \link TDP_DECLARE_ID \endlink and \link TDP_DEFINE_ID \endlink. First
+  recommended that you use \link tp_qt_DECLARE_ID \endlink and \link tp_qt_DEFINE_ID \endlink. First
   declare the id in a public header file in your modules namespace, and them define them in a source
   file again in your modules namespace.
   \param keyString - The string to generate the StringID from.
@@ -71,7 +71,7 @@ public:
   //! Construct a StringID from a string
   /*!
   If you are declaring a StringID's to be used in your application or across a module, it is
-  recommended that you use \link TDP_DECLARE_ID \endlink and \link TDP_DEFINE_ID \endlink. First
+  recommended that you use \link tp_qt_DECLARE_ID \endlink and \link tp_qt_DEFINE_ID \endlink. First
   declare the id in a public header file in your modules namespace, and them define them in a source
   file again in your modules namespace.
 
@@ -185,11 +185,11 @@ and all other letters should be lower case.
 The method should match the string text exactly, but with lower case first letter and upper case for
 the first letter of each word, followed by SID at the end.
 
-\def TDP_DECLARE_ID(methodName, idString)
+\def tp_qt_DECLARE_ID(methodName, idString)
 \param methodName - The name to give the method that this macro will create.
 \param idString - The string that the method will return.
 */
-#define TDP_DECLARE_ID(methodName, idString)const tp_utils::StringID& methodName()
+#define tp_qt_DECLARE_ID(methodName, idString)const tp_utils::StringID& methodName()
 
 //##################################################################################################
 //! Define a global string id
@@ -200,11 +200,11 @@ and all other letters should be lower case.
 The method should match the string text exactly, but with lower case first letter and upper case for
 the first letter of each word, followed by SID at the end.
 
-\def TDP_DEFINE_ID(methodName, idString)
+\def tp_qt_DEFINE_ID(methodName, idString)
 \param methodName - The name to give the method that this macro will create.
 \param idString - The string that the method will return.
 */
-#define TDP_DEFINE_ID(methodName, idString)     \
+#define tp_qt_DEFINE_ID(methodName, idString)     \
   const tp_utils::StringID& methodName() {      \
   static const tp_utils::StringID id(idString); \
   return id;                                    \

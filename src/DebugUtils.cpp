@@ -9,7 +9,7 @@
 #include <atomic>
 #include <memory>
 
-#ifdef TDP_ANDROID
+#ifdef tp_qt_ANDROID
 #include <android/log.h>
 #endif
 
@@ -266,7 +266,7 @@ std::ostream& DebugHelper::operator()()
 //## Platform Abstractions #########################################################################
 //##################################################################################################
 
-#ifdef TDP_ANDROID
+#ifdef tp_qt_ANDROID
 namespace
 {
 //##################################################################################################
@@ -286,7 +286,7 @@ void messageHandler(tp_utils::MessageType messageType, const std::string& messag
 //##################################################################################################
 void installDefaultMessageHandler()
 {
-#ifdef TDP_ANDROID
+#ifdef tp_qt_ANDROID
   tp_utils::installMessageHandler(messageHandler);
 #endif
 }

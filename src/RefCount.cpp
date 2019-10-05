@@ -1,6 +1,6 @@
 #include "tp_utils/RefCount.h"
 
-#ifdef TDP_REF_COUNT
+#ifdef tp_qt_REF_COUNT
 
 #include "tp_utils/StackTrace.h"
 #include "tp_utils/DebugUtils.h"

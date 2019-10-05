@@ -5,7 +5,7 @@
 
 #include <unordered_map>
 
-#if defined(TDP_WIN32)
+#if defined(tp_qt_WIN32)
 #undef interface
 #endif
 

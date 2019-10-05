@@ -176,7 +176,7 @@ bool exists(const std::string& path)
 
 namespace
 {
-#ifdef TDP_WIN32
+#ifdef tp_qt_WIN32
   char del = '\\';
 #else
 char del = '/';
