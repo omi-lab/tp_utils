@@ -8,7 +8,6 @@ namespace tp_utils
 
 #if defined TP_WIN32
 using SignalHandlerT = _crt_signal_t;
-#define
 #elif defined TP_EMSCRIPTEN
 using SignalHandlerT = sighandler_t;
 #else
