@@ -90,7 +90,7 @@ private:
 };
 
 #define TP_FUNCTION_TIME tp_utils::FunctionTimer TP_CONCAT(tpFunctionTimer, __LINE__)(__FILE__, __LINE__); TP_UNUSED(TP_CONCAT(tpFunctionTimer, __LINE__))
-#elif
+#else
 #define TP_FUNCTION_TIME do{}while(false)
 #endif
 
