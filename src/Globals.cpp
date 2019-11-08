@@ -172,6 +172,32 @@ void rightJustified(std::string& text, size_t maxLength, char padding)
   text = std::string(maxLength-text.size(), padding)+text;
 }
 
+//##################################################################################################
+std::string fixedWidthKeepRight(std::string data, size_t len, char pad)
+{
+  if(data.size()>=len)
+    return data.substr(data.size()-len);
+
+  size_t missing = size_t(len) - size_t(data.size());
+  if(missing>0)
+    data = std::string(missing, pad) + data;
+
+  return data;
+}
+
+//##################################################################################################
+std::string fixedWidthKeepLeft(std::string data, size_t len, char pad)
+{
+  if(data.size()>=len)
+    return data.substr(0, len);
+
+  size_t missing = size_t(len) - size_t(data.size());
+  if(missing>0)
+    data += std::string(missing, pad);
+
+
+  return data;
+}
 
 //##################################################################################################
 bool parseColor(const std::string& color, uint8_t& r, uint8_t& g, uint8_t& b, uint8_t& a)

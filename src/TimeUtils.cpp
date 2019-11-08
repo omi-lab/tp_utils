@@ -1,7 +1,10 @@
 #include "tp_utils/TimeUtils.h"
 #include "tp_utils/DebugUtils.h"
+#include "tp_utils/MutexUtils.h"
+#include "tp_utils/FileUtils.h"
 
 #include <chrono>
+#include <thread>
 
 namespace tp_utils
 {
@@ -15,6 +18,12 @@ int64_t currentTime()
 int64_t currentTimeMS()
 {
   return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+}
+
+//##################################################################################################
+int64_t currentTimeMicroseconds()
+{
+  return std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
 }
 
 //##################################################################################################
@@ -73,5 +82,153 @@ void ElapsedTimer::printTime(const char* msg)
   if(e>d->smallTime)
     tpWarning() << msg << " (" << e << ")";
 }
+
+#ifdef TP_ENABLE_FUNCTION_TIME
+
+namespace
+{
+struct FunctionTimeStatsDetails_lt
+{
+  int64_t count{0};
+  int64_t max{0};
+  int64_t total{0};
+};
+}
+
+//##################################################################################################
+struct FunctionTimeStats::Private
+{
+  TPMutex mutex{TPM};
+  std::unordered_map<std::string, FunctionTimeStatsDetails_lt> stats;
+};
+
+//##################################################################################################
+void FunctionTimeStats::add(int64_t timeMicroseconds, const char* file, int line)
+{
+  auto i = instance();
+  TP_MUTEX_LOCKER(i->mutex);
+  auto key = fixedWidthKeepRight(std::string(file) + ':' + std::to_string(line), 50, ' ');
+  auto& s = i->stats[key];
+  s.count++;
+  s.max = tpMax(s.max, timeMicroseconds);
+  s.total += timeMicroseconds;
+}
+
+//##################################################################################################
+std::string FunctionTimeStats::takeResults()
+{
+  std::string result;
+
+  auto i = instance();
+  TP_MUTEX_LOCKER(i->mutex);
+
+  std::vector<std::pair<std::string, FunctionTimeStatsDetails_lt>> detailsList;
+  detailsList.reserve(i->stats.size());
+  for(const auto& it : i->stats)
+    detailsList.push_back({it.first, it.second});
+
+  std::sort(detailsList.begin(), detailsList.end(), [](const std::pair<std::string, FunctionTimeStatsDetails_lt>& a, const std::pair<std::string, FunctionTimeStatsDetails_lt>& b)
+  {
+    return a.second.total > b.second.total;
+  });
+
+  size_t a=50;
+  size_t b=10;
+  size_t c=20;
+  size_t d=20;
+  size_t e=20;
+
+  result += '+' + std::string(a, '-') + '+' + std::string(b, '-') + '+' + std::string(c, '-') + '+' + std::string(d, '-') + '+' + std::string(e, '-') + "+\n";
+
+  result += '|' + fixedWidthKeepLeft("Name", a, ' ') + '|';
+  result += fixedWidthKeepLeft("Count", b, ' ') + '|';
+  result += fixedWidthKeepLeft("Total ms", c, ' ') + '|';
+  result += fixedWidthKeepLeft("Max ms", d, ' ') + '|';
+  result += fixedWidthKeepLeft("Average micro", e, ' ') + "|\n";
+
+  result += '+' + std::string(a, '-') + '+' + std::string(b, '-') + '+' + std::string(c, '-') + '+' + std::string(d, '-') + '+' + std::string(e, '-') + "+\n";
+
+  for(const auto& details : detailsList)
+  {
+    auto average = details.second.total / details.second.count;
+
+    result += '|' + details.first + '|';
+    result += fixedWidthKeepRight(std::to_string(details.second.count     ), b, ' ') + '|';
+    result += fixedWidthKeepRight(std::to_string(details.second.total/1000), c, ' ') + '|';
+    result += fixedWidthKeepRight(std::to_string(details.second.max  /1000), d, ' ') + '|';
+    result += fixedWidthKeepRight(std::to_string(average                  ), e, ' ') + "|\n";
+  }
+  result += '+' + std::string(a, '-') + '+' + std::string(b, '-') + '+' + std::string(c, '-') + '+' + std::string(d, '-') + '+' + std::string(e, '-') + "+\n";
+
+  return result;
+}
+
+//##################################################################################################
+FunctionTimeStats::Private* FunctionTimeStats::instance()
+{
+  static FunctionTimeStats::Private instance;
+  return &instance;
+}
+
+//##################################################################################################
+FunctionTimer::FunctionTimer(const char* file, int line):
+  m_start(currentTimeMicroseconds()),
+  m_file(file),
+  m_line(line)
+{
+
+}
+
+//##################################################################################################
+FunctionTimer::~FunctionTimer()
+{
+  FunctionTimeStats::add(currentTimeMicroseconds() - m_start, m_file, m_line);
+}
+
+//##################################################################################################
+struct SaveFunctionTimeStatsTimer::Private
+{
+  TPMutex mutex{TPM};
+  TPWaitCondition waitCondition;
+  bool finish{false};
+  std::thread thread;
+};
+
+//##################################################################################################
+SaveFunctionTimeStatsTimer::SaveFunctionTimeStatsTimer(const std::string& path, int64_t intervalMS):
+  d(new  Private)
+{
+  d->thread = std::thread([=]
+  {
+    d->mutex.lock(TPM);
+    while(!d->finish)
+    {
+      d->waitCondition.wait(TPMc d->mutex, intervalMS);
+      if(!d->finish)
+      {
+        d->mutex.unlock(TPM);
+        writeTextFile(path, FunctionTimeStats::takeResults());
+        d->mutex.lock(TPM);
+      }
+    }
+    d->mutex.unlock(TPM);
+  });
+}
+
+//##################################################################################################
+SaveFunctionTimeStatsTimer::~SaveFunctionTimeStatsTimer()
+{
+  {
+    TP_MUTEX_LOCKER(d->mutex);
+    d->finish = true;
+    d->waitCondition.wakeAll();
+  }
+
+  d->thread.join();
+
+  delete d;
+}
+
+#endif
 
 }

@@ -93,7 +93,6 @@ private:
 
 }
 
-//#define TP_ENABLE_MUTEX_TIME
 #ifndef TP_ENABLE_MUTEX_TIME
 
 #define TPM

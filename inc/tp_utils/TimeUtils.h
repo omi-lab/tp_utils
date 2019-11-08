@@ -48,6 +48,52 @@ private:
   Private* d;
 };
 
+#ifdef TP_ENABLE_FUNCTION_TIME
+
+class TP_UTILS_SHARED_EXPORT FunctionTimeStats
+{
+public:
+  //################################################################################################
+  static void add(int64_t timeMicroseconds, const char* file, int line);
+
+  //################################################################################################
+  static std::string takeResults();
+
+private:
+  struct Private;
+  static Private* instance();
+};
+
+class FunctionTimer
+{
+public:
+  FunctionTimer(const char* file, int line);
+  ~FunctionTimer();
+private:
+  int64_t m_start;
+  const char* m_file;
+  int m_line;
+};
+
+//##################################################################################################
+//! Manages a timer thread that writes function time stats to file.
+struct TP_UTILS_SHARED_EXPORT SaveFunctionTimeStatsTimer
+{
+  //################################################################################################
+  SaveFunctionTimeStatsTimer(const std::string& path, int64_t intervalMS);
+
+  //################################################################################################
+  ~SaveFunctionTimeStatsTimer();
+private:
+  struct Private;
+  Private* d;
+};
+
+#define TP_FUNCTION_TIME tp_utils::FunctionTimer TP_CONCAT(tpFunctionTimer, __LINE__)(__FILE__, __LINE__); TP_UNUSED(TP_CONCAT(tpFunctionTimer, __LINE__))
+#elif
+#define TP_FUNCTION_TIME do{}while(false)
+#endif
+
 }
 
 #endif

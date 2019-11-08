@@ -354,6 +354,12 @@ void TP_UTILS_SHARED_EXPORT leftJustified(std::string& text, size_t maxLength, c
 void TP_UTILS_SHARED_EXPORT rightJustified(std::string& text, size_t maxLength, char padding=' ');
 
 //##################################################################################################
+std::string TP_UTILS_SHARED_EXPORT fixedWidthKeepRight(std::string data, size_t len, char pad);
+
+//##################################################################################################
+std::string TP_UTILS_SHARED_EXPORT fixedWidthKeepLeft(std::string data, size_t len, char pad);
+
+//##################################################################################################
 bool TP_UTILS_SHARED_EXPORT parseColor(const std::string& color, uint8_t& r, uint8_t& g, uint8_t& b, uint8_t& a);
 
 //##################################################################################################

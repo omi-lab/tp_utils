@@ -117,33 +117,6 @@ namespace
 {
 
 //##################################################################################################
-std::string fixedWidthKeepRight(std::string data, size_t len, char pad)
-{
-  if(data.size()>=len)
-    return data.substr(data.size()-len);
-
-  size_t missing = size_t(len) - size_t(data.size());
-  if(missing>0)
-    data = std::string(missing, pad) + data;
-
-  return data;
-}
-
-//##################################################################################################
-std::string fixedWidthKeepLeft(std::string data, size_t len, char pad)
-{
-  if(data.size()>=len)
-    return data.substr(0, len);
-
-  size_t missing = size_t(len) - size_t(data.size());
-  if(missing>0)
-    data += std::string(missing, pad);
-
-
-  return data;
-}
-
-//##################################################################################################
 //
 struct LockSiteDetails_lt
 {
