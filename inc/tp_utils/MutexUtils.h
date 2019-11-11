@@ -2,10 +2,7 @@
 #define tp_utils_MutexUtils_h
 
 #include "tp_utils/Globals.h"
-
-#ifdef TP_ENABLE_MUTEX_TIME
 #include "tp_utils/TimeUtils.h"
-#endif
 
 #include <mutex>
 
