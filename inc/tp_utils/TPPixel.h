@@ -84,6 +84,24 @@ union TPPixel
     return result;
   }
 
+  bool bestContrastIsBlack() const
+  {
+    auto l=[](uint8_t cc)
+    {
+      auto c = float(cc)/255.0f;
+      if(c <= 0.03928f)
+        return c/12.92f;
+      else
+        return std::pow(((c+0.055f)/1.055f), 2.4f);
+    };
+
+    auto r = l(this->r);
+    auto g = l(this->g);
+    auto b = l(this->b);
+
+    return ((0.2126f*r) + (0.7152f*g) + (0.0722f*b)) > 0.179f;
+  }
+
   uint32_t i;
 #ifndef TP_WIN32
 #pragma GCC diagnostic push
