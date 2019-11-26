@@ -6,13 +6,7 @@
 
 #include <unordered_map>
 
-//! Methods related to ref counting of types
-/*!
-\file RefCount.h
-*/
-
-#define TP_REF_COUNT true
-
+#ifdef TP_REF_COUNT
 namespace tp_utils
 {
 
@@ -29,11 +23,6 @@ struct TP_UTILS_SHARED_EXPORT InstanceDetails
   {}
 };
 
-}
-
-#ifdef TP_REF_COUNT
-namespace tp_utils
-{
 //##################################################################################################
 //! A class for counting instances of different types
 /*!
@@ -131,9 +120,9 @@ public:
 
 #else
 
-#define TP_REF_COUNT_OBJECTS(type)
-#define TP_REF(type)
-#define TP_UNREF(type)
+#define TP_REF_COUNT_OBJECTS(type) struct TP_REF_COUNT_OBJECTS_
+#define TP_REF(type) do{}while(0)
+#define TP_UNREF(type) do{}while(0)
 
 #endif
 

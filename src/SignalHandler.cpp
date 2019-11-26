@@ -1,5 +1,6 @@
 #include "tp_utils/SignalHandler.h"
 #include "tp_utils/MutexUtils.h"
+#include "tp_utils/RefCount.h"
 
 #include <csignal>
 
@@ -17,6 +18,9 @@ using SignalHandlerT = __sighandler_t;
 //##################################################################################################
 struct SignalHandler::Private
 {
+  TP_REF_COUNT_OBJECTS("tp_utils::SignalHandler::Private");
+  TP_NONCOPYABLE(Private);
+
   SignalHandlerT signt;
   SignalHandlerT sigterm;
 

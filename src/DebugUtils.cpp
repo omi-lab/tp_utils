@@ -1,6 +1,7 @@
 #include "tp_utils/DebugUtils.h"
 #include "tp_utils/MutexUtils.h"
 #include "tp_utils/StackTrace.h"
+#include "tp_utils/RefCount.h"
 
 #include <csignal>
 #include <cstdlib>
@@ -47,6 +48,9 @@ void installMessageHandler(const std::function<void(MessageType, const std::stri
 //##################################################################################################
 struct DebugMode::Private
 {
+  TP_REF_COUNT_OBJECTS("tp_utils::DebugMode::Private");
+  TP_NONCOPYABLE(Private);
+
   const std::string& classPath;
   DebugType debugType;
   std::atomic_bool enabled{false};
@@ -185,6 +189,10 @@ std::ostream& Default::operator()()
 //##################################################################################################
 struct Manager::Private
 {
+  TP_REF_COUNT_OBJECTS("tp_utils::DBG::Manager::Private");
+  TP_NONCOPYABLE(Private);
+  Private() = default;
+
   std::mutex mutex;
   std::unique_ptr<FactoryBase> warningFactory{new DefaultFactory()};
   std::unique_ptr<FactoryBase> debugFactory{new DefaultFactory()};

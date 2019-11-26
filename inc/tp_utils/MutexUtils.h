@@ -6,6 +6,61 @@
 
 #include <mutex>
 
+#ifndef TP_ENABLE_MUTEX_TIME
+
+#define TPM
+#define TPM_A
+#define TPM_B
+#define TPMc
+#define TPM_Ac
+#define TPM_Bc
+#define TP_MUTEX_LOCKER(m)std::lock_guard<std::mutex> TP_CONCAT(locker, __LINE__)(m); TP_UNUSED(TP_CONCAT(locker, __LINE__))
+#define TP_MUTEX_UNLOCKER(mutex)TPMutexUnlocker TP_CONCAT(locker, __LINE__)(&mutex); TP_UNUSED(TP_CONCAT(locker, __LINE__))
+
+class TP_UTILS_SHARED_EXPORT TPMutex: public std::mutex
+{
+public:
+  //################################################################################################
+  template<typename T>
+  auto locked(TPM_Ac const T& callback)
+  {
+    lock(TPM_B);
+    TP_CLEANUP([&]{unlock(TPM_B);});
+    return callback();
+  }
+};
+
+//##################################################################################################
+class TP_UTILS_SHARED_EXPORT TPMutexUnlocker
+{
+  TPMutex* m_mutex;
+public:
+
+  //################################################################################################
+  TPMutexUnlocker(TPMutex* mutex):
+    m_mutex(mutex)
+  {
+    m_mutex->unlock();
+  }
+
+  //################################################################################################
+  ~TPMutexUnlocker()
+  {
+    m_mutex->lock();
+  }
+};
+
+#else
+
+#define TPM __FILE__, __LINE__
+#define TPM_A const char* file_tpm, int line_tpm
+#define TPM_B file_tpm, line_tpm
+#define TPMc TPM,
+#define TPM_Ac TPM_A,
+#define TPM_Bc TPM_B,
+#define TP_MUTEX_LOCKER(mutex)TPMutexLocker TP_CONCAT(locker, __LINE__)(&mutex, TPM); TP_UNUSED(TP_CONCAT(locker, __LINE__))
+#define TP_MUTEX_UNLOCKER(mutex)TPMutexUnlocker TP_CONCAT(locker, __LINE__)(&mutex, TPM); TP_UNUSED(TP_CONCAT(locker, __LINE__))
+
 namespace tp_utils
 {
 
@@ -74,76 +129,7 @@ private:
   static Private* instance();
 };
 
-//##################################################################################################
-//! Manages a timer thread that writes mutex stats to file.
-struct TP_UTILS_SHARED_EXPORT SaveLockStatsTimer
-{
-  //################################################################################################
-  SaveLockStatsTimer(const std::string& path, int64_t intervalMS);
-
-  //################################################################################################
-  ~SaveLockStatsTimer();
-private:
-  struct Private;
-  Private* d;
-};
-
 }
-
-#ifndef TP_ENABLE_MUTEX_TIME
-
-#define TPM
-#define TPM_A
-#define TPM_B
-#define TPMc
-#define TPM_Ac
-#define TPM_Bc
-#define TP_MUTEX_LOCKER(m)std::lock_guard<std::mutex> TP_CONCAT(locker, __LINE__)(m); TP_UNUSED(TP_CONCAT(locker, __LINE__))
-#define TP_MUTEX_UNLOCKER(mutex)TPMutexUnlocker TP_CONCAT(locker, __LINE__)(&mutex); TP_UNUSED(TP_CONCAT(locker, __LINE__))
-
-class TP_UTILS_SHARED_EXPORT TPMutex: public std::mutex
-{
-public:
-  //################################################################################################
-  template<typename T>
-  auto locked(TPM_Ac const T& callback)
-  {
-    lock(TPM_B);
-    TP_CLEANUP([&]{unlock(TPM_B);});
-    return callback();
-  }
-};
-
-//##################################################################################################
-class TP_UTILS_SHARED_EXPORT TPMutexUnlocker
-{
-  TPMutex* m_mutex;
-public:
-
-  //################################################################################################
-  TPMutexUnlocker(TPMutex* mutex):
-    m_mutex(mutex)
-  {
-    m_mutex->unlock();
-  }
-
-  //################################################################################################
-  ~TPMutexUnlocker()
-  {
-    m_mutex->lock();
-  }
-};
-
-#else
-
-#define TPM __FILE__, __LINE__
-#define TPM_A const char* file_tpm, int line_tpm
-#define TPM_B file_tpm, line_tpm
-#define TPMc TPM,
-#define TPM_Ac TPM_A,
-#define TPM_Bc TPM_B,
-#define TP_MUTEX_LOCKER(mutex)TPMutexLocker TP_CONCAT(locker, __LINE__)(&mutex, TPM); TP_UNUSED(TP_CONCAT(locker, __LINE__))
-#define TP_MUTEX_UNLOCKER(mutex)TPMutexUnlocker TP_CONCAT(locker, __LINE__)(&mutex, TPM); TP_UNUSED(TP_CONCAT(locker, __LINE__))
 
 //##################################################################################################
 class TP_UTILS_SHARED_EXPORT TPMutex: public std::timed_mutex

@@ -75,20 +75,6 @@ private:
   int m_line;
 };
 
-//##################################################################################################
-//! Manages a timer thread that writes function time stats to file.
-struct TP_UTILS_SHARED_EXPORT SaveFunctionTimeStatsTimer
-{
-  //################################################################################################
-  SaveFunctionTimeStatsTimer(const std::string& path, int64_t intervalMS);
-
-  //################################################################################################
-  ~SaveFunctionTimeStatsTimer();
-private:
-  struct Private;
-  Private* d;
-};
-
 #define TP_FUNCTION_TIME tp_utils::FunctionTimer TP_CONCAT(tpFunctionTimer, __LINE__)(__FILE__, __LINE__); TP_UNUSED(TP_CONCAT(tpFunctionTimer, __LINE__))
 #else
 #define TP_FUNCTION_TIME do{}while(false)

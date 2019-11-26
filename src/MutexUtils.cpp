@@ -2,6 +2,7 @@
 #include "tp_utils/DebugUtils.h"
 #include "tp_utils/TimeUtils.h"
 #include "tp_utils/FileUtils.h"
+#include "tp_utils/RefCount.h"
 
 #include "lib_platform/Polyfill.h"
 
@@ -31,8 +32,11 @@ struct hash<std::pair<const char*, int>>
 //##################################################################################################
 struct TPWaitCondition::Private
 {
-  std::condition_variable_any cv;
+  TP_REF_COUNT_OBJECTS("tp_utils::TPWaitCondition::Private");
+  TP_NONCOPYABLE(Private);
+  Private() = default;
 
+  std::condition_variable_any cv;
 };
 
 //##################################################################################################
@@ -185,6 +189,7 @@ struct MutexDefinitionDetails_lt
 
 }
 
+#ifdef TP_ENABLE_MUTEX_TIME
 //##################################################################################################
 struct LockStats::Private
 {
@@ -622,54 +627,12 @@ std::string LockStats::takeResults()
 }
 
 //##################################################################################################
-struct SaveLockStatsTimer::Private
-{
-  TPMutex mutex{TPM};
-  TPWaitCondition waitCondition;
-  bool finish{false};
-  std::thread thread;
-};
-
-//##################################################################################################
-SaveLockStatsTimer::SaveLockStatsTimer(const std::string& path, int64_t intervalMS):
-  d(new  Private)
-{
-  d->thread = std::thread([=]
-  {
-    d->mutex.lock(TPM);
-    while(!d->finish)
-    {
-      d->waitCondition.wait(TPMc d->mutex, intervalMS);
-      if(!d->finish)
-      {
-        d->mutex.unlock(TPM);
-        writeTextFile(path, LockStats::takeResults());
-        d->mutex.lock(TPM);
-      }
-    }
-    d->mutex.unlock(TPM);
-  });
-}
-
-//##################################################################################################
-SaveLockStatsTimer::~SaveLockStatsTimer()
-{
-  {
-    TP_MUTEX_LOCKER(d->mutex);
-    d->finish = true;
-    d->waitCondition.wakeAll();
-  }
-
-  d->thread.join();
-
-  delete d;
-}
-
-//##################################################################################################
 LockStats::Private* LockStats::instance()
 {
   static LockStats::Private instance;
   return &instance;
 }
+
+#endif
 
 }

@@ -212,5 +212,6 @@ the first letter of each word, followed by SID at the end.
   void ANONYMOUS_FUNCTION()
 
 #include "tp_utils/Globals.h"
+#include "tp_utils/RefCount.h"
 
 #endif

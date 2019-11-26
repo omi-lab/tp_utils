@@ -11,6 +11,10 @@ namespace tp_utils
 //##################################################################################################
 struct StringIDManager::Private
 {
+  TP_REF_COUNT_OBJECTS("tp_utils::StringIDManager::Private");
+  TP_NONCOPYABLE(Private);
+  Private() = default;
+
   TPMutex mutex{TPM};
 
   std::map<std::string, int64_t> keys;

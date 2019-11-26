@@ -2,6 +2,7 @@
 #include "tp_utils/DebugUtils.h"
 #include "tp_utils/MutexUtils.h"
 #include "tp_utils/FileUtils.h"
+#include "tp_utils/RefCount.h"
 
 #include <chrono>
 #include <thread>
@@ -183,50 +184,6 @@ FunctionTimer::FunctionTimer(const char* file, int line):
 FunctionTimer::~FunctionTimer()
 {
   FunctionTimeStats::add(currentTimeMicroseconds() - m_start, m_file, m_line);
-}
-
-//##################################################################################################
-struct SaveFunctionTimeStatsTimer::Private
-{
-  TPMutex mutex{TPM};
-  TPWaitCondition waitCondition;
-  bool finish{false};
-  std::thread thread;
-};
-
-//##################################################################################################
-SaveFunctionTimeStatsTimer::SaveFunctionTimeStatsTimer(const std::string& path, int64_t intervalMS):
-  d(new  Private)
-{
-  d->thread = std::thread([=]
-  {
-    d->mutex.lock(TPM);
-    while(!d->finish)
-    {
-      d->waitCondition.wait(TPMc d->mutex, intervalMS);
-      if(!d->finish)
-      {
-        d->mutex.unlock(TPM);
-        writeTextFile(path, FunctionTimeStats::takeResults());
-        d->mutex.lock(TPM);
-      }
-    }
-    d->mutex.unlock(TPM);
-  });
-}
-
-//##################################################################################################
-SaveFunctionTimeStatsTimer::~SaveFunctionTimeStatsTimer()
-{
-  {
-    TP_MUTEX_LOCKER(d->mutex);
-    d->finish = true;
-    d->waitCondition.wakeAll();
-  }
-
-  d->thread.join();
-
-  delete d;
 }
 
 #endif
