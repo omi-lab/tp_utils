@@ -12,11 +12,11 @@ namespace tp_utils
 {
 
 //##################################################################################################
-template<typename T>
-struct TP_UTILS_SHARED_EXPORT SaveStatsTimer
+template<class T = void>
+struct TP_UTILS_SHARED_EXPORT LogStatsTimer
 {
   //################################################################################################
-  SaveStatsTimer(const std::string& path, int64_t intervalMS, const T& take)
+  LogStatsTimer(const std::string& path, int64_t intervalMS, const std::function<std::string()>& take, bool append=false)
   {
     m_thread = std::thread([=]
     {
@@ -27,7 +27,7 @@ struct TP_UTILS_SHARED_EXPORT SaveStatsTimer
         if(!m_finish)
         {
           m_mutex.unlock(TPM);
-          writeTextFile(path, take());
+          writeTextFile(path, take(), append);
           m_mutex.lock(TPM);
         }
       }
@@ -36,7 +36,7 @@ struct TP_UTILS_SHARED_EXPORT SaveStatsTimer
   }
 
   //################################################################################################
-  ~SaveStatsTimer()
+  ~LogStatsTimer()
   {
     {
       TP_MUTEX_LOCKER(m_mutex);
@@ -57,10 +57,11 @@ private:
 
 #ifdef TP_ENABLE_FUNCTION_TIME
 //##################################################################################################
-struct TP_UTILS_SHARED_EXPORT SaveFunctionTimeStatsTimer : public SaveStatsTimer<std::function<std::string()>>
+template<class T = void>
+struct TP_UTILS_SHARED_EXPORT SaveFunctionTimeStatsTimer : public LogStatsTimer<void>
 {
   SaveFunctionTimeStatsTimer(const std::string& path, int64_t intervalMS):
-    SaveStatsTimer(path, intervalMS, FunctionTimeStats::takeResults)
+    LogStatsTimer(path, intervalMS, FunctionTimeStats::takeResults)
   {
 
   }
@@ -69,15 +70,68 @@ struct TP_UTILS_SHARED_EXPORT SaveFunctionTimeStatsTimer : public SaveStatsTimer
 
 #ifdef TP_ENABLE_MUTEX_TIME
 //##################################################################################################
-struct TP_UTILS_SHARED_EXPORT SaveLockStatsTimer : public SaveStatsTimer<std::function<std::string()>>
+template<class T = void>
+struct TP_UTILS_SHARED_EXPORT SaveLockStatsTimer : public LogStatsTimer<void>
 {
   SaveLockStatsTimer(const std::string& path, int64_t intervalMS):
-    SaveStatsTimer(path, intervalMS, LockStats::takeResults)
+    LogStatsTimer(path, intervalMS, LockStats::takeResults)
   {
 
   }
 };
 #endif
+
+//##################################################################################################
+template<class T = void>
+class KeyValueLogStatsTimer
+{
+public:
+
+  //################################################################################################
+  KeyValueLogStatsTimer(const std::string& path, int64_t intervalMS):
+    m_path(path),
+    m_intervalMS(intervalMS)
+  {
+
+  }
+
+  //################################################################################################
+  void addProducer(const std::function<std::map<std::string, size_t>()>& producer)
+  {
+    TP_MUTEX_LOCKER(m_mutex);
+    m_producers.push_back(producer);
+  }
+
+  //################################################################################################
+  void start()
+  {
+    m_logStatsTimer = std::make_unique<tp_utils::LogStatsTimer>(m_path, m_intervalMS, [&]{return take();}, true);
+  }
+
+  //################################################################################################
+  void stop()
+  {
+    m_logStatsTimer.reset();
+  }
+
+  //################################################################################################
+  std::string take()
+  {
+    TP_MUTEX_LOCKER(m_mutex);
+    std::string results;
+    for(const auto& producer : m_producers)
+      for(const auto& result : producer())
+        results += result.first + " ---> " + std::to_string(result.second) + '\n';
+    return results;
+  }
+
+private:
+  TPMutex m_mutex{TPM};
+  std::vector<std::function<std::map<std::string, size_t>()> > m_producers;
+  std::string m_path;
+  int64_t m_intervalMS;
+  std::unique_ptr<tp_utils::LogStatsTimer<>> m_logStatsTimer;
+};
 
 }
 

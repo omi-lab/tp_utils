@@ -52,11 +52,17 @@ std::string TP_UTILS_SHARED_EXPORT readBinaryFile(const std::string& fileName)
 }
 
 //##################################################################################################
-bool TP_UTILS_SHARED_EXPORT writeTextFile(const std::string& fileName, const std::string& textOutput)
+bool TP_UTILS_SHARED_EXPORT writeTextFile(const std::string& fileName, const std::string& textOutput, bool append)
 {
   try
   {
-    std::ofstream out(fileName);
+    std::ofstream out;
+
+    if(append)
+      out.open(fileName, std::ios_base::out | std::ios_base::app);
+    else
+      out.open(fileName, std::ios_base::out | std::ios_base::trunc);
+
     out << textOutput;
     return true;
   }

@@ -24,7 +24,7 @@ std::string TP_UTILS_SHARED_EXPORT readBinaryFile(const std::string& fileName);
 \param textOutput - The text to write out
 \return True if the file was written, else false.
  */
-bool TP_UTILS_SHARED_EXPORT writeTextFile(const std::string& fileName, const std::string& textOutput);
+bool TP_UTILS_SHARED_EXPORT writeTextFile(const std::string& fileName, const std::string& textOutput, bool append=false);
 
 //##################################################################################################
 //! Writes a string to a file
