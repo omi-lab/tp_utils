@@ -5,6 +5,7 @@
 #include "tp_utils/StringID.h"
 
 #include <unordered_map>
+#include <map>
 
 #ifdef TP_REF_COUNT
 namespace tp_utils
@@ -73,6 +74,12 @@ public:
 
   //################################################################################################
   static std::vector<std::string> serialize();
+
+  //################################################################################################
+  static std::string takeResults();
+
+  //################################################################################################
+  static std::map<std::string, size_t> keyValueResults();
 };
 
 }

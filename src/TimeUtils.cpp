@@ -165,6 +165,23 @@ std::string FunctionTimeStats::takeResults()
 }
 
 //##################################################################################################
+std::map<std::string, size_t> FunctionTimeStats::keyValueResults()
+{
+  std::map<std::string, size_t> result;
+
+  auto i = instance();
+  TP_MUTEX_LOCKER(i->mutex);
+  for(const auto& it : i->stats)
+  {
+    result[it.first+"_count"] = it.second.count;
+    result[it.first+"_max"  ] = it.second.max;
+    result[it.first+"_total"] = it.second.total;
+  }
+
+  return result;
+}
+
+//##################################################################################################
 FunctionTimeStats::Private* FunctionTimeStats::instance()
 {
   static FunctionTimeStats::Private instance;

@@ -3,6 +3,8 @@
 
 #include "tp_utils/Globals.h"
 
+#include <map>
+
 namespace tp_utils
 {
 
@@ -50,6 +52,7 @@ private:
 
 #ifdef TP_ENABLE_FUNCTION_TIME
 
+//##################################################################################################
 class TP_UTILS_SHARED_EXPORT FunctionTimeStats
 {
 public:
@@ -58,6 +61,9 @@ public:
 
   //################################################################################################
   static std::string takeResults();
+
+  //################################################################################################
+  static std::map<std::string, size_t> keyValueResults();
 
 private:
   struct Private;

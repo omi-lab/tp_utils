@@ -74,6 +74,23 @@ public:
 
     return results;
   }
+
+  //################################################################################################
+  std::map<std::string, size_t> keyValueResults()
+  {
+    std::map<std::string, size_t> result;
+
+    mutex.lock();
+    for(const auto& i : instances)
+    {
+      auto title = i.first.keyString();
+      result[title+"_count"] = i.second.count;
+      result[title+"_total"] = i.second.total;
+    }
+    mutex.unlock();
+
+    return result;
+  }
 };
 
 //##################################################################################################
@@ -140,6 +157,21 @@ const std::unordered_map<tp_utils::StringID, InstanceDetails>& RefCount::instanc
 std::vector<std::string> RefCount::serialize()
 {
   return staticDetails().serialize();
+}
+
+//##################################################################################################
+std::string RefCount::takeResults()
+{
+  std::string result;
+  for(const auto& l : serialize())
+    result += l + '\n';
+  return result;
+}
+
+//##################################################################################################
+std::map<std::string, size_t> RefCount::keyValueResults()
+{
+  return staticDetails().keyValueResults();
 }
 
 }

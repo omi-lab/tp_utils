@@ -55,4 +55,6 @@ HEADERS += inc/tp_utils/PageSize.h
 
 HEADERS += inc/tp_utils/LogStatsTimer.h
 
+HEADERS += inc/tp_utils/ExtendArgs.h
+
 HEADERS += inc/tp_utils/Test.h
