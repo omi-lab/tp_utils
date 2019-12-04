@@ -80,6 +80,24 @@ template<int s> struct __TP_SIZEOF;
 //TP_CLEANUP
 #define TP_CLEANUP(cleanup) TPCleanUp TP_CONCAT(tpCleanUp, __LINE__)(cleanup); TP_UNUSED(TP_CONCAT(tpCleanUp, __LINE__))
 
+#define TP_DEFINE_FLAGS(C) \
+  inline C operator|(C lhs, C rhs) \
+{ \
+  using T = std::underlying_type_t <C>; \
+  return static_cast<C>(static_cast<T>(lhs) | static_cast<T>(rhs)); \
+} \
+  inline C& operator |= (C& lhs, C rhs) \
+{ \
+  lhs = lhs | rhs; \
+  return lhs; \
+} \
+  inline bool operator&(C lhs, C rhs) \
+{ \
+  using T = std::underlying_type_t <C>; \
+  return (static_cast<T>(lhs) & static_cast<T>(rhs))!=0; \
+} \
+struct TP_CONCAT(TP_DEFINE_FLAGS_, __LINE__)
+
 //##################################################################################################
 //! Return a const object
 template<typename T>

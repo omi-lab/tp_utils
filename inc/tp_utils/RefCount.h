@@ -101,7 +101,9 @@ public:
   _TP_REF_COUNT_OBJECT_& operator=(const _TP_REF_COUNT_OBJECT_&)=delete;\
   _TP_REF_COUNT_OBJECT_& operator=(_TP_REF_COUNT_OBJECT_&&)=delete;\
   _TP_REF_COUNT_OBJECT_ (_TP_REF_COUNT_OBJECT_&&)=delete;\
-  }; _TP_REF_COUNT_OBJECT_ _TP_REF_COUNT_OBJECT_instance
+  }; \
+  void swap(_TP_REF_COUNT_OBJECT_&, _TP_REF_COUNT_OBJECT_&) noexcept{} \
+  _TP_REF_COUNT_OBJECT_ _TP_REF_COUNT_OBJECT_instance
 
 
 //##################################################################################################
