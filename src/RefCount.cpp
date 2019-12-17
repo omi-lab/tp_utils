@@ -1,5 +1,6 @@
 #include "tp_utils/RefCount.h"
 
+
 #ifdef TP_REF_COUNT
 
 #include "tp_utils/StackTrace.h"
@@ -175,4 +176,7 @@ std::map<std::string, size_t> RefCount::keyValueResults()
 }
 
 }
+#else
+extern int tp_utilsRefCount;
+int tp_utilsRefCount{0};
 #endif
