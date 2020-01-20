@@ -141,6 +141,17 @@ std::string tpToUTF8(const std::u16string& source)
 }
 
 //##################################################################################################
+std::string tpToUTF8(const std::wstring& source)
+{
+#if _MSC_VER >= 1900
+  auto p = reinterpret_cast<const wchar_t *>(source.data());
+  return std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>().to_bytes(p, p + source.size());
+#else
+  return std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>().to_bytes(source);
+#endif
+}
+
+//##################################################################################################
 std::u16string tpFromUTF8(const std::string& source)
 {
 #if _MSC_VER >= 1900
@@ -148,6 +159,17 @@ std::u16string tpFromUTF8(const std::string& source)
   return std::u16string();
 #else
   return std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t>().from_bytes(source);
+#endif
+}
+
+//##################################################################################################
+std::wstring tpWStringFromUTF8(const std::string& source)
+{
+#if _MSC_VER >= 1900
+  TP_UNUSED(source);
+  return std::wstring();
+#else
+  return std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>().from_bytes(source);
 #endif
 }
 

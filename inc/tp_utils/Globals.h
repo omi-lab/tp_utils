@@ -320,7 +320,13 @@ typename std::vector<typename T::key_type> tpKeys(const T& map)
 std::string TP_UTILS_SHARED_EXPORT tpToUTF8(const std::u16string& source);
 
 //##################################################################################################
+std::string TP_UTILS_SHARED_EXPORT tpToUTF8(const std::wstring& source);
+
+//##################################################################################################
 std::u16string TP_UTILS_SHARED_EXPORT tpFromUTF8(const std::string& source);
+
+//##################################################################################################
+std::wstring tpWStringFromUTF8(const std::string& source);
 
 namespace detail
 {
