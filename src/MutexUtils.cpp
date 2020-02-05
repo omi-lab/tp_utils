@@ -11,6 +11,7 @@
 #include <vector>
 #include <unordered_map>
 #include <thread>
+#include <sstream>
 
 #define MUTEX_NAME_LEN 52
 #define SITE_NAME_LEN  43
@@ -546,7 +547,7 @@ std::string LockStats::takeResults()
         std::string wait      = fixedWidthKeepRight(std::to_string(lockSite.wait),      10, '0');
         std::string held      = fixedWidthKeepRight(std::to_string(lockSite.held),      10, '0');
         std::string heldAvg   = fixedWidthKeepRight(std::to_string(heldAverage),        10, '0');
-        std::string blockedBy = fixedWidthKeepLeft(blockedByString,                      28, ' ');
+        std::string blockedBy = fixedWidthKeepLeft(blockedByString,                     28, ' ');
         result+='|';
         result+=id;
         result+='|';
@@ -620,6 +621,33 @@ std::string LockStats::takeResults()
         result+="|\n";
       }
       result.append(titleLineUnlock);
+    }
+  }
+
+  //-- Currently locked mutexes --------------------------------------------------------------------
+  {
+    result += "\n\nCurrently locked mutexes.\n";
+    for(const auto& i : d->mutexInstances)
+    {
+      const MutexDefinitionDetails_lt& mutexDefinition = d->mutexDefinitions.at(i.second.mutexDefinition);
+
+      if(i.second.holder == 0)
+        continue;
+
+      const LockSiteDetails_lt lockSiteDetails = tpGetMapValue(mutexDefinition.lockSiteDetails, i.second.holder, LockSiteDetails_lt());
+
+      result+=mutexDefinition.name;
+      result+=':';
+      result+=lockSiteDetails.name;
+      result+="( ";
+
+      for(const auto& lockTimers : i.second.lockTimers)
+        for(const auto& lockTimer : lockTimers.second)
+          result+=std::to_string(lockTimer.second->elapsed()) + ' ';
+
+      std::stringstream ss;
+      ss << i.second.holderThread;
+      result+=") threadID: " + ss.str();
     }
   }
 
