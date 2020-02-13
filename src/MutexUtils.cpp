@@ -3,6 +3,7 @@
 #include "tp_utils/TimeUtils.h"
 #include "tp_utils/FileUtils.h"
 #include "tp_utils/RefCount.h"
+#include "tp_utils/StackTrace.h"
 
 #include "lib_platform/Polyfill.h"
 
@@ -11,6 +12,7 @@
 #include <vector>
 #include <unordered_map>
 #include <thread>
+#include <iostream>
 #include <sstream>
 
 #define MUTEX_NAME_LEN 52
@@ -418,7 +420,10 @@ void LockStats::unlock(int id, const char* file, int line)
         delete timer.second;
       }
       else
-        tpWarning() << "Failed to find timer for locked mutex: " << file << line;
+      {
+        std::cerr << "Failed to find timer for locked mutex: " << file << line << std::endl;
+        std::cerr << formatStackTrace() << std::endl;
+      }
 
       if(timerList.empty())
       {
