@@ -30,4 +30,6 @@ const char* translate(const char* str, const char* file, int line)
 }
 #else
 
+int translationTable{0};
+
 #endif
