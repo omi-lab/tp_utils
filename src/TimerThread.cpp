@@ -12,7 +12,7 @@ struct TimerThread::Private
   std::function<void()> callback;
   int64_t timeoutMS;
 
-  TPMutex mutex;
+  TPMutex mutex{TPM};
   TPWaitCondition waitCondition;
   bool finish{false};
 
@@ -45,7 +45,7 @@ struct TimerThread::Private
     TP_MUTEX_LOCKER(mutex);
     while(!finish)
     {
-      waitCondition.wait(mutex, timeoutMS);
+      waitCondition.wait(TPMc mutex, timeoutMS);
 
       if(!finish)
       {
