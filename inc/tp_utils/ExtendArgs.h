@@ -1,5 +1,5 @@
-#ifndef tp_utils_DebugUtils_h
-#define tp_utils_DebugUtils_h
+#ifndef tp_utils_ExtendArgs_h
+#define tp_utils_ExtendArgs_h
 
 #include "tp_utils/Globals.h"
 
