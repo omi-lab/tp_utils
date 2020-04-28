@@ -36,7 +36,7 @@ std::string TP_UTILS_SHARED_EXPORT readBinaryFile(const std::string& fileName)
       int64_t read=0;
       while(read<size && !in.eof())
       {
-        in.read(&results[size_t(read)], size-read);
+        in.read(&results[size_t(read)], ptrdiff_t(size)-ptrdiff_t(read));
         read += int64_t(in.gcount());
       }
 
