@@ -3,6 +3,7 @@
 
 #include "tp_utils/Globals.h"
 
+#include <memory>
 #include <cassert>
 
 namespace tp_utils
@@ -40,6 +41,14 @@ class CallbackCollection<R(Args...)>
   }
 
   //################################################################################################
+  void addCallback(std::function<T> callback)
+  {
+    assert(callback);
+    m_nonRemovableCallbacks.push_back(std::make_unique<std::function<T>>(callback));
+    m_callbacks.push_back(m_nonRemovableCallbacks.back().get());
+  }
+
+  //################################################################################################
   void removeCallback(std::function<T>* callback)
   {
     assert(callback);
@@ -56,6 +65,7 @@ class CallbackCollection<R(Args...)>
   }
 
   private:
+  std::vector<std::unique_ptr<std::function<T>>> m_nonRemovableCallbacks;
   std::vector<std::function<T>*> m_callbacks;
   std::vector<std::function<void(CallbackCollection<T>*)>*> m_unrefCallbacks;
 };

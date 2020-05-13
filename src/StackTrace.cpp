@@ -335,7 +335,7 @@ static _Unwind_Reason_Code android_unwind_callback(struct _Unwind_Context* conte
     if(state->current == state->end)
       return _URC_END_OF_STACK;
     else
-      *state->current++ = static_cast<void*>(pc);
+      *state->current++ = reinterpret_cast<void*>(pc);
   }
 
   return _URC_NO_REASON;
