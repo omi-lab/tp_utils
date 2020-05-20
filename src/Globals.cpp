@@ -4,6 +4,11 @@
 #include <locale>
 #include <algorithm>
 
+#if defined(TP_WIN32) && (defined(_MSC_VER) && (_MSC_VER >= 1900))
+#define WIN32_LEAN_AND_MEAN
+#include <Windows.h>
+#endif
+
 //##################################################################################################
 std::string tpToHex(const std::string& input)
 {
@@ -154,11 +159,20 @@ std::string tpToUTF8(const std::wstring& source)
 //##################################################################################################
 std::u16string tpFromUTF8(const std::string& source)
 {
-#if _MSC_VER >= 1900
-  TP_UNUSED(source);
-  return std::u16string();
+#if defined(TP_WIN32) && (defined(_MSC_VER) && (_MSC_VER >= 1900))
+  int len = MultiByteToWideChar(CP_UTF8, 0, source.c_str(), -1, nullptr, 0);
+  if (len == 0)
+      return nullptr;
+
+  std::wstring wstr(size_t(len), 0);
+  int result = MultiByteToWideChar(CP_UTF8, 0, source.c_str(), -1, &wstr[0], len);
+  if (result == 0)
+      return nullptr;
+
+  wstr.resize(source.size());
+  return std::u16string(reinterpret_cast<const char16_t*>(wstr.c_str()));
 #else
-  return std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t>().from_bytes(source);
+  return std::wstring_convert<std::codecvt_utf8_utf16<char16_t>,char16_t>().from_bytes(source);
 #endif
 }
 
