@@ -94,6 +94,15 @@ class Callback<R(Args...)>
   }
 
   //################################################################################################
+  template<typename F>
+  Callback(const F& callback):
+    m_callback(callback),
+    m_unrefCallback([&](C c){tpRemoveOne(m_collections, c);})
+  {
+
+  }
+
+  //################################################################################################
   ~Callback()
   {
     for(auto c : m_collections)
