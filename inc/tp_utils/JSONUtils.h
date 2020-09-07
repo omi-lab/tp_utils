@@ -10,6 +10,7 @@
 #define TPJSONInt     tp_utils::getJSONValue<int>
 #define TPJSONSizeT   tp_utils::getJSONValue<size_t>
 #define TPJSONInt64T  tp_utils::getJSONValue<int64_t>
+#define TPJSONUint64T tp_utils::getJSONValue<uint64_t>
 #define TPJSONUint16T tp_utils::getJSONValue<uint16_t>
 #define TPJSONFloat   tp_utils::getJSONValue<float>
 #define TPJSONDouble  tp_utils::getJSONValue<double>
