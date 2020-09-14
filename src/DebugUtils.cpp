@@ -21,8 +21,8 @@ namespace
 TPMutex debugMutex{TPM};
 std::function<void(MessageType, const std::string&)> debugCallback;
 std::function<void(const std::string&, DebugType, const std::string&)> tableCallback;
-std::unordered_map<std::string, std::unordered_map<int, bool>> enabledDebugModeObjects;
-std::vector<DebugMode*> debugModeObjects;
+std::unordered_map<std::string, std::unordered_map<int, bool>>& enabledDebugModeObjects(){static std::unordered_map<std::string, std::unordered_map<int, bool>> s; return s;}
+std::vector<DebugMode*>& debugModeObjects(){static std::vector<DebugMode*> s; return s;}
 
 //##################################################################################################
 void handleSignal(int signum)
@@ -69,9 +69,9 @@ DebugMode::DebugMode(const std::string& classPath, DebugType debugType):
   d(new Private(classPath, debugType))
 {
   TP_MUTEX_LOCKER(debugMutex);
-  debugModeObjects.push_back(this);
-  auto i = enabledDebugModeObjects.find(classPath);
-  if(i != enabledDebugModeObjects.end())
+  debugModeObjects().push_back(this);
+  auto i = enabledDebugModeObjects().find(classPath);
+  if(i != enabledDebugModeObjects().end())
   {
     auto ii = i->second.find(int(debugType));
     if(ii != i->second.end())
@@ -83,7 +83,7 @@ DebugMode::DebugMode(const std::string& classPath, DebugType debugType):
 DebugMode::~DebugMode()
 {
   TP_MUTEX_LOCKER(debugMutex);
-  tpRemoveOne(debugModeObjects, this);
+  tpRemoveOne(debugModeObjects(), this);
 }
 
 //##################################################################################################
@@ -114,8 +114,8 @@ void DebugMode::installTableCallback(std::function<void(const std::string&, Debu
 void DebugMode::enable(const std::string& classPath, DebugType debugType, bool enabled)
 {
   TP_MUTEX_LOCKER(debugMutex);
-  enabledDebugModeObjects[classPath][int(debugType)] = enabled;
-  for(auto dm : debugModeObjects)
+  enabledDebugModeObjects()[classPath][int(debugType)] = enabled;
+  for(auto dm : debugModeObjects())
     if(dm->d->classPath == classPath && dm->d->debugType == debugType)
       dm->d->enabled = enabled;
 }
@@ -126,7 +126,7 @@ std::vector<std::string> DebugMode::classPaths(DebugType debugType)
   TP_MUTEX_LOCKER(debugMutex);
   std::vector<std::string> classPaths;
 
-  for(DebugMode* dm : debugModeObjects)
+  for(DebugMode* dm : debugModeObjects())
     if(dm->d->debugType == debugType)
       classPaths.push_back(dm->d->classPath);
 
