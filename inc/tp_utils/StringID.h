@@ -97,18 +97,18 @@ public:
   \return - A key or 0 if there was a problem.
   \sa \link StringIDManager::key() \endlink
   */
-  int64_t key(StringIDManager* manager)const;
+  int64_t key(StringIDManager* manager) const;
 
   //################################################################################################
   //! Returns the string that this StringID represents
   /*!
   \return The string or an empty string id this is an invalid StringID.
   */
-  const std::string& keyString()const;
+  const std::string& keyString() const;
 
   //################################################################################################
   //! Returns true if this points to a valid key
-  bool isValid()const;
+  bool isValid() const;
 
   //################################################################################################
   static std::vector<std::string> toStringList(const std::vector<StringID>& stringIDs);
@@ -189,7 +189,7 @@ the first letter of each word, followed by SID at the end.
 \param methodName - The name to give the method that this macro will create.
 \param idString - The string that the method will return.
 */
-#define TP_DECLARE_ID(methodName, idString)const tp_utils::StringID& methodName()
+#define TP_DECLARE_ID(methodName, idString) const tp_utils::StringID& methodName()
 
 //##################################################################################################
 //! Define a global string id

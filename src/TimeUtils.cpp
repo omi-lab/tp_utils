@@ -70,7 +70,7 @@ int64_t ElapsedTimer::restart()
 }
 
 //##################################################################################################
-int64_t ElapsedTimer::elapsed()const
+int64_t ElapsedTimer::elapsed() const
 {
   std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
   return std::chrono::duration_cast<std::chrono::milliseconds>(now - d->start).count();

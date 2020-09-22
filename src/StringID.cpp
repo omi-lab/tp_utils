@@ -241,7 +241,7 @@ StringID::~StringID()
 }
 
 //##################################################################################################
-int64_t StringID::key(StringIDManager* manager)const
+int64_t StringID::key(StringIDManager* manager) const
 {
   if(!sd)
     return 0;
@@ -282,7 +282,7 @@ int64_t StringID::key(StringIDManager* manager)const
 }
 
 //##################################################################################################
-const std::string& StringID::keyString()const
+const std::string& StringID::keyString() const
 {
   static const std::string emptyString;
   if(!sd)
@@ -292,7 +292,7 @@ const std::string& StringID::keyString()const
 }
 
 //##################################################################################################
-bool StringID::isValid()const
+bool StringID::isValid() const
 {
   return sd!=nullptr;
 }

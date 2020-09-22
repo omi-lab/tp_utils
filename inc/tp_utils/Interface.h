@@ -20,14 +20,14 @@ public:
 
   //################################################################################################
   //! Find the interface related to the given stringID.
-  inline void* findVoid(const tp_utils::StringID& stringID)const
+  inline void* findVoid(const tp_utils::StringID& stringID) const
   {
     return tpGetMapValue(m_interfaces, stringID, nullptr);
   }
 
   //################################################################################################
   template<class T>
-  void find(const tp_utils::StringID& stringID, T*& interface)const
+  void find(const tp_utils::StringID& stringID, T*& interface) const
   {
     interface = static_cast<T*>(findVoid(stringID));
   }

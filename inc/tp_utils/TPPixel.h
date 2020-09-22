@@ -66,7 +66,7 @@ union TPPixel
     r = uint8_t(acc);
   }
 
-  std::string toString()const
+  std::string toString() const
   {
     uint32_t acc = 0;
     acc|=r; acc<<=8;

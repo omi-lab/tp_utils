@@ -54,7 +54,7 @@ public:
 
   \return - The state of this manager
   */
-  std::string saveState()const;
+  std::string saveState() const;
 
   //################################################################################################
   std::vector<std::pair<std::string, int64_t>> takeNewSIDs();

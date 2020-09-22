@@ -87,7 +87,7 @@ std::string StringIDManager::keyString(int64_t key)
 }
 
 //##################################################################################################
-std::string StringIDManager::saveState()const
+std::string StringIDManager::saveState() const
 {
   nlohmann::json j;
   auto a = j["pairs"] = nlohmann::json::array();
