@@ -107,6 +107,12 @@ class Callback<R(Args...)>
   //################################################################################################
   ~Callback()
   {
+    disconnect();
+  }
+
+  //################################################################################################
+  void disconnect()
+  {
     for(auto c : m_collections)
     {
       tpRemoveOne(c->m_unrefCallbacks, &m_unrefCallback);
