@@ -158,8 +158,8 @@ struct Default : public Base
   TP_NONCOPYABLE(Default);
 
   Default();
-  ~Default()override;
-  std::ostream& operator()()override;
+  ~Default() override;
+  std::ostream& operator()() override;
 
   DebugBuffer m_buffer;
   std::ostream m_stream;
