@@ -265,9 +265,9 @@ void tpRemoveAt(T& container, I index)
 
 //##################################################################################################
 template<typename T>
-int tpIndexOf(const T& container, const typename T::value_type& value)
+size_t tpIndexOf(const T& container, const typename T::value_type& value)
 {
-  return (std::find(container.begin(), container.end(), value) - container.begin());
+  return size_t(std::find(container.begin(), container.end(), value) - container.begin());
 }
 
 //##################################################################################################
