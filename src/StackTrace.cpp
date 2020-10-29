@@ -32,6 +32,11 @@
 #include <emscripten.h>
 #endif
 
+#if defined(OSX_STACKTRACE)
+#include <execinfo.h>
+#include <stdio.h>
+#endif
+
 #define MAX_LEVELS 100
 
 //##################################################################################################
@@ -379,6 +384,25 @@ void TP_UTILS_SHARED_EXPORT printStackTrace()
   tpWarning() << "android stack dump done\n";
 }
 
+std::string TP_UTILS_SHARED_EXPORT formatStackTrace()
+{
+  return std::string();
+}
+
+#elif defined(OSX_STACKTRACE)
+
+//##################################################################################################
+void TP_UTILS_SHARED_EXPORT printStackTrace()
+{
+  void* callstack[128];
+  int i, frames = backtrace(callstack, 128);
+  char** strs = backtrace_symbols(callstack, frames);
+  for (i = 0; i < frames; ++i)
+      tpWarning() << strs[i];
+  free(strs);
+}
+
+//##################################################################################################
 std::string TP_UTILS_SHARED_EXPORT formatStackTrace()
 {
   return std::string();
