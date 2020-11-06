@@ -186,7 +186,7 @@ StringID& StringID::operator=(const StringID& other)
     {
       staticData.allKeys.erase(sd->keyString);
 
-      for (const auto& i : sd->keys)
+      for(const auto& i : sd->keys)
         staticData.managers[i.first].erase(i.second);
 
       sd->mutex.unlock(TPM);

@@ -21,7 +21,7 @@ std::string tpToHex(const std::string& input)
   std::string output;
   output.reserve(2 * len);
 
-  for (; s<sMax; s++)
+  for(; s<sMax; s++)
   {
     const unsigned char c = *s;
     output.push_back(lut[c >> 4]);
@@ -44,7 +44,7 @@ std::string tpFromHEX(const std::string& input)
 
   auto* o = reinterpret_cast<uint8_t*>(output[0]);
 
-  for (size_t i = 0; i < len; i+=2, o++)
+  for(size_t i = 0; i < len; i+=2, o++)
   {
     char a = input[i];
     const char* p = std::lower_bound(lut, lut + 16, a);
@@ -161,12 +161,12 @@ std::u16string tpFromUTF8(const std::string& source)
 {
 #if defined(TP_WIN32) && (defined(_MSC_VER) && (_MSC_VER >= 1900))
   int len = MultiByteToWideChar(CP_UTF8, 0, source.c_str(), -1, nullptr, 0);
-  if (len == 0)
+  if(len == 0)
       return nullptr;
 
   std::wstring wstr(size_t(len), 0);
   int result = MultiByteToWideChar(CP_UTF8, 0, source.c_str(), -1, &wstr[0], len);
-  if (result == 0)
+  if(result == 0)
       return nullptr;
 
   wstr.resize(source.size());

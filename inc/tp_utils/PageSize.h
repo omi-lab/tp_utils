@@ -22,11 +22,11 @@ inline size_t TP_UTILS_SHARED_EXPORT pageSize()
 {
   size_t n;
   int u;
-  for (n = 1; n; n *= 2)
+  for(n = 1; n; n *= 2)
   {
     char* p = reinterpret_cast<char*>(mmap(nullptr, n * 2, PROT_NONE, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0));
 
-    if (p == MAP_FAILED)
+    if(p == MAP_FAILED)
       return 0;
 
     u = munmap(p + n, n);
