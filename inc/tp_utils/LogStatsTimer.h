@@ -6,6 +6,12 @@
 #include "tp_utils/FileUtils.h"
 #include "tp_utils/RefCount.h"
 
+#ifdef TP_LINUX
+#include "stdlib.h"
+#include "stdio.h"
+#include "string.h"
+#endif
+
 #include <functional>
 #include <thread>
 
@@ -136,6 +142,50 @@ private:
   tp_utils::LogStatsTimer m_logStatsTimer;
 };
 using KeyValueLogStatsTimer = _KeyValueLogStatsTimer<void>;
+
+//##################################################################################################
+inline void addMemoryUsageProducer(KeyValueLogStatsTimer& keyValueStatsTimer)
+{
+#ifdef TP_LINUX
+  //https://stackoverflow.com/questions/63166/how-to-determine-cpu-and-memory-consumption-from-inside-a-process
+  auto parseLine = [](char* line)
+  {
+    // This assumes that a digit will be found and the line ends in " Kb".
+    int i = strlen(line);
+    const char* p = line;
+    while (*p <'0' || *p > '9') p++;
+    line[i-3] = '\0';
+    i = atoi(p);
+    return i;
+  };
+
+  //Note: this value is in KB!
+  auto getValue = [=](const std::string& key)
+  {
+    FILE* file = fopen("/proc/self/status", "r");
+    int result = -1;
+    char line[128];
+
+    while (fgets(line, 128, file) != NULL){
+      if (strncmp(line, key.c_str(), key.size()) == 0){
+        result = parseLine(line);
+        break;
+      }
+    }
+    fclose(file);
+    return result;
+  };
+
+  keyValueStatsTimer.addProducer("Memory ", [=]
+  {
+    std::map<std::string, size_t> result;
+    result["VmSize"] = size_t(getValue("VmSize:"));
+    result["VmHWM"] = size_t(getValue("VmHWM:"));
+    result["VmRSS"] = size_t(getValue("VmRSS:"));
+    return result;
+  });
+#endif
+}
 
 }
 
