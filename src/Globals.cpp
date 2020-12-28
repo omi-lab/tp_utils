@@ -35,14 +35,14 @@ std::string tpToHex(const std::string& input)
 std::string tpFromHEX(const std::string& input)
 {
   static const char* const lut = "0123456789ABCDEF";
-  size_t len = input.length();
+  size_t len = input.size();
   if(len & 1)
     return std::string();
 
   std::string output;
   output.resize(len / 2);
 
-  auto* o = reinterpret_cast<uint8_t*>(output[0]);
+  auto* o = reinterpret_cast<uint8_t*>(&output[0]);
 
   for(size_t i = 0; i < len; i+=2, o++)
   {
