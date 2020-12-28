@@ -145,6 +145,8 @@ int DebugBuffer::sync()
     std::cout.flush();
   }
 
+  DBG::Manager::instance().debugCallbacks(MessageType::Warning, str());
+
   str("");
   return 0;
 }

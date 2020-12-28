@@ -1,7 +1,7 @@
 #ifndef tp_utils_DebugUtils_h
 #define tp_utils_DebugUtils_h
 
-#include "tp_utils/Globals.h"
+#include "tp_utils/CallbackCollection.h"
 
 #include <sstream>
 #include <unordered_set>
@@ -143,6 +143,8 @@ struct TP_UTILS_SHARED_EXPORT Manager
   Base* produceDebug();
 
   static Manager& instance();
+
+  CallbackCollection<void(MessageType, const std::string&)> debugCallbacks;
 
   struct Private;
   Private* d;
