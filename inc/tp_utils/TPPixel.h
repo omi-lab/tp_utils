@@ -103,6 +103,7 @@ union TPPixel
   }
 
   uint32_t i;
+  uint8_t v[4];
 #ifndef TP_WIN32
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpedantic"
