@@ -11,12 +11,8 @@ namespace tp_utils
 using SignalHandlerT = _crt_signal_t;
 #elif defined TP_EMSCRIPTEN
 using SignalHandlerT = sighandler_t;
-#elif defined TP_OSX
-using SignalHandlerT = void (*)(int);
-#elif defined TP_IOS
-using SignalHandlerT = void (*)(int);
 #else
-using SignalHandlerT = __sighandler_t;
+using SignalHandlerT = void (*)(int);
 #endif
 
 //##################################################################################################
