@@ -137,6 +137,7 @@ bool (*copyFileCallback)(const std::string& pathFrom, const std::string& pathTo)
 bool (*mkdirCallback)(const std::string& path, CreateFullPath createFullPath)=nullptr;
 bool (*rmCallback)(const std::string& path, bool recursive)=nullptr;
 bool (*existsCallback)(const std::string& path)=nullptr;
+size_t (*fileSizeCallback)(const std::string& path)=nullptr;
 
 //##################################################################################################
 std::vector<std::string> listFiles(const std::string& path, const std::unordered_set<std::string>& extensions)
@@ -178,6 +179,13 @@ bool rm(const std::string& path, bool recursive)
 bool exists(const std::string& path)
 {
   return existsCallback?existsCallback(path):false;
+}
+
+//##################################################################################################
+size_t fileSize(const std::string& path)
+{
+
+  return fileSizeCallback?fileSizeCallback(path):0;
 }
 
 namespace

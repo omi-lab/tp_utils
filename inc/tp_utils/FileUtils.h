@@ -77,6 +77,9 @@ bool TP_UTILS_SHARED_EXPORT rm(const std::string& path, bool recursive);
 bool TP_UTILS_SHARED_EXPORT exists(const std::string& path);
 
 //##################################################################################################
+size_t TP_UTILS_SHARED_EXPORT fileSize(const std::string& path);
+
+//##################################################################################################
 std::string TP_UTILS_SHARED_EXPORT fileName(const std::string& path);
 
 //##################################################################################################
@@ -90,6 +93,7 @@ extern bool TP_UTILS_SHARED_EXPORT (*copyFileCallback)(const std::string& pathFr
 extern bool TP_UTILS_SHARED_EXPORT (*mkdirCallback)(const std::string& path, CreateFullPath createFullPath);
 extern bool TP_UTILS_SHARED_EXPORT (*rmCallback)(const std::string& path, bool recursive);
 extern bool TP_UTILS_SHARED_EXPORT (*existsCallback)(const std::string& path);
+extern size_t (*fileSizeCallback)(const std::string& path);
 
 }
 
