@@ -5,7 +5,7 @@
 
 #include "json.hpp"
 
-#define TPJSON        tp_utils::getJSONValue<nlohmann::json>
+#define TPJSON        tp_utils::getJSON
 #define TPJSONString  tp_utils::getJSONValue<std::string>
 #define TPJSONInt     tp_utils::getJSONValue<int>
 #define TPJSONSizeT   tp_utils::getJSONValue<size_t>
@@ -25,22 +25,31 @@ namespace tp_utils
 nlohmann::json TP_UTILS_SHARED_EXPORT jsonFromString(const std::string& json);
 
 //##################################################################################################
+nlohmann::json TP_UTILS_SHARED_EXPORT getJSON(const nlohmann::json& j,
+                                              const std::string& key,
+                                              const nlohmann::json& defaultValue=nlohmann::json());
+
+//##################################################################################################
+float TP_UTILS_SHARED_EXPORT getJSONFloat(const nlohmann::json& j,
+                                              const std::string& key,
+                                              float defaultValue=nlohmann::json());
+
+//##################################################################################################
 template<typename T>
 T getJSONValue(const nlohmann::json& j,
                const std::string& key,
                const T& defaultValue=T())
 {
-    T result=defaultValue;
+  T result=defaultValue;
+  try
+  {
+    result = j.value<T>(key, defaultValue);
+  }
+  catch(...)
+  {
+  }
 
-    try
-    {
-        result = j.value<T>(key, defaultValue);
-    }
-    catch(...)
-    {
-    }
-
-    return result;
+  return result;
 }
 
 //##################################################################################################

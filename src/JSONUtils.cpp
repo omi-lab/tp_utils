@@ -17,6 +17,17 @@ nlohmann::json jsonFromString(const std::string& json)
 }
 
 //##################################################################################################
+nlohmann::json TP_UTILS_SHARED_EXPORT getJSON(const nlohmann::json& j,
+                                              const std::string& key,
+                                              const nlohmann::json& defaultValue)
+{
+  nlohmann::json result=defaultValue;
+  if(auto i = j.find(key); i != j.end())
+    result = i.value();
+  return result;
+}
+
+//##################################################################################################
 std::vector<std::string> getJSONStringList(const nlohmann::json& j,
                                            const std::string& key)
 {
