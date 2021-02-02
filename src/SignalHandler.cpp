@@ -1,11 +1,27 @@
 #include "tp_utils/SignalHandler.h"
 #include "tp_utils/StackTrace.h"
 #include "tp_utils/MutexUtils.h"
-#include "tp_utils/FileUtils.h"
 #include "tp_utils/RefCount.h"
 
 #include <csignal>
 #include <iostream>
+
+#ifdef TP_WIN32
+#define WIN32_LEAN_AND_MEAN
+#include <Windows.h>
+#include <tchar.h>
+#include <stdio.h>
+#include <conio.h>
+#include <stdlib.h>
+#include <new.h>
+#include <signal.h>
+#include <exception>
+#include <sys/stat.h>
+#include <Psapi.h>
+#include <rtcapi.h>
+#include <shellapi.h>
+#include <DbgHelp.h>
+#endif
 
 namespace tp_utils
 {
@@ -17,6 +33,8 @@ using SignalHandlerT = sighandler_t;
 #else
 using SignalHandlerT = void (*)(int);
 #endif
+
+
 
 //##################################################################################################
 struct SignalHandler::Private
@@ -44,33 +62,146 @@ struct SignalHandler::Private
     exitOnInt(exitOnInt_)
   {
     instance = this;
+
+    sigint  = std::signal(SIGINT , exitWake);
+    sigterm = std::signal(SIGTERM, exitWake);
+
+#ifdef TP_WIN32
+    setWindowsHandlers();
+#else
+    sigabrt = std::signal(SIGABRT, exitNow);
+    sigfpe  = std::signal(SIGFPE , exitNow);
+    sigill  = std::signal(SIGILL , exitNow);
+    sigsegv = std::signal(SIGSEGV, exitNow);
+#endif
   }
 
   //################################################################################################
   ~Private()
   {
     instance = nullptr;
+    std::signal(SIGINT , sigint );
+    std::signal(SIGTERM, sigterm);
+
+#ifndef TP_WIN32
+    std::signal(SIGABRT, sigabrt);
+    std::signal(SIGFPE , sigfpe );
+    std::signal(SIGILL , sigill );
+    std::signal(SIGSEGV, sigsegv);
+#endif
   }
+
+#ifdef TP_WIN32
+  //################################################################################################
+  // Lifted from:
+  // https://www.codeproject.com/Articles/207464/Exception-Handling-in-Visual-Cplusplus
+  void setWindowsHandlers()
+  {
+    SetUnhandledExceptionFilter(sehHandler);
+    _set_purecall_handler(pureCallHandler);
+    _set_new_handler(newHandler);
+    _set_invalid_parameter_handler(invalidParameterHandler);
+    _set_abort_behavior(_CALL_REPORTFAULT, _CALL_REPORTFAULT);
+    set_terminate(terminateHandler);
+    set_unexpected(unexpectedHandler);
+  }
+
+  //################################################################################################
+  // Install top-level SEH handler
+  // Structured exception handler
+  [[noreturn]]static LONG WINAPI sehHandler(PEXCEPTION_POINTERS pExceptionPtrs)
+  {
+    std::cout << "sehHandler()" << std::endl;
+    saveCrashReportAndExit(pExceptionPtrs);
+  }
+
+  //################################################################################################
+  // Catch pure virtual function calls.
+  // Because there is one _purecall_handler for the whole process,
+  // calling this function immediately impacts all threads. The last
+  // caller on any thread sets the handler.
+  // http://msdn.microsoft.com/en-us/library/t296ys27.aspx
+  // CRT Pure virtual method call handler
+  [[noreturn]]static void __cdecl pureCallHandler()
+  {
+    std::cout << "pureCallHandler()" << std::endl;
+    saveCrashReportAndExit();
+  }
+
+  //################################################################################################
+  // Catch new operator memory allocation exceptions
+  // CRT new operator fault handler
+  [[noreturn]]static int __cdecl newHandler(size_t)
+  {
+    std::cout << "newHandler()" << std::endl;
+    // 'new' operator memory allocation exception
+    saveCrashReportAndExit();
+  }
+
+  //################################################################################################
+  // Catch invalid parameter exceptions.
+  // CRT invalid parameter handler
+  [[noreturn]]static void __cdecl invalidParameterHandler(const wchar_t* expression,
+                                              const wchar_t* function,
+                                              const wchar_t* file,
+                                              unsigned int line,
+                                              uintptr_t pReserved)
+  {
+    std::cout << "invalidParameterHandler()" << std::endl;
+    std::cout << "expression: " << expression << std::endl;
+    std::cout << "function  : " << function << std::endl;
+    std::cout << "file      : " << file << std::endl;
+    std::cout << "line      : " << line << std::endl;
+
+    // Invalid parameter exception
+    TP_UNUSED(pReserved);
+    saveCrashReportAndExit();
+  }
+
+  //################################################################################################
+  // Catch terminate() calls.
+  // In a multithreaded environment, terminate functions are maintained
+  // separately for each thread. Each new thread needs to install its own
+  // terminate function. Thus, each thread is in charge of its own termination handling.
+  // http://msdn.microsoft.com/en-us/library/t6fk7h29.aspx
+  // CRT terminate() call handler
+  [[noreturn]]static void __cdecl terminateHandler()
+  {
+    std::cout << "terminateHandler()" << std::endl;
+    // Abnormal program termination (terminate() function was called)
+    saveCrashReportAndExit();
+  }
+
+  //################################################################################################
+  // Catch unexpected() calls.
+  // In a multithreaded environment, unexpected functions are maintained
+  // separately for each thread. Each new thread needs to install its own
+  // unexpected function. Thus, each thread is in charge of its own unexpected handling.
+  // http://msdn.microsoft.com/en-us/library/h46t5b69.aspx
+  // CRT unexpected() call handler
+  [[noreturn]]static void __cdecl unexpectedHandler()
+  {
+    std::cout << "unexpectedHandler()" << std::endl;
+    // Unexpected error (unexpected() function was called)
+    saveCrashReportAndExit();
+  }
+#endif
 
   //################################################################################################
   static void exitWake(int sig)
   {
     std::cout << "Signal caught: " << sig << '\n';
     if(instance->exitOnInt)
-    {
-      printStackTrace();
-      tp_utils::writeTextFile("crash.txt", formatStackTrace());
-      exit(sig);
-    }
+      saveCrashReportAndExit();
+
     instance->waitCondition.wakeAll();
   }
 
   //################################################################################################
-  static void exitNow(int sig)
+  [[noreturn]]static void exitNow(int sig)
   {
     std::cout << "Fatal signal caught: " << sig << '\n';
-    printStackTrace();
-    exit(sig);
+    saveCrashReportAndExit();
   }
 };
 
@@ -81,26 +212,12 @@ SignalHandler::Private* SignalHandler::Private::instance{nullptr};
 SignalHandler::SignalHandler(bool exitOnInt):
   d(new Private(exitOnInt))
 {
-  d->sigint  = std::signal(SIGINT , Private::exitWake);
-  d->sigterm = std::signal(SIGTERM, Private::exitWake);
 
-  d->sigabrt = std::signal(SIGABRT, Private::exitNow);
-  d->sigfpe  = std::signal(SIGFPE , Private::exitNow);
-  d->sigill  = std::signal(SIGILL , Private::exitNow);
-  d->sigsegv = std::signal(SIGSEGV, Private::exitNow);
 }
 
 //##################################################################################################
 SignalHandler::~SignalHandler()
 {
-  std::signal(SIGINT , d->sigint );
-  std::signal(SIGTERM, d->sigterm);
-
-  std::signal(SIGABRT, d->sigabrt);
-  std::signal(SIGFPE , d->sigfpe );
-  std::signal(SIGILL , d->sigill );
-  std::signal(SIGSEGV, d->sigsegv);
-
   delete d;
 }
 
