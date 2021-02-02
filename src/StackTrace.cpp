@@ -589,6 +589,12 @@ void getExceptionPointers(DWORD dwExceptionCode, EXCEPTION_POINTERS** ppExceptio
 }
 
 //##################################################################################################
+[[noreturn]]void saveCrashReportAndExit()
+{
+  saveCrashReportAndExit(nullptr);
+}
+
+//##################################################################################################
 [[noreturn]]void saveCrashReportAndExit(EXCEPTION_POINTERS* pExceptionPtrs)
 {
   if(!pExceptionPtrs)
@@ -748,4 +754,13 @@ void saveCrashReport()
   printStackTrace();
   tp_utils::writeTextFile("crash.txt", formatStackTrace());
 }
+
+//##################################################################################################
+#ifndef TP_WIN32
+[[noreturn]]void saveCrashReportAndExit()
+{
+  saveCrashReport();
+  exit(1);
+}
+#endif
 }

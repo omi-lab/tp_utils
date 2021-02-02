@@ -32,12 +32,15 @@ std::string TP_UTILS_SHARED_EXPORT formatStackTrace();
 //##################################################################################################
 void saveCrashReport();
 
+//##################################################################################################
+[[noreturn]]void saveCrashReportAndExit();
+
 #ifdef TP_WIN32
 //##################################################################################################
 void TP_UTILS_SHARED_EXPORT createMiniDump(EXCEPTION_POINTERS* pExceptionPtrs);
 
 //##################################################################################################
-[[noreturn]]void TP_UTILS_SHARED_EXPORT saveCrashReportAndExit(EXCEPTION_POINTERS* pExceptionPtrs=nullptr);
+[[noreturn]]void TP_UTILS_SHARED_EXPORT saveCrashReportAndExit(EXCEPTION_POINTERS* pExceptionPtrs);
 
 //##################################################################################################
 void TP_UTILS_SHARED_EXPORT printStackTrace(EXCEPTION_POINTERS* pExceptionPtrs);
