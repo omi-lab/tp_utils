@@ -206,11 +206,22 @@ std::string fileName(const std::string& path)
 }
 
 //##################################################################################################
+std::string directoryName(const std::string& path)
+{
+  auto i = path.find_last_of("\\/");
+  if(i != std::string::npos)
+    return path.substr(0, i);
+  return "";
+}
+
+//##################################################################################################
 std::string pathAppend(const std::string& path, const std::string& part)
 {
   auto result = path;
-  if(!tpEndsWith(result, std::string(1, del)))
-    result.push_back(del);
+
+  if(!result.empty())
+    if(!tpEndsWith(result, std::string(1, del)))
+      result.push_back(del);
 
   return result + part;
 }

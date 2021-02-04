@@ -83,6 +83,9 @@ size_t TP_UTILS_SHARED_EXPORT fileSize(const std::string& path);
 std::string TP_UTILS_SHARED_EXPORT fileName(const std::string& path);
 
 //##################################################################################################
+std::string TP_UTILS_SHARED_EXPORT directoryName(const std::string& path);
+
+//##################################################################################################
 std::string TP_UTILS_SHARED_EXPORT pathAppend(const std::string& path, const std::string& part);
 
 //##################################################################################################
