@@ -63,4 +63,36 @@ std::vector<nlohmann::json> getJSONArray(const nlohmann::json& j,
   return result;
 }
 
+
+//##################################################################################################
+std::vector<StringID> TP_UTILS_SHARED_EXPORT getJSONStringIDs(const nlohmann::json& j,
+                                                              const std::string& key)
+{
+  std::vector<StringID> ids;
+  auto i = j.find(key);
+  if(i!=j.end() && i.value().is_array())
+  {
+    for(const auto& jj : i.value())
+    {
+      if(jj.is_string())
+      {
+        std::string str = jj;
+        ids.push_back(str);
+      }
+    }
+  }
+
+  return ids;
+}
+
+//##################################################################################################
+nlohmann::json stringIDsToJSON(const std::vector<StringID>& stringIDs)
+{
+  nlohmann::json j;
+  j=nlohmann::json::array();
+  for(const auto& stringID : stringIDs)
+    j.push_back(stringID.keyString());
+  return j;
+}
+
 }

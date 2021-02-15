@@ -1,22 +1,23 @@
 #ifndef tp_utils_JSONUtils_h
 #define tp_utils_JSONUtils_h
 
-#include "tp_utils/Globals.h"
+#include "tp_utils/StringID.h"
 
 #include "json.hpp"
 
-#define TPJSON        tp_utils::getJSON
-#define TPJSONString  tp_utils::getJSONValue<std::string>
-#define TPJSONInt     tp_utils::getJSONValue<int>
-#define TPJSONSizeT   tp_utils::getJSONValue<size_t>
-#define TPJSONInt64T  tp_utils::getJSONValue<int64_t>
-#define TPJSONUint64T tp_utils::getJSONValue<uint64_t>
-#define TPJSONUint16T tp_utils::getJSONValue<uint16_t>
-#define TPJSONFloat   tp_utils::getJSONValue<float>
-#define TPJSONDouble  tp_utils::getJSONValue<double>
-#define TPJSONBool    tp_utils::getJSONValue<bool>
-#define TPJSONList    tp_utils::getJSONStringList
-#define TPJSONArray   tp_utils::getJSONArray
+#define TPJSON          tp_utils::getJSON
+#define TPJSONString    tp_utils::getJSONValue<std::string>
+#define TPJSONInt       tp_utils::getJSONValue<int>
+#define TPJSONSizeT     tp_utils::getJSONValue<size_t>
+#define TPJSONInt64T    tp_utils::getJSONValue<int64_t>
+#define TPJSONUint64T   tp_utils::getJSONValue<uint64_t>
+#define TPJSONUint16T   tp_utils::getJSONValue<uint16_t>
+#define TPJSONFloat     tp_utils::getJSONValue<float>
+#define TPJSONDouble    tp_utils::getJSONValue<double>
+#define TPJSONBool      tp_utils::getJSONValue<bool>
+#define TPJSONList      tp_utils::getJSONStringList
+#define TPJSONArray     tp_utils::getJSONArray
+#define TPJSONStringIDs tp_utils::getJSONStringIDs
 
 namespace tp_utils
 {
@@ -59,6 +60,14 @@ std::vector<std::string> TP_UTILS_SHARED_EXPORT getJSONStringList(const nlohmann
 //##################################################################################################
 std::vector<nlohmann::json> TP_UTILS_SHARED_EXPORT getJSONArray(const nlohmann::json& j,
                                                                 const std::string& key);
+
+//##################################################################################################
+std::vector<StringID> TP_UTILS_SHARED_EXPORT getJSONStringIDs(const nlohmann::json& j,
+                                                              const std::string& key);
+
+//##################################################################################################
+nlohmann::json stringIDsToJSON(const std::vector<StringID>& stringIDs);
+
 }
 
 #endif
