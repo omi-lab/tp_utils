@@ -26,7 +26,9 @@
 namespace tp_utils
 {
 
-#if defined TP_WIN32
+#if defined TP_WIN32_MINGW
+using SignalHandlerT = void (*)(int);
+#elif defined TP_WIN32
 using SignalHandlerT = _crt_signal_t;
 #elif defined TP_EMSCRIPTEN
 using SignalHandlerT = sighandler_t;
@@ -66,7 +68,7 @@ struct SignalHandler::Private
     sigint  = std::signal(SIGINT , exitWake);
     sigterm = std::signal(SIGTERM, exitWake);
 
-#ifdef TP_WIN32
+#ifdef TP_WIN32_MSVC
     setWindowsHandlers();
 #else
     sigabrt = std::signal(SIGABRT, exitNow);
@@ -83,7 +85,7 @@ struct SignalHandler::Private
     std::signal(SIGINT , sigint );
     std::signal(SIGTERM, sigterm);
 
-#ifndef TP_WIN32
+#ifndef TP_WIN32_MSVC
     std::signal(SIGABRT, sigabrt);
     std::signal(SIGFPE , sigfpe );
     std::signal(SIGILL , sigill );
@@ -91,7 +93,7 @@ struct SignalHandler::Private
 #endif
   }
 
-#ifdef TP_WIN32
+#ifdef TP_WIN32_MSVC
   //################################################################################################
   // Lifted from:
   // https://www.codeproject.com/Articles/207464/Exception-Handling-in-Visual-Cplusplus
@@ -102,6 +104,7 @@ struct SignalHandler::Private
     _set_new_handler(newHandler);
     _set_invalid_parameter_handler(invalidParameterHandler);
     _set_abort_behavior(_CALL_REPORTFAULT, _CALL_REPORTFAULT);
+
     set_terminate(terminateHandler);
     set_unexpected(unexpectedHandler);
   }

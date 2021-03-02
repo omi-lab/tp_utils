@@ -35,7 +35,7 @@ void saveCrashReport();
 //##################################################################################################
 [[noreturn]]void saveCrashReportAndExit();
 
-#ifdef TP_WIN32
+#ifdef TP_WIN32_MSVC
 //##################################################################################################
 void TP_UTILS_SHARED_EXPORT createMiniDump(EXCEPTION_POINTERS* pExceptionPtrs);
 

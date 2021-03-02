@@ -38,7 +38,7 @@
 #include <stdio.h>
 #endif
 
-#if defined(TP_WIN32)
+#if defined(TP_WIN32_MSVC)
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 #include <tchar.h>
@@ -436,7 +436,8 @@ std::string TP_UTILS_SHARED_EXPORT formatStackTrace()
   return std::string();
 }
 
-#elif defined(TP_WIN32)
+#elif defined(TP_WIN32_MSVC)
+
 //##################################################################################################
 // This method creates minidump of the process
 void createMiniDump(EXCEPTION_POINTERS* pExceptionPtrs)
@@ -618,6 +619,7 @@ struct module_data
   DWORD load_size;
 };
 
+//##################################################################################################
 class symbol
 {
   typedef IMAGEHLP_SYMBOL64 sym_type;
@@ -756,7 +758,7 @@ void saveCrashReport()
 }
 
 //##################################################################################################
-#ifndef TP_WIN32
+#ifndef TP_WIN32_MSVC
 [[noreturn]]void saveCrashReportAndExit()
 {
   saveCrashReport();
