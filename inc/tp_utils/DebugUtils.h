@@ -144,6 +144,7 @@ struct TP_UTILS_SHARED_EXPORT Manager
 
   static Manager& instance();
 
+  // This is not thread safe but we get away with it...
   CallbackCollection<void(MessageType, const std::string&)> debugCallbacks;
 
   struct Private;
