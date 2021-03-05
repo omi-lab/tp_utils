@@ -87,17 +87,17 @@ enum perms : unsigned
 {
   owner_read = 0400 , // S_IRUSR, Read permission, owner
   owner_write = 0200, // S_IWUSR, Write permission, owner
-  owner_exe = 0100  , // S_IXUSR, Execute/search permission, owner
+  owner_exec = 0100 , // S_IXUSR, Execute/search permission, owner
   owner_all = 0700  , // S_IRWXU, Read, write, execute/search by owner
 
   group_read = 040  , // S_IRGRP, Read permission, group
   group_write = 020 , // S_IWGRP, Write permission, group
-  group_exe = 010   , // S_IXGRP, Execute/search permission, group
+  group_exec = 010  , // S_IXGRP, Execute/search permission, group
   group_all = 070   , // S_IRWXG, Read, write, execute/search by group
 
   others_read = 04  , // S_IROTH, Read permission, others
   others_write = 02 , // S_IWOTH, Write permission, others
-  others_exe = 01   , // S_IXOTH, Execute/search permission, others
+  others_exec = 01  , // S_IXOTH, Execute/search permission, others
   others_all = 07     // S_IRWXO, Read, write, execute/search by others
 };
 
