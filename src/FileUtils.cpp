@@ -138,6 +138,8 @@ bool (*mkdirCallback)(const std::string& path, CreateFullPath createFullPath)=nu
 bool (*rmCallback)(const std::string& path, bool recursive)=nullptr;
 bool (*existsCallback)(const std::string& path)=nullptr;
 size_t (*fileSizeCallback)(const std::string& path)=nullptr;
+bool (*setCWDCallback)(const std::string& path)=nullptr;
+bool (*setPermissionsCallback)(const std::string& path, unsigned permissionsh)=nullptr;
 
 //##################################################################################################
 std::vector<std::string> listFiles(const std::string& path, const std::unordered_set<std::string>& extensions)
@@ -184,8 +186,13 @@ bool exists(const std::string& path)
 //##################################################################################################
 size_t fileSize(const std::string& path)
 {
-
   return fileSizeCallback?fileSizeCallback(path):0;
+}
+
+//##################################################################################################
+bool setCWD(const std::string& path)
+{
+  return setCWDCallback?setCWDCallback(path):false;
 }
 
 namespace
@@ -195,6 +202,12 @@ namespace
 #else
 char del = '/';
 #endif
+}
+
+//##################################################################################################
+bool setPermissions(const std::string& path, unsigned permissions)
+{
+  return setPermissionsCallback?setPermissionsCallback(path, permissions):false;
 }
 
 //##################################################################################################
