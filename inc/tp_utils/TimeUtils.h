@@ -50,7 +50,7 @@ private:
   Private* d;
 };
 
-#if 0
+#ifdef TP_ENABLE_TIME_SCOPE
 #define TP_TIME_SCOPE(name) tp_utils::ElapsedTimer TP_CONCAT(tpET, __LINE__)(20); TP_CONCAT(tpET, __LINE__).start(); TP_CLEANUP([&]{TP_CONCAT(tpET, __LINE__).printTime(name);})
 #else
 #define TP_TIME_SCOPE(name)[]{}()
