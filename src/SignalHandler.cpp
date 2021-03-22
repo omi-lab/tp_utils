@@ -68,13 +68,15 @@ struct SignalHandler::Private
     sigint  = std::signal(SIGINT , exitWake);
     sigterm = std::signal(SIGTERM, exitWake);
 
-#ifdef TP_WIN32_MSVC
+#ifndef TP_DEBUG
+#  ifdef TP_WIN32_MSVC
     setWindowsHandlers();
-#else
+#  else
     sigabrt = std::signal(SIGABRT, exitNow);
     sigfpe  = std::signal(SIGFPE , exitNow);
     sigill  = std::signal(SIGILL , exitNow);
     sigsegv = std::signal(SIGSEGV, exitNow);
+#  endif
 #endif
   }
 
