@@ -48,18 +48,6 @@
 #endif
 
 //##################################################################################################
-//TP_FALLTHROUGH
-#if TP_CPP_VERSION>=17
-#  define TP_FALLTHROUGH [[fallthrough]]
-#elif __GNUC__>=7
-#  define TP_FALLTHROUGH [[gnu::fallthrough]]
-#elif defined __CLANG__
-#  define TP_FALLTHROUGH [[clang::fallthrough]]
-#else
-#  define TP_FALLTHROUGH
-#endif
-
-//##################################################################################################
 //TP_SIZEOF
 template<int s> struct __TP_SIZEOF;
 //! Use this to show the size of objects at compile time, will fail at the line it is used.
