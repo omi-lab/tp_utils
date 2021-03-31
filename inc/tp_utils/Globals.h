@@ -66,6 +66,7 @@ template<int s> struct __TP_SIZEOF;
 
 //##################################################################################################
 //TP_CLEANUP
+//! Create an object on the stack and call cleanup when it falls out of scope.
 #define TP_CLEANUP(cleanup) TPCleanUp TP_CONCAT(tpCleanUp, __LINE__)(cleanup); TP_UNUSED(TP_CONCAT(tpCleanUp, __LINE__))
 
 #define TP_DEFINE_FLAGS(C) \

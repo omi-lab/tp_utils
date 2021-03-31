@@ -7,6 +7,7 @@ namespace tp_utils
 {
 
 //##################################################################################################
+//! Handles Posix signals.
 class SignalHandler
 {
 public:
