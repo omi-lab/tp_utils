@@ -102,6 +102,18 @@ union TPPixel
     return ((0.2126f*r) + (0.7152f*g) + (0.0722f*b)) > 0.179f;
   }
 
+  template<typename T>
+  T toFloat3()
+  {
+    return {float(r)/255.0f, float(g)/255.0f, float(b)/255.0f};
+  }
+
+  template<typename T>
+  T toFloat4()
+  {
+    return {float(r)/255.0f, float(g)/255.0f, float(b)/255.0f, float(a)/255.0f};
+  }
+
   uint32_t i;
   uint8_t v[4];
 #ifndef TP_WIN32
