@@ -2,6 +2,7 @@
 #define tp_utils_Globals_h
 
 #include "lib_platform/Warnings.h"
+#include "lib_platform/RandomDevice.h"
 
 #include <functional>
 
@@ -133,7 +134,7 @@ bool TP_UTILS_SHARED_EXPORT tpEndsWith(const std::string& input, const std::stri
 template<class B, class E>
 void tpRandomShuffle(B begin, E end)
 {
-  std::random_device rd;
+  lib_platform::RandomDevice rd;
   std::mt19937 g(rd());
   std::shuffle(begin, end, g);
 }
