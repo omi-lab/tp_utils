@@ -73,6 +73,23 @@ bool tpEndsWith(const std::string& input, const std::string& s)
 {
   return input.size() >= s.size() && std::equal(s.begin(), s.end(), input.end()-int(s.size()));
 }
+//##################################################################################################
+std::string tpToLower(const std::string& str)
+{
+  std::string out;
+  out.resize(str.size());
+  std::transform(str.begin(), str.end(), out.begin(), ::tolower);
+  return out;
+}
+
+//##################################################################################################
+std::string tpToUpper(const std::string& str)
+{
+  std::string out;
+  out.resize(str.size());
+  std::transform(str.begin(), str.end(), out.begin(), ::toupper);
+  return out;
+}
 
 //##################################################################################################
 void* tpVoidLiteral(size_t value)

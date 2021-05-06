@@ -131,6 +131,12 @@ bool TP_UTILS_SHARED_EXPORT tpStartsWith(const std::string& input, const std::st
 bool TP_UTILS_SHARED_EXPORT tpEndsWith(const std::string& input, const std::string& s);
 
 //##################################################################################################
+std::string tpToLower(const std::string& str);
+
+//##################################################################################################
+std::string tpToUpper(const std::string& str);
+
+//##################################################################################################
 template<class B, class E>
 void tpRandomShuffle(B begin, E end)
 {
