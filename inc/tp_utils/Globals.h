@@ -137,6 +137,10 @@ std::string tpToLower(const std::string& str);
 std::string tpToUpper(const std::string& str);
 
 //##################################################################################################
+//! Returns true if input contains the string in s
+bool TP_UTILS_SHARED_EXPORT tpContains(const std::string& input, const std::string& s);
+
+//##################################################################################################
 template<class B, class E>
 void tpRandomShuffle(B begin, E end)
 {

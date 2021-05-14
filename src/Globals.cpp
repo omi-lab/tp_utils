@@ -92,6 +92,12 @@ std::string tpToUpper(const std::string& str)
 }
 
 //##################################################################################################
+bool tpContains(const std::string& input, const std::string& s)
+{
+  return(input.find(s) != std::string::npos);
+}
+
+//##################################################################################################
 void* tpVoidLiteral(size_t value)
 {
   return reinterpret_cast<void*>(value);
