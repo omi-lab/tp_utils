@@ -328,6 +328,43 @@ std::u16string TP_UTILS_SHARED_EXPORT tpFromUTF8(const std::string& source);
 //##################################################################################################
 std::wstring tpWStringFromUTF8(const std::string& source);
 
+//##################################################################################################
+template<typename T>
+bool tpNumber(const std::string& s, T& n, T d=T())
+{
+  try
+  {
+    if constexpr (std::is_same_v<T, int>)
+      n = std::stoi(s);
+    else if constexpr (std::is_same_v<T, long>)
+      n = std::stol(s);
+    else if constexpr (std::is_same_v<T, unsigned long>)
+      n = std::stoul(s);
+    else if constexpr (std::is_same_v<T, long long>)
+      n = std::stoll(s);
+    else if constexpr (std::is_same_v<T, unsigned long long>)
+      n = std::stoull(s);
+    else if constexpr (std::is_same_v<T, float>)
+      n = std::stof(s);
+    else if constexpr (std::is_same_v<T, double>)
+      n = std::stod(s);
+    else if constexpr (std::is_same_v<T, long double>)
+      n = std::stold(s);
+    else
+      n = T(std::stoi(s));
+    return true;
+  }
+  catch(const std::invalid_argument&)
+  {
+  }
+  catch(const std::out_of_range&)
+  {
+  }
+
+  n=d;
+  return false;
+}
+
 namespace detail
 {
 //##################################################################################################
