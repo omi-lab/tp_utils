@@ -93,6 +93,10 @@ struct TP_CONCAT(TP_DEFINE_FLAGS_, __LINE__)
 template<typename T>
 const T& tpConst(const T& o){return o;}
 template<typename T>
+const T* tpConst(const T* o){return o;}
+template<typename T>
+const T* tpConst(T* o){return o;}
+template<typename T>
 const T& tpConst(const T&& o)=delete;
 
 //##################################################################################################
