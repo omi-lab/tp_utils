@@ -30,6 +30,29 @@ void handleSignal(int signum)
   tpWarning() << "Signal caught: " << signum;
   printStackTrace();
 }
+
+//##################################################################################################
+std::string getCurrentTimestamp()
+{
+  using std::chrono::system_clock;
+  auto currentTime = std::chrono::system_clock::now();
+
+  auto transformed = currentTime.time_since_epoch().count() / 1000000;
+
+  auto millis = transformed % 1000;
+
+  std::time_t tt;
+  tt = system_clock::to_time_t( currentTime );
+  auto timeinfo = localtime(&tt);
+
+  char bufferA[80];
+  strftime (bufferA, 80, "[%F %H:%M:%S", timeinfo);
+
+  char bufferB[100];
+  sprintf(bufferB, "%s:%03d] ", bufferA, int(millis));
+
+  return std::string(bufferB);
+}
 }
 
 //##################################################################################################
@@ -43,6 +66,16 @@ void installMessageHandler(const std::function<void(MessageType, const std::stri
 {
   TP_MUTEX_LOCKER(debugMutex);
   debugCallback = callback;
+}
+
+//##################################################################################################
+void TP_UTILS_SHARED_EXPORT installDateTimeMessageHandler()
+{
+  tp_utils::installMessageHandler([](tp_utils::MessageType, const std::string& message)
+  {
+    std::cout << getCurrentTimestamp() << message;
+    std::cout.flush();
+  });
 }
 
 //##################################################################################################

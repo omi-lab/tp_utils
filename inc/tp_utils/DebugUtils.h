@@ -55,6 +55,9 @@ void TP_UTILS_SHARED_EXPORT installSignalHandler();
 void TP_UTILS_SHARED_EXPORT installMessageHandler(const std::function<void(MessageType, const std::string&)>& callback);
 
 //##################################################################################################
+void TP_UTILS_SHARED_EXPORT installDateTimeMessageHandler();
+
+//##################################################################################################
 class TP_UTILS_SHARED_EXPORT DebugMode
 {
 public:
