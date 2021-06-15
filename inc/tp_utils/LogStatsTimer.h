@@ -143,9 +143,17 @@ private:
 };
 using KeyValueLogStatsTimer = _KeyValueLogStatsTimer<void>;
 
+
 //##################################################################################################
-inline void addMemoryUsageProducer(KeyValueLogStatsTimer& keyValueStatsTimer)
+struct VirtualMemory
 {
+  size_t VmSize{0};
+  size_t VmHWM{0};
+  size_t VmRSS{0};
+
+  //################################################################################################
+  VirtualMemory()
+  {
 #ifdef TP_LINUX
   //https://stackoverflow.com/questions/63166/how-to-determine-cpu-and-memory-consumption-from-inside-a-process
   auto parseLine = [](char* line)
@@ -176,12 +184,25 @@ inline void addMemoryUsageProducer(KeyValueLogStatsTimer& keyValueStatsTimer)
     return result;
   };
 
+  VmSize = size_t(getValue("VmSize:"));
+  VmHWM = size_t(getValue("VmHWM:"));
+  VmRSS = size_t(getValue("VmRSS:"));
+#endif
+  }
+};
+
+//##################################################################################################
+inline void addMemoryUsageProducer(KeyValueLogStatsTimer& keyValueStatsTimer)
+{
+#ifdef TP_LINUX
   keyValueStatsTimer.addProducer("Memory ", [=]
   {
+    VirtualMemory virtualMemory;
+
     std::map<std::string, size_t> result;
-    result["VmSize"] = size_t(getValue("VmSize:"));
-    result["VmHWM"] = size_t(getValue("VmHWM:"));
-    result["VmRSS"] = size_t(getValue("VmRSS:"));
+    result["VmSize"] = virtualMemory.VmSize;
+    result["VmHWM"]  = virtualMemory.VmHWM;
+    result["VmRSS"]  = virtualMemory.VmRSS;
     return result;
   });
 #endif
