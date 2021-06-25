@@ -31,6 +31,9 @@ std::unordered_map<std::string, Resource>& resources();
 Resource TP_UTILS_SHARED_EXPORT resource(const std::string& name);
 
 //##################################################################################################
+std::string TP_UTILS_SHARED_EXPORT resourceString(const std::string& name);
+
+//##################################################################################################
 void TP_UTILS_SHARED_EXPORT addResource(const std::string& name,  const char* data, size_t size);
 
 }

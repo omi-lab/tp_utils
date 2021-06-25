@@ -21,17 +21,30 @@ class Callback;
 template<typename R, typename... Args>
 class CallbackCollection<R(Args...)>
 {
+  TP_NONCOPYABLE(CallbackCollection);
   template<typename> friend class Callback;
   public:
   using T = R(Args...);
 
   //################################################################################################
+  CallbackCollection() = default;
+
+  //################################################################################################
   ~CallbackCollection()
+  {
+    clear();
+  }
+
+  //################################################################################################
+  void clear()
   {
     for(auto unrefCallback : m_unrefCallbacks)
       (*unrefCallback)(this);
 
     tpDeleteAll(m_nonRemovableCallbacks);
+
+    m_unrefCallbacks.clear();
+    m_nonRemovableCallbacks.clear();
   }
 
   //################################################################################################

@@ -24,6 +24,12 @@ Resource resource(const std::string& name)
 }
 
 //##################################################################################################
+std::string resourceString(const std::string& name)
+{
+  auto r = resource(name);
+  return std::string(r.data, r.size);
+}
+//##################################################################################################
 void addResource(const std::string& name, const char* data, size_t size)
 {
   auto& r = resources()[name];
