@@ -9,6 +9,7 @@ namespace tp_utils
 //##################################################################################################
 class TP_UTILS_SHARED_EXPORT TimerThread
 {
+  TP_NONCOPYABLE(TimerThread);
 public:
   //################################################################################################
   TimerThread(const std::function<void()>& callback, int64_t timeoutMS);

@@ -10,6 +10,7 @@ namespace tp_utils
 //! Handles Posix signals.
 class SignalHandler
 {
+  TP_NONCOPYABLE(SignalHandler);
 public:
   //################################################################################################
   SignalHandler(bool exitOnInt=false);

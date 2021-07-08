@@ -9,6 +9,7 @@ namespace tp_utils
 //##################################################################################################
 class TP_UTILS_SHARED_EXPORT AbstractCrossThreadCallback
 {
+  TP_NONCOPYABLE(AbstractCrossThreadCallback);
 public:
   //################################################################################################
   AbstractCrossThreadCallback(std::function<void()> callback);
@@ -34,12 +35,17 @@ private:
 //##################################################################################################
 class TP_UTILS_SHARED_EXPORT AbstractCrossThreadCallbackFactory
 {
+  TP_NONCOPYABLE(AbstractCrossThreadCallbackFactory);
 public:
+
+  //################################################################################################
+  AbstractCrossThreadCallbackFactory()=default;
+
   //################################################################################################
   virtual ~AbstractCrossThreadCallbackFactory();
 
   //################################################################################################
-  virtual AbstractCrossThreadCallback* produce(const std::function<void()>& callback) const = 0;
+  [[nodiscard]] virtual AbstractCrossThreadCallback* produce(const std::function<void()>& callback) const = 0;
 };
 
 //##################################################################################################

@@ -361,6 +361,7 @@ std::array<T, N> tpMakeArray(const T& value)
 template<typename T>
 class TPCleanUp
 {
+  TP_NONCOPYABLE(TPCleanUp);
   T m_cleanup;
 public:
   TPCleanUp(const T& cleanup):m_cleanup(cleanup){}

@@ -60,6 +60,7 @@ void TP_UTILS_SHARED_EXPORT installDateTimeMessageHandler();
 //##################################################################################################
 class TP_UTILS_SHARED_EXPORT DebugMode
 {
+  TP_NONCOPYABLE(DebugMode);
 public:
   //################################################################################################
   DebugMode(const std::string& classPath, DebugType debugType=DebugType::Console);

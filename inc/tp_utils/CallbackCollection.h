@@ -89,6 +89,7 @@ class CallbackCollection<R(Args...)>
 template<typename R, typename... Args>
 class Callback<R(Args...)>
 {
+  TP_NONCOPYABLE(Callback);
   using C = CallbackCollection<R(Args...)>*;
   public:
   using T = R(Args...);
@@ -137,6 +138,12 @@ class Callback<R(Args...)>
   void setCallback(const std::function<T>& callback)
   {
     m_callback = callback;
+  }
+
+  //################################################################################################
+  const std::function<T>& callback()
+  {
+    return m_callback;
   }
 
   //################################################################################################

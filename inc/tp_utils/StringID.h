@@ -24,7 +24,7 @@ Here I will try to document the StringID's that are currently in use.
 This is probably the most important class in tp Toolkit, a majority of the other components are
 linked together by strings, and this class is used to make this efficent.
 */
-class TP_UTILS_SHARED_EXPORT StringID
+class  TP_UTILS_SHARED_EXPORT StringID final
 {
   friend class StringIDManager;
   friend bool TP_UTILS_SHARED_EXPORT operator==(const StringID& a, const StringID& b);
@@ -85,7 +85,7 @@ public:
 
   //################################################################################################
   //! Decrement the reference count and clean up
-  virtual ~StringID();
+  ~StringID();
 
   //################################################################################################
   //! Return the key that manager uses to reference this string id
@@ -167,14 +167,14 @@ struct hash<tp_utils::StringID>
 };
 }
 
-namespace tp_utils
-{
-//##################################################################################################
-inline unsigned TP_UTILS_SHARED_EXPORT qHash(const StringID& stringID)
-{
-  return unsigned(std::hash<StringID>()(stringID));
-}
-}
+//namespace tp_utils
+//{
+////##################################################################################################
+//inline size_t TP_UTILS_SHARED_EXPORT qHash(const StringID& stringID)
+//{
+//  return size_t(std::hash<StringID>()(stringID));
+//}
+//}
 
 //##################################################################################################
 //! Declare a global string id

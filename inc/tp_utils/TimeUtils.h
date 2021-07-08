@@ -25,6 +25,7 @@ int64_t TP_UTILS_SHARED_EXPORT currentTimeMS();
 //##################################################################################################
 class TP_UTILS_SHARED_EXPORT ElapsedTimer
 {
+  TP_NONCOPYABLE(ElapsedTimer);
 public:
   //################################################################################################
   ElapsedTimer(int64_t smallTime=-1);

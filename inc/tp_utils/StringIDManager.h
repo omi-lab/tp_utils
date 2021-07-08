@@ -8,6 +8,7 @@ namespace tp_utils
 
 class TP_UTILS_SHARED_EXPORT StringIDManager
 {
+  TP_NONCOPYABLE(StringIDManager);
 public:
   //################################################################################################
   StringIDManager(const std::string& state=std::string());
