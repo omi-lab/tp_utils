@@ -147,8 +147,7 @@ std::vector<StringID> getJSONStringIDs(const nlohmann::json& j,
 //##################################################################################################
 nlohmann::json stringIDsToJSON(const std::vector<StringID>& stringIDs)
 {
-  nlohmann::json j;
-  j=nlohmann::json::array();
+  nlohmann::json j=nlohmann::json::array();
   for(const auto& stringID : stringIDs)
     j.push_back(stringID.keyString());
   return j;

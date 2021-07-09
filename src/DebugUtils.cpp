@@ -69,7 +69,7 @@ void installMessageHandler(const std::function<void(MessageType, const std::stri
 }
 
 //##################################################################################################
-void TP_UTILS_SHARED_EXPORT installDateTimeMessageHandler()
+void installDateTimeMessageHandler()
 {
   tp_utils::installMessageHandler([](tp_utils::MessageType, const std::string& message)
   {
