@@ -205,7 +205,8 @@ template<typename T>
 typename T::value_type tpTakeLast(T& container)
 {
   auto i = container.begin() + (container.size()-1);
-  typename T::value_type t = *i;
+  typename T::value_type t;
+  std::swap(t, *i);
   container.erase(i);
   return t;
 }
