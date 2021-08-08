@@ -61,8 +61,9 @@ class CallbackCollection<R(Args...)>
   //################################################################################################
   R operator()(Args... args) const
   {
-    for(auto callback : m_callbacks)
-      (*callback)(args...);
+    for(size_t i=0; i<m_callbacks.size(); i++)
+      (*m_callbacks.at(i))(args...);
+
     return; //Force void
   }
 
