@@ -279,7 +279,6 @@ static bool demangle(const char* symbol, std::string& output)
   {
     // couldn't parse the line? Just print the whole line.
     output += symbol;
-    output[MAX_TRACE_SIZE-1] = '\0';
   }
 
   return true;

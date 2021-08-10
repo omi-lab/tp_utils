@@ -33,6 +33,7 @@ public:
 //##################################################################################################
 class TP_UTILS_SHARED_EXPORT TPMutexUnlocker
 {
+  TP_NONCOPYABLE(TPMutexUnlocker);
   TPMutex* m_mutex;
 public:
 
@@ -241,6 +242,7 @@ public:
 //##################################################################################################
 class TP_UTILS_SHARED_EXPORT TPWaitCondition
 {
+  TP_NONCOPYABLE(TPWaitCondition);
 public:
   //################################################################################################
   TPWaitCondition();

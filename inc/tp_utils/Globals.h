@@ -8,6 +8,7 @@
 
 #include <string>
 #include <vector>
+#include <list>
 #include <random>
 #include <algorithm>
 //#include <variant>
@@ -92,6 +93,10 @@ struct TP_CONCAT(TP_DEFINE_FLAGS_, __LINE__)
 //! Return a const object
 template<typename T>
 const T& tpConst(const T& o){return o;}
+template<typename T>
+const T* tpConst(const T* o){return o;}
+template<typename T>
+const T* tpConst(T* o){return o;}
 template<typename T>
 const T& tpConst(const T&& o)=delete;
 
@@ -198,11 +203,21 @@ void tpDeleteAll(const T& container)
 
 //##################################################################################################
 template<typename T>
-typename T::value_type tpTakeLast(T& container)
+typename std::list<T>::value_type tpTakeLast(std::list<T>& container)
 {
-  auto i = container.begin() + (container.size()-1);
-  typename T::value_type t = *i;
-  container.erase(i);
+  typename std::list<T>::value_type t;
+  std::swap(t, container.back());
+  container.pop_back();
+  return t;
+}
+
+//##################################################################################################
+template<typename T>
+typename std::vector<T>::value_type tpTakeLast(std::vector<T>& container)
+{
+  typename std::vector<T>::value_type t;
+  std::swap(t, container.back());
+  container.pop_back();
   return t;
 }
 
@@ -394,6 +409,7 @@ std::array<T, N> tpMakeArray(const T& value)
 template<typename T>
 class TPCleanUp
 {
+  TP_NONCOPYABLE(TPCleanUp);
   T m_cleanup;
 public:
   TPCleanUp(const T& cleanup):m_cleanup(cleanup){}

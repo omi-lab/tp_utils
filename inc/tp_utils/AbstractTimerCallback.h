@@ -9,6 +9,7 @@ namespace tp_utils
 //##################################################################################################
 class TP_UTILS_SHARED_EXPORT AbstractTimerCallback
 {
+  TP_NONCOPYABLE(AbstractTimerCallback);
 public:
   //################################################################################################
   AbstractTimerCallback(std::function<void()> callback, int64_t timeOutMS);
@@ -34,7 +35,12 @@ private:
 //##################################################################################################
 class TP_UTILS_SHARED_EXPORT AbstractTimerCallbackFactory
 {
+  TP_NONCOPYABLE(AbstractTimerCallbackFactory);
 public:
+
+  //################################################################################################
+  AbstractTimerCallbackFactory()=default;
+
   //################################################################################################
   virtual ~AbstractTimerCallbackFactory();
 
