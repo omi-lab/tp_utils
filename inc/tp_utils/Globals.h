@@ -11,6 +11,8 @@
 #include <list>
 #include <random>
 #include <algorithm>
+#include <stdexcept>
+
 //#include <variant>
 
 #if defined(TP_UTILS_LIBRARY)
