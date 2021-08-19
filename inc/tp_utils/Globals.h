@@ -144,6 +144,9 @@ std::string tpToLower(const std::string& str);
 std::string tpToUpper(const std::string& str);
 
 //##################################################################################################
+std::string tpTrim(const std::string& str, const std::string& whitespace = " \n\r\t");
+
+//##################################################################################################
 //! Returns true if input contains the string in s
 bool TP_UTILS_SHARED_EXPORT tpContains(const std::string& input, const std::string& s);
 
