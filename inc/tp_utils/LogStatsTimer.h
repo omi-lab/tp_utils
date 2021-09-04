@@ -55,6 +55,7 @@ struct TP_UTILS_SHARED_EXPORT _LogStatsTimer
   }
 
 private:
+  TP_NONCOPYABLE(_LogStatsTimer);
   TPMutex m_mutex{TPM};
   TPWaitCondition m_waitCondition;
   bool m_finish{false};
