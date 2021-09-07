@@ -46,7 +46,12 @@ std::string getCurrentTimestamp()
   auto timeinfo = localtime(&tt);
 
   char bufferA[80];
+
+#ifdef TP_WIN32_MINGW
+  strftime(bufferA, 80, "[%H:%M:%S", timeinfo);
+#else
   strftime(bufferA, 80, "[%F %H:%M:%S", timeinfo);
+#endif
 
   char bufferB[100];
   sprintf(bufferB, "%s:%03d] ", bufferA, int(millis));
