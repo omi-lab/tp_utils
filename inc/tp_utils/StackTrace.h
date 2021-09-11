@@ -26,6 +26,10 @@ Otherwise, all entries on the stack are printed.
 void TP_UTILS_SHARED_EXPORT printStackTrace();
 
 //##################################################################################################
+void TP_UTILS_SHARED_EXPORT printAddr2Line();
+
+
+//##################################################################################################
 //! Returns a stack trace as a string
 std::string TP_UTILS_SHARED_EXPORT formatStackTrace();
 
