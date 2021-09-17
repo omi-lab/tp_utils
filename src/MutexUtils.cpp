@@ -652,7 +652,7 @@ std::string LockStats::takeResults()
 
       std::stringstream ss;
       ss << i.second.holderThread;
-      result+=") threadID: " + ss.str();
+      result+=") threadID: " + ss.str() + '\n';
     }
   }
 

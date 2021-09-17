@@ -119,13 +119,6 @@ int backtraceMIPS(void** array, int size)
 }
 #endif
 
-#if defined(GCC_STACKTRACE)
-namespace
-{
-const int MAX_TRACE_SIZE = 384;
-}
-#endif
-
 namespace tp_utils
 {
 //##################################################################################################
@@ -320,6 +313,61 @@ void TP_UTILS_SHARED_EXPORT printStackTrace()
     else
       tpWarning() << "Frame " << i << ": " << symbol;
   }
+}
+
+//##################################################################################################
+void TP_UTILS_SHARED_EXPORT printAddr2Line()
+{
+  //Get the backtrace
+  std::array<void*, MAX_LEVELS> array = tpMakeArray<void*, MAX_LEVELS>(nullptr);
+
+  int startOffset = 1;   // don't include printStackTrace() in the output
+#if defined(__mips)
+  int size = backtraceMIPS(array, MAX_LEVELS);
+  ucontext_t* context = (ucontext_t*)pcontext;
+  if(context)
+  {
+    // When called from the CrashReporter signal handler, the first two entries on the stack are the
+    // signal handler and the sigaction() address where the signal handler was called from. Insert
+    // the address of the last caller before the signal was generated.
+    array[0] = array[1];
+    array[1] = array[2];
+    array[2] = (void*)context->uc_mcontext.pc;
+    startOffset = 0;
+  }
+#else
+  int size = backtrace(array.data(), MAX_LEVELS);
+#endif
+  std::unique_ptr<char*, decltype(&free)> strings(backtrace_symbols(array.data(), size), &free);
+  std::string output;
+  for(int i = startOffset; i < size; ++i)
+  {
+    const char* symbol = strings.get()[i];
+
+    std::vector<std::string> partsA;
+    tpSplit(partsA, symbol, '(', SplitBehavior::SkipEmptyParts);
+    if(partsA.size()==2)
+    {
+      std::vector<std::string> partsB;
+      tpSplit(partsB, partsA.back(), '[', SplitBehavior::SkipEmptyParts);
+      if(!partsB.empty())
+      {
+        std::vector<std::string> partsC;
+        tpSplit(partsC, partsB.back(), ']', SplitBehavior::SkipEmptyParts);
+
+        if(!partsC.empty())
+        {
+          output += " addr2line ";
+          output += partsC.front();
+          output += " -f -C -e ";
+          output += partsA.front();
+          output += '\n';
+        }
+      }
+    }
+  }
+
+  std::cout << output << std::endl;
 }
 
 //##################################################################################################
