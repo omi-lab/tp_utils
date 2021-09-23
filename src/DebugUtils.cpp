@@ -30,6 +30,7 @@ void handleSignal(int signum)
   tpWarning() << "Signal caught: " << signum;
   printStackTrace();
 }
+}
 
 //##################################################################################################
 std::string getCurrentTimestamp()
@@ -57,7 +58,6 @@ std::string getCurrentTimestamp()
   sprintf(bufferB, "%s:%03d] ", bufferA, int(millis));
 
   return std::string(bufferB);
-}
 }
 
 //##################################################################################################

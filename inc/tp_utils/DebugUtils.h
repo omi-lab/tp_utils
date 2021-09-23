@@ -47,6 +47,8 @@ enum class DebugType
   Console,
   Table
 };
+//##################################################################################################
+std::string TP_UTILS_SHARED_EXPORT getCurrentTimestamp();
 
 //##################################################################################################
 void TP_UTILS_SHARED_EXPORT installSignalHandler();
