@@ -396,6 +396,12 @@ void TP_UTILS_SHARED_EXPORT printStackTrace()
   emscripten_run_script("console.log(stackTrace());");
 }
 
+//##################################################################################################
+std::string TP_UTILS_SHARED_EXPORT formatStackTrace()
+{
+  return emscripten_run_script_string("stackTrace();");
+}
+
 #elif defined(ANDROID_STACKTRACE)
 // Android version taken from:
 // http://stackoverflow.com/questions/8115192/android-ndk-getting-the-backtrace/35585744#35585744
