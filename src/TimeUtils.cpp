@@ -104,11 +104,11 @@ struct FunctionTimeStats::Private
 };
 
 //##################################################################################################
-void FunctionTimeStats::add(int64_t timeMicroseconds, const char* file, int line)
+void FunctionTimeStats::add(int64_t timeMicroseconds, const char* file, int line, const std::string& name)
 {
   auto i = instance();
   TP_MUTEX_LOCKER(i->mutex);
-  auto key = fixedWidthKeepRight(std::string(file) + ':' + std::to_string(line), 50, ' ');
+  auto key = fixedWidthKeepRight(std::string(file) + ':' + std::to_string(line) + ' ' + name, 50, ' ');
   auto& s = i->stats[key];
   s.count++;
   s.max = tpMax(s.max, timeMicroseconds);
@@ -189,10 +189,11 @@ FunctionTimeStats::Private* FunctionTimeStats::instance()
 }
 
 //##################################################################################################
-FunctionTimer::FunctionTimer(const char* file, int line):
+FunctionTimer::FunctionTimer(const char* file, int line, const std::string& name):
   m_start(currentTimeMicroseconds()),
   m_file(file),
-  m_line(line)
+  m_line(line),
+  m_name(name)
 {
 
 }
@@ -200,7 +201,7 @@ FunctionTimer::FunctionTimer(const char* file, int line):
 //##################################################################################################
 FunctionTimer::~FunctionTimer()
 {
-  FunctionTimeStats::add(currentTimeMicroseconds() - m_start, m_file, m_line);
+  FunctionTimeStats::add(currentTimeMicroseconds() - m_start, m_file, m_line, m_name);
 }
 
 #endif

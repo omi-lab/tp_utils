@@ -64,7 +64,7 @@ class TP_UTILS_SHARED_EXPORT FunctionTimeStats
 {
 public:
   //################################################################################################
-  static void add(int64_t timeMicroseconds, const char* file, int line);
+  static void add(int64_t timeMicroseconds, const char* file, int line, const std::string& name);
 
   //################################################################################################
   static std::string takeResults();
@@ -80,17 +80,18 @@ private:
 class FunctionTimer
 {
 public:
-  FunctionTimer(const char* file, int line);
+  FunctionTimer(const char* file, int line, const std::string& name);
   ~FunctionTimer();
 private:
   int64_t m_start;
   const char* m_file;
   int m_line;
+  std::string m_name;
 };
 
-#define TP_FUNCTION_TIME tp_utils::FunctionTimer TP_CONCAT(tpFunctionTimer, __LINE__)(__FILE__, __LINE__); TP_UNUSED(TP_CONCAT(tpFunctionTimer, __LINE__))
+#define TP_FUNCTION_TIME(A) tp_utils::FunctionTimer TP_CONCAT(tpFunctionTimer, __LINE__)(__FILE__, __LINE__, A); TP_UNUSED(TP_CONCAT(tpFunctionTimer, __LINE__))
 #else
-#define TP_FUNCTION_TIME do{}while(false)
+#define TP_FUNCTION_TIME(A) do{}while(false)
 #endif
 
 }
