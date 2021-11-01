@@ -60,7 +60,14 @@ HEADERS += inc/tp_utils/TPPixel.h
 HEADERS += inc/tp_utils/PageSize.h
 
 HEADERS += inc/tp_utils/LogStatsTimer.h
+HEADERS += inc/tp_utils/detail/log_stats/impl.h
+HEADERS += inc/tp_utils/detail/log_stats/function_time.h
+HEADERS += inc/tp_utils/detail/log_stats/mutex_time.h
+HEADERS += inc/tp_utils/detail/log_stats/ref_count.h
+HEADERS += inc/tp_utils/detail/log_stats/virtual_memory.h
 
 HEADERS += inc/tp_utils/ExtendArgs.h
 
 HEADERS += inc/tp_utils/Test.h
+
+
