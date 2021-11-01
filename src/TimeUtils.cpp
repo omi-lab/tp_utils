@@ -176,6 +176,7 @@ std::map<std::string, size_t> FunctionTimeStats::keyValueResults()
     result[it.first+"_count"] = it.second.count;
     result[it.first+"_max"  ] = it.second.max;
     result[it.first+"_total"] = it.second.total;
+    result[it.first+"_average"] = it.second.total/it.second.count;
   }
 
   return result;
