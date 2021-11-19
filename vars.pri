@@ -42,6 +42,9 @@ HEADERS += inc/tp_utils/AbstractCrossThreadCallback.h
 SOURCES += src/AbstractTimerCallback.cpp
 HEADERS += inc/tp_utils/AbstractTimerCallback.h
 
+SOURCES += src/Progress.cpp
+HEADERS += inc/tp_utils/Progress.h
+
 SOURCES += src/Resources.cpp
 HEADERS += inc/tp_utils/Resources.h
 

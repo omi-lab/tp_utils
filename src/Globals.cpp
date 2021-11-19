@@ -3,6 +3,7 @@
 #include <codecvt>
 #include <locale>
 #include <algorithm>
+#include <iostream>
 
 #if defined(TP_WIN32) && (defined(_MSC_VER) && (_MSC_VER >= 1900))
 #define WIN32_LEAN_AND_MEAN
@@ -208,7 +209,9 @@ std::u16string tpFromUTF8(const std::string& source)
   wstr.resize(source.size());
   return std::u16string(reinterpret_cast<const char16_t*>(wstr.c_str()));
 #else
-  return std::wstring_convert<std::codecvt_utf8_utf16<char16_t>,char16_t>().from_bytes(source);
+  std::wstring_convert<std::codecvt_utf8_utf16<char16_t>,char16_t> cvt;
+  std::u16string result = cvt.from_bytes(source);
+  return result;
 #endif
 }
 

@@ -13,8 +13,6 @@
 #include <algorithm>
 #include <stdexcept>
 
-//#include <variant>
-
 #if defined(TP_UTILS_LIBRARY)
 #  define TP_UTILS_SHARED_EXPORT TP_EXPORT
 #else
@@ -401,14 +399,6 @@ std::array<T, N> tpMakeArray(const T& value)
 {
   return detail::tpMakeArray(value, std::make_index_sequence<N>());
 }
-
-////##################################################################################################
-//template<typename V, typename T>
-//V tpGetVariantValue(const T& variant, const V& defaultValue=V())
-//{
-//  const V* v = std::get_if<V>(&variant);
-//  return v?*v:defaultValue;
-//}
 
 //##################################################################################################
 template<typename T>
