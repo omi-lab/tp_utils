@@ -1,5 +1,6 @@
 #include "tp_utils/Progress.h"
 #include "tp_utils/MutexUtils.h"
+#include "tp_utils/DebugUtils.h"
 #include "tp_utils/RefCount.h"
 #include "tp_utils/AbstractCrossThreadCallback.h"
 
@@ -27,6 +28,10 @@ struct Progress::Private
   TP_NONCOPYABLE(Private);
   Private() = default;
 
+  Progress* q;
+  bool printToConsole{false};
+  size_t indentation{0};
+
   TPMutex mutex{TPM};
   std::string description;
   std::vector<ChildStep_lt> childSteps;
@@ -35,6 +40,13 @@ struct Progress::Private
   std::unique_ptr<AbstractCrossThreadCallback> crossThreadCallback;
   std::function<bool()> poll;
   Progress* parent{nullptr};
+
+  //################################################################################################
+  Private(Progress* q_):
+    q(q_)
+  {
+
+  }
 
   //################################################################################################
   ~Private()
@@ -72,33 +84,54 @@ struct Progress::Private
 
     closure(childSteps.back());
   }
+
+  //################################################################################################
+  void checkPrint(const std::string& text)
+  {
+    if(!printToConsole)
+      return;
+
+    Progress* p=q;
+    while(p->d->parent)
+      p=p->d->parent;
+
+    tpWarning() << "(" << int(p->progress()*100.1f) << "%) " << std::string(indentation, ' ') << text;
+  }
 };
 
 //##################################################################################################
 Progress::Progress(AbstractCrossThreadCallbackFactory* crossThreadCallbackFactory):
-  d(new Private())
+  d(new Private(this))
 {
   d->crossThreadCallback.reset(crossThreadCallbackFactory->produce([&]{changed();}));
 }
 
 //##################################################################################################
 Progress::Progress(const std::function<bool()>& poll):
-  d(new Private())
+  d(new Private(this))
 {
   d->poll = poll;
 }
 
 //##################################################################################################
 Progress::Progress(Progress* parent):
-  d(new Private())
+  d(new Private(this))
 {
   d->parent = parent;
+  d->indentation = parent->d->indentation + 2;
+  d->printToConsole = parent->d->printToConsole;
 }
 
 //##################################################################################################
 Progress::~Progress()
 {
   delete d;
+}
+
+//##################################################################################################
+void Progress::setPrintToConsole(bool printToConsole)
+{
+  d->printToConsole = printToConsole;
 }
 
 //##################################################################################################
@@ -219,7 +252,8 @@ Progress* Progress::addChildStep(const std::string& message, float completeFract
     childProgress = childStep.childProgress;
   });
 
-  callChanged();
+  callChanged();  
+  childProgress->d->checkPrint(message);
 
   return childProgress;
 }
@@ -233,17 +267,19 @@ void Progress::addMessage(const std::string& message)
   });
 
   callChanged();
+  d->checkPrint(message);
 }
 
 //##################################################################################################
-void Progress::addError(const std::string& message)
+void Progress::addError(const std::string& error)
 {
   d->updateThis([&](ChildStep_lt& childStep)
   {
-    childStep.messages.emplace_back(message, true, 0);
+    childStep.messages.emplace_back(error, true, 0);
   });
 
   callChanged();
+  d->checkPrint(error);
 }
 
 //##################################################################################################

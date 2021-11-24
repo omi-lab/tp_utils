@@ -49,6 +49,9 @@ public:
   virtual ~Progress();
 
   //################################################################################################
+  void setPrintToConsole(bool printToConsole);
+
+  //################################################################################################
   //! Set the progress
   /*!
   \param fraction of the way through this task (0 to 1)
