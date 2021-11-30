@@ -73,12 +73,12 @@ bool TP_UTILS_SHARED_EXPORT writeTextFile(const std::string& fileName, const std
 }
 
 //##################################################################################################
-bool TP_UTILS_SHARED_EXPORT writeBinaryFile(const std::string& fileName, const std::string& textOutput)
+bool TP_UTILS_SHARED_EXPORT writeBinaryFile(const std::string& fileName, const std::string& binaryOutput)
 {
   try
   {
     std::ofstream out(fileName, std::ios::binary);
-    out << textOutput;
+    out << binaryOutput;
     return true;
   }
   catch(...)

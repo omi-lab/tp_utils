@@ -33,7 +33,7 @@ bool TP_UTILS_SHARED_EXPORT writeTextFile(const std::string& fileName, const std
 \param textOutput - The text to write out
 \return True if the file was written, else false.
  */
-bool TP_UTILS_SHARED_EXPORT writeBinaryFile(const std::string& fileName, const std::string& textOutput);
+bool TP_UTILS_SHARED_EXPORT writeBinaryFile(const std::string& fileName, const std::string& binaryOutput);
 
 //##################################################################################################
 [[nodiscard]]nlohmann::json TP_UTILS_SHARED_EXPORT readJSONFile(const std::string& fileName);
