@@ -275,6 +275,17 @@ std::string fixedWidthKeepLeft(std::string data, size_t len, char pad)
 }
 
 //##################################################################################################
+void replace(std::string& result, const std::string& key, const std::string& value)
+{
+  size_t pos = result.find(key);
+  while(pos != std::string::npos)
+  {
+    result.replace(pos, key.size(), value);
+    pos = result.find(key, pos + value.size());
+  }
+}
+
+//##################################################################################################
 bool parseColor(const std::string& color, uint8_t& r, uint8_t& g, uint8_t& b, uint8_t& a)
 {
   r =   0;

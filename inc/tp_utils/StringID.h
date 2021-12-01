@@ -153,6 +153,12 @@ bool TP_UTILS_SHARED_EXPORT lessThanStringID(const StringID& lhs, const StringID
 */
 std::string TP_UTILS_SHARED_EXPORT join(const std::vector<StringID>& ids);
 
+//##################################################################################################
+std::string TP_UTILS_SHARED_EXPORT join(const std::vector<StringID>& ids, const std::string& del);
+
+//##################################################################################################
+std::string TP_UTILS_SHARED_EXPORT join(const std::vector<std::string>& parts, const std::string& del);
+
 }
 
 namespace std

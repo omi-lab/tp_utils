@@ -369,12 +369,31 @@ bool lessThanStringID(const StringID& lhs, const StringID& rhs)
 //##################################################################################################
 std::string join(const std::vector<StringID>& ids)
 {
+  return join(ids, ",");
+}
+
+//##################################################################################################
+std::string TP_UTILS_SHARED_EXPORT join(const std::vector<StringID>& ids, const std::string& del)
+{
   std::string result;
-  for(const StringID& id: ids)
+  for(const StringID& id : ids)
   {
     if(!result.empty())
-      result += ",";
+      result += del;
     result += id.keyString();
+  }
+  return result;
+}
+
+//##################################################################################################
+std::string TP_UTILS_SHARED_EXPORT join(const std::vector<std::string>& parts, const std::string& del)
+{
+  std::string result;
+  for(const auto& part : parts)
+  {
+    if(!result.empty())
+      result += del;
+    result += part;
   }
   return result;
 }

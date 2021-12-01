@@ -432,6 +432,10 @@ std::string TP_UTILS_SHARED_EXPORT fixedWidthKeepRight(std::string data, size_t 
 std::string TP_UTILS_SHARED_EXPORT fixedWidthKeepLeft(std::string data, size_t len, char pad);
 
 //##################################################################################################
+//! Replace key with value in result.
+void replace(std::string& result, const std::string& key, const std::string& value);
+
+//##################################################################################################
 bool TP_UTILS_SHARED_EXPORT parseColor(const std::string& color, uint8_t& r, uint8_t& g, uint8_t& b, uint8_t& a);
 
 //##################################################################################################
