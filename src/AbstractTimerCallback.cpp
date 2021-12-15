@@ -39,7 +39,7 @@ AbstractTimerCallbackFactory::~AbstractTimerCallbackFactory() = default;
 namespace
 {
 //##################################################################################################
-class PolledTimerCallback: public AbstractTimerCallback
+class PolledTimerCallback final : public AbstractTimerCallback
 {
 public:
   //################################################################################################
@@ -58,7 +58,7 @@ public:
   }
 
   //################################################################################################
-  void setTimeOutMS(int64_t timeOutMS) final
+  void setTimeOutMS(int64_t timeOutMS) override
   {
     AbstractTimerCallback::setTimeOutMS(timeOutMS);
     m_nextCall = currentTimeMS() + timeOutMS;
