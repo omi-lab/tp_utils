@@ -63,9 +63,9 @@ public:
   recommended that you use \link TP_DECLARE_ID \endlink and \link TP_DEFINE_ID \endlink. First
   declare the id in a public header file in your modules namespace, and them define them in a source
   file again in your modules namespace.
-  \param keyString - The string to generate the StringID from.
+  \param toString - The string to generate the StringID from.
   */
-  StringID(const std::string& keyString);
+  StringID(const std::string& toString);
 
   //################################################################################################
   //! Construct a StringID from a string
@@ -75,9 +75,9 @@ public:
   declare the id in a public header file in your modules namespace, and them define them in a source
   file again in your modules namespace.
 
-  \param keyString - The null terminated string to generate the StringID from.
+  \param toString - The null terminated string to generate the StringID from.
   */
-  StringID(const char* keyString);
+  StringID(const char* toString);
 
   //################################################################################################
   //! Copy another StringID
@@ -104,7 +104,7 @@ public:
   /*!
   \return The string or an empty string id this is an invalid StringID.
   */
-  const std::string& keyString() const;
+  const std::string& toString() const;
 
   //################################################################################################
   //! Returns true if this points to a valid key

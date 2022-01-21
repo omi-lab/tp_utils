@@ -56,19 +56,19 @@ StringIDManager::~StringIDManager()
 }
 
 //##################################################################################################
-int64_t StringIDManager::key(const std::string& keyString)
+int64_t StringIDManager::key(const std::string& toString)
 {
-  if(keyString.empty())
+  if(toString.empty())
     return 0;
 
   d->mutex.lock(TPM);
-  int64_t key = tpGetMapValue(d->keys, keyString, 0ll);
+  int64_t key = tpGetMapValue(d->keys, toString, 0ll);
 
   if(!key)
   {
     key = int64_t(d->keys.size())+1;
-    d->keys[keyString] = key;
-    d->stringKeys[key] = keyString;
+    d->keys[toString] = key;
+    d->stringKeys[key] = toString;
   }
 
   d->mutex.unlock(TPM);
@@ -77,13 +77,13 @@ int64_t StringIDManager::key(const std::string& keyString)
 }
 
 //##################################################################################################
-std::string StringIDManager::keyString(int64_t key)
+std::string StringIDManager::toString(int64_t key)
 {
   d->mutex.lock(TPM);
-  std::string keyString = tpGetMapValue(d->stringKeys, key, std::string());
+  std::string toString = tpGetMapValue(d->stringKeys, key, std::string());
   d->mutex.unlock(TPM);
 
-  return keyString;
+  return toString;
 }
 
 //##################################################################################################

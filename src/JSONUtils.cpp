@@ -149,7 +149,7 @@ nlohmann::json stringIDsToJSON(const std::vector<StringID>& stringIDs)
 {
   nlohmann::json j=nlohmann::json::array();
   for(const auto& stringID : stringIDs)
-    j.push_back(stringID.keyString());
+    j.push_back(stringID.toString());
   return j;
 }
 

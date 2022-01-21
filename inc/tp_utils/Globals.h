@@ -275,6 +275,18 @@ void tpRemoveOne(T& container, const typename T::value_type& value)
 }
 
 //##################################################################################################
+template<typename T>
+void tpRemoveAll(T& container, const typename T::value_type& value)
+{
+  auto i = std::find(container.begin(), container.end(), value);
+  while(i != container.end())
+  {
+    container.erase(i);
+    i = std::find(container.begin(), container.end(), value);
+  }
+}
+
+//##################################################################################################
 template<typename T, typename I>
 void tpRemoveAt(T& container, I index)
 {

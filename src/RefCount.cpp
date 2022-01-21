@@ -36,7 +36,7 @@ public:
 
     for(const auto& i : instances)
     {
-      maxLength = tpMax(maxLength, i.first.keyString().size());
+      maxLength = tpMax(maxLength, i.first.toString().size());
       maxDigits = tpMax(maxDigits, std::to_string(i.second.total).size());
     }
 
@@ -54,7 +54,7 @@ public:
 
     for(const auto& i : instances)
     {
-      title = i.first.keyString();
+      title = i.first.toString();
       std::string count = std::to_string(i.second.count);
       std::string total = std::to_string(i.second.total);
 
@@ -84,7 +84,7 @@ public:
     mutex.lock();
     for(const auto& i : instances)
     {
-      auto title = i.first.keyString();
+      auto title = i.first.toString();
       result[title+"_count"] = i.second.count;
       result[title+"_total"] = i.second.total;
     }
@@ -123,7 +123,7 @@ void RefCount::unref(const tp_utils::StringID& type)
   instanceDetails.count--;
   if(instanceDetails.count<0)
   {
-    tpWarning() << "RefCount::unref, error! Type: " << type.keyString().data();
+    tpWarning() << "RefCount::unref, error! Type: " << type.toString().data();
     printStackTrace();
     abort();
   }

@@ -23,13 +23,13 @@ struct StringID::SharedData
 {
   TPMutex mutex{TPM};
 
-  std::string keyString;
+  std::string toString;
   std::map<StringIDManager*, int64_t> keys;
 
   int referenceCount{0};
 
-  SharedData(std::string keyString_):
-    keyString(std::move(keyString_))
+  SharedData(std::string toString_):
+    toString(std::move(toString_))
   {
   }
 };
@@ -79,19 +79,19 @@ StringID::StringID(StringIDManager* manager, int64_t key):
   {
     //This can involve a call to the db so we unlock here to avoid tying things up
     staticData.mutex.unlock(TPM);
-    std::string keyString = manager->keyString(key);
+    std::string toString = manager->toString(key);
     staticData.mutex.lock(TPM);
 
-    if(!keyString.empty())
+    if(!toString.empty())
     {
       //std::map<std::string, SharedData*> allKeys;
 
-      sd = tpGetMapValue(staticData.allKeys, keyString);
+      sd = tpGetMapValue(staticData.allKeys, toString);
 
       if(!sd)
       {
-        sd = new SharedData(keyString);
-        staticData.allKeys[keyString] = sd;
+        sd = new SharedData(toString);
+        staticData.allKeys[toString] = sd;
       }
 
       sd->keys[manager] = key;
@@ -102,7 +102,7 @@ StringID::StringID(StringIDManager* manager, int64_t key):
   if(sd)
   {
     TP_MUTEX_LOCKER(sd->mutex);
-    if(sd->keyString.empty())
+    if(sd->toString.empty())
       sd=nullptr;
     else
       sd->referenceCount++;
@@ -111,21 +111,21 @@ StringID::StringID(StringIDManager* manager, int64_t key):
 }
 
 //##################################################################################################
-StringID::StringID(const std::string& keyString):
+StringID::StringID(const std::string& toString):
   sd(nullptr)
 {
-  if(keyString.empty())
+  if(toString.empty())
     return;
 
   StaticData& staticData(StringID::staticData());
   staticData.mutex.lock(TPM);
 
-  sd = tpGetMapValue(staticData.allKeys, keyString);
+  sd = tpGetMapValue(staticData.allKeys, toString);
 
   if(!sd)
   {
-    sd = new SharedData(keyString);
-    staticData.allKeys[keyString] = sd;
+    sd = new SharedData(toString);
+    staticData.allKeys[toString] = sd;
   }
 
   if(sd)
@@ -139,22 +139,22 @@ StringID::StringID(const std::string& keyString):
 }
 
 //##################################################################################################
-StringID::StringID(const char* keyString_):
+StringID::StringID(const char* toString_):
   sd(nullptr)
 {
-  std::string keyString(keyString_);
-  if(keyString.empty())
+  std::string toString(toString_);
+  if(toString.empty())
     return;
 
   StaticData& staticData(StringID::staticData());
   staticData.mutex.lock(TPM);
 
-  sd = tpGetMapValue(staticData.allKeys, keyString);
+  sd = tpGetMapValue(staticData.allKeys, toString);
 
   if(!sd)
   {
-    sd = new SharedData(keyString);
-    staticData.allKeys[keyString] = sd;
+    sd = new SharedData(toString);
+    staticData.allKeys[toString] = sd;
   }
 
   if(sd)
@@ -184,7 +184,7 @@ StringID& StringID::operator=(const StringID& other)
     //Delete unused shared data
     if(!sd->referenceCount)
     {
-      staticData.allKeys.erase(sd->keyString);
+      staticData.allKeys.erase(sd->toString);
 
       for(const auto& i : sd->keys)
         staticData.managers[i.first].erase(i.second);
@@ -225,7 +225,7 @@ StringID::~StringID()
   //Delete unused shared data
   if(!sd->referenceCount)
   {
-    staticData.allKeys.erase(sd->keyString);
+    staticData.allKeys.erase(sd->toString);
 
     for(const auto& i : sd->keys)
       staticData.managers[i.first].erase(i.second);
@@ -258,10 +258,10 @@ int64_t StringID::key(StringIDManager* manager) const
 
     if(!key)
     {
-      std::string keyString = sd->keyString;
+      std::string toString = sd->toString;
       sd->mutex.unlock(TPM);
 
-      key = manager->key(keyString);
+      key = manager->key(toString);
 
       if(key)
       {
@@ -282,13 +282,13 @@ int64_t StringID::key(StringIDManager* manager) const
 }
 
 //##################################################################################################
-const std::string& StringID::keyString() const
+const std::string& StringID::toString() const
 {
   static const std::string emptyString;
   if(!sd)
     return emptyString;
 
-  return sd->keyString;
+  return sd->toString;
 }
 
 //##################################################################################################
@@ -304,7 +304,7 @@ std::vector<std::string> StringID::toStringList(const std::vector<StringID>& str
   stringList.reserve(stringIDs.size());
 
   for(const StringID& stringID : stringIDs)
-    stringList.emplace_back(stringID.keyString());
+    stringList.emplace_back(stringID.toString());
 
   return stringList;
 }
@@ -363,7 +363,7 @@ bool operator!=(const StringID& a, const StringID& b)
 //##################################################################################################
 bool lessThanStringID(const StringID& lhs, const StringID& rhs)
 {
-  return lhs.keyString() < rhs.keyString();
+  return lhs.toString() < rhs.toString();
 }
 
 //##################################################################################################
@@ -380,7 +380,7 @@ std::string TP_UTILS_SHARED_EXPORT join(const std::vector<StringID>& ids, const 
   {
     if(!result.empty())
       result += del;
-    result += id.keyString();
+    result += id.toString();
   }
   return result;
 }

@@ -17,22 +17,22 @@ public:
   virtual ~StringIDManager();
 
   //################################################################################################
-  //! Get the key for keyString
+  //! Get the key for toString
   /*!
-  This should return the key for a given keyString, if it can't then it should return 0. Keys can be
+  This should return the key for a given toString, if it can't then it should return 0. Keys can be
   any number greater than 0. You can re-implement this to store keys in your data own store.
 
   \warning This must be thread safe!
 
-  \param keyString - The string to produce the key for
+  \param toString - The string to produce the key for
   \return The key
   */
-  virtual int64_t key(const std::string& keyString);
+  virtual int64_t key(const std::string& toString);
 
   //################################################################################################
-  //! Get the keyString for key
+  //! Get the toString for key
   /*!
-  This should return the keyString for a given key, if it can't then it should return an empty
+  This should return the toString for a given key, if it can't then it should return an empty
   string. Keys can be any number greater than 0, and key strings can be any string at least one
   character long and containing alphanumeric characters, hyphens, and under scores. You can
   re-implement this to store keys in your own data store.
@@ -42,7 +42,7 @@ public:
   \param  key - The string to produce the key for
   \return The key string for key
   */
-  virtual std::string keyString(int64_t key);
+  virtual std::string toString(int64_t key);
 
   //################################################################################################
   //! Save the state of the manager

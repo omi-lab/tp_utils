@@ -103,13 +103,13 @@ union TPPixel
   }
 
   template<typename T>
-  T toFloat3()
+  T toFloat3() const
   {
     return {float(r)/255.0f, float(g)/255.0f, float(b)/255.0f};
   }
 
   template<typename T>
-  T toFloat4()
+  T toFloat4() const
   {
     return {float(r)/255.0f, float(g)/255.0f, float(b)/255.0f, float(a)/255.0f};
   }
