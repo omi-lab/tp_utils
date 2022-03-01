@@ -1,21 +1,40 @@
 #include "tp_utils/StringID.h"
-#include "tp_utils/StringIDManager.h"
 #include "tp_utils/MutexUtils.h"
 
 #include <unordered_map>
-
-#include <map>
 #include <mutex>
+#include <iostream>
 
 namespace tp_utils
 {
+
+namespace
+{
+//##################################################################################################
+struct StringHash_lt
+{
+  std::string string;
+  size_t hash;
+};
+
+//##################################################################################################
+auto hashStringHash_lt = [](const StringHash_lt& k)
+{
+  return k.hash;
+};
+
+//##################################################################################################
+auto eqStringHash_lt = [](const StringHash_lt& a, const StringHash_lt& b)
+{
+  return a.hash==b.hash && a.string==b.string;
+};
+}
 
 //##################################################################################################
 struct StringID::StaticData
 {
   TPMutex mutex{TPM};
-  std::map<StringIDManager*, std::map<int64_t, SharedData*>> managers;
-  std::map<std::string, SharedData*> allKeys;
+  std::unordered_map<StringHash_lt, SharedData*, decltype(hashStringHash_lt), decltype(eqStringHash_lt)> allKeys{128, hashStringHash_lt, eqStringHash_lt};
 };
 
 //##################################################################################################
@@ -23,13 +42,12 @@ struct StringID::SharedData
 {
   TPMutex mutex{TPM};
 
-  std::string toString;
-  std::map<StringIDManager*, int64_t> keys;
+  StringHash_lt hash;
 
   int referenceCount{0};
 
-  SharedData(std::string toString_):
-    toString(std::move(toString_))
+  SharedData(const StringHash_lt& hash_):
+    hash(hash_)
   {
   }
 };
@@ -60,75 +78,28 @@ StringID::StringID(StringID&& other) noexcept:
 }
 
 //##################################################################################################
-StringID::StringID(StringIDManager* manager, int64_t key):
+StringID::StringID(const std::string& string):
   sd(nullptr)
 {
-  if(!key)
+  if(string.empty())
     return;
 
-  StaticData& staticData(StringID::staticData());
+  StringHash_lt hash;
+  hash.string = string;
+  hash.hash = std::hash<std::string>()(hash.string);
+
+  StaticData& staticData(StringID::staticData(hash.hash));
   staticData.mutex.lock(TPM);
 
-  std::map<int64_t, SharedData*>& managerKeys = staticData.managers[manager];
-  {
-    auto i = managerKeys.find(key);
-    sd = (i == managerKeys.cend())?nullptr:(*i).second;
-  }
+  sd = tpGetMapValue(staticData.allKeys, hash);
 
   if(!sd)
   {
-    //This can involve a call to the db so we unlock here to avoid tying things up
-    staticData.mutex.unlock(TPM);
-    std::string toString = manager->toString(key);
-    staticData.mutex.lock(TPM);
-
-    if(!toString.empty())
-    {
-      //std::map<std::string, SharedData*> allKeys;
-
-      sd = tpGetMapValue(staticData.allKeys, toString);
-
-      if(!sd)
-      {
-        sd = new SharedData(toString);
-        staticData.allKeys[toString] = sd;
-      }
-
-      sd->keys[manager] = key;
-      managerKeys[key] = sd;
-    }
+    sd = new SharedData(hash);
+    sd->referenceCount++;
+    staticData.allKeys[hash] = sd;
   }
-
-  if(sd)
-  {
-    TP_MUTEX_LOCKER(sd->mutex);
-    if(sd->toString.empty())
-      sd=nullptr;
-    else
-      sd->referenceCount++;
-  }
-  staticData.mutex.unlock(TPM);
-}
-
-//##################################################################################################
-StringID::StringID(const std::string& toString):
-  sd(nullptr)
-{
-  if(toString.empty())
-    return;
-
-  StaticData& staticData(StringID::staticData());
-  staticData.mutex.lock(TPM);
-
-  sd = tpGetMapValue(staticData.allKeys, toString);
-
-  if(!sd)
-  {
-    sd = new SharedData(toString);
-    staticData.allKeys[toString] = sd;
-  }
-
-  if(sd)
+  else
   {
     sd->mutex.lock(TPM);
     sd->referenceCount++;
@@ -139,25 +110,29 @@ StringID::StringID(const std::string& toString):
 }
 
 //##################################################################################################
-StringID::StringID(const char* toString_):
+StringID::StringID(const char* string_):
   sd(nullptr)
 {
-  std::string toString(toString_);
-  if(toString.empty())
+  std::string string(string_);
+  if(string.empty())
     return;
 
-  StaticData& staticData(StringID::staticData());
+  StringHash_lt hash;
+  hash.string = string;
+  hash.hash = std::hash<std::string>()(hash.string);
+
+  StaticData& staticData(StringID::staticData(hash.hash));
   staticData.mutex.lock(TPM);
 
-  sd = tpGetMapValue(staticData.allKeys, toString);
+  sd = tpGetMapValue(staticData.allKeys, hash);
 
   if(!sd)
   {
-    sd = new SharedData(toString);
-    staticData.allKeys[toString] = sd;
+    sd = new SharedData(hash);
+    sd->referenceCount++;
+    staticData.allKeys[hash] = sd;
   }
-
-  if(sd)
+  else
   {
     sd->mutex.lock(TPM);
     sd->referenceCount++;
@@ -173,9 +148,6 @@ StringID& StringID::operator=(const StringID& other)
   if(&other == this || other.sd == sd)
     return *this;
 
-  StaticData& staticData(StringID::staticData());
-  staticData.mutex.lock(TPM);
-
   if(sd)
   {
     sd->mutex.lock(TPM);
@@ -184,11 +156,10 @@ StringID& StringID::operator=(const StringID& other)
     //Delete unused shared data
     if(!sd->referenceCount)
     {
-      staticData.allKeys.erase(sd->toString);
-
-      for(const auto& i : sd->keys)
-        staticData.managers[i.first].erase(i.second);
-
+      StaticData& staticData(StringID::staticData(sd->hash.hash));
+      staticData.mutex.lock(TPM);
+      staticData.allKeys.erase(sd->hash);
+      staticData.mutex.unlock(TPM);
       sd->mutex.unlock(TPM);
       delete sd;
     }
@@ -205,8 +176,6 @@ StringID& StringID::operator=(const StringID& other)
     sd->mutex.unlock(TPM);
   }
 
-  staticData.mutex.unlock(TPM);
-
   return *this;
 }
 
@@ -216,69 +185,21 @@ StringID::~StringID()
   if(!sd)
     return;
 
-  StaticData& staticData(StringID::staticData());
-  staticData.mutex.lock(TPM);
-
   sd->mutex.lock(TPM);
   sd->referenceCount--;
 
   //Delete unused shared data
   if(!sd->referenceCount)
-  {
-    staticData.allKeys.erase(sd->toString);
-
-    for(const auto& i : sd->keys)
-      staticData.managers[i.first].erase(i.second);
-
+  {    
+    StaticData& staticData(StringID::staticData(sd->hash.hash));
+    staticData.mutex.lock(TPM);
+    staticData.allKeys.erase(sd->hash);
+    staticData.mutex.unlock(TPM);
     sd->mutex.unlock(TPM);
     delete sd;
   }
   else
     sd->mutex.unlock(TPM);
-
-
-  staticData.mutex.unlock(TPM);
-}
-
-//##################################################################################################
-int64_t StringID::key(StringIDManager* manager) const
-{
-  if(!sd)
-    return 0;
-
-  sd->mutex.lock(TPM);
-  int64_t key = tpGetMapValue(sd->keys, manager, 0);
-  sd->mutex.unlock(TPM);
-
-  if(!key)
-  {
-
-    sd->mutex.lock(TPM);
-    key = tpGetMapValue(sd->keys, manager, 0);
-
-    if(!key)
-    {
-      std::string toString = sd->toString;
-      sd->mutex.unlock(TPM);
-
-      key = manager->key(toString);
-
-      if(key)
-      {
-        StaticData& staticData(StringID::staticData());
-        staticData.mutex.lock(TPM);
-        sd->mutex.lock(TPM);
-        sd->keys[manager] = key;
-        staticData.managers[manager][key] = sd;
-        sd->mutex.unlock(TPM);
-        staticData.mutex.unlock(TPM);
-      }
-    }
-    else
-      sd->mutex.unlock(TPM);
-  }
-
-  return key;
 }
 
 //##################################################################################################
@@ -288,7 +209,7 @@ const std::string& StringID::toString() const
   if(!sd)
     return emptyString;
 
-  return sd->toString;
+  return sd->hash.string;
 }
 
 //##################################################################################################
@@ -324,28 +245,12 @@ std::vector<StringID> StringID::fromStringList(const std::vector<std::string>& s
 }
 
 //##################################################################################################
-void StringID::managerDestroyed(StringIDManager* manager)
+StringID::StaticData& StringID::staticData(size_t hash)
 {
-  StaticData& staticData(StringID::staticData());
-  staticData.mutex.lock(TPM);
-
-  for(const auto& p : tpConst(staticData.managers[manager]))
-  {
-    SharedData* sd = p.second;
-    sd->mutex.lock(TPM);
-    sd->keys.erase(manager);
-    sd->mutex.unlock(TPM);
-  }
-
-  staticData.managers.erase(manager);
-  staticData.mutex.unlock(TPM);
-}
-
-//##################################################################################################
-StringID::StaticData& StringID::staticData()
-{
-  static StaticData staticData;
-  return staticData;
+  constexpr size_t n{256};
+  constexpr size_t m{n-1};
+  static StaticData staticData[n];
+  return staticData[hash&m];
 }
 
 //##################################################################################################

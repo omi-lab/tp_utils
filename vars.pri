@@ -15,9 +15,6 @@ HEADERS += inc/tp_utils/JSONUtils.h
 SOURCES += src/StringID.cpp
 HEADERS += inc/tp_utils/StringID.h
 
-SOURCES += src/StringIDManager.cpp
-HEADERS += inc/tp_utils/StringIDManager.h
-
 SOURCES += src/RefCount.cpp
 HEADERS += inc/tp_utils/RefCount.h
 

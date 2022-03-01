@@ -5,18 +5,6 @@
 
 namespace tp_utils
 {
-class StringIDManager;
-
-//! A list of %StringID's currently in use.
-/*!
-\defgroup StringIDs StringID's
-
-StringID's are the most important part of tp Toolkit, they are used for tying components together,
-as enums, as names, and to describe types. They are designed to be easy to use, and fast to compare.
-See \link StringID \endlink for more details of how StringID's should be used.
-
-Here I will try to document the StringID's that are currently in use.
-*/
 
 //##################################################################################################
 //! A class that implements efficent string based identifiers
@@ -26,7 +14,6 @@ linked together by strings, and this class is used to make this efficent.
 */
 class  TP_UTILS_SHARED_EXPORT StringID final
 {
-  friend class StringIDManager;
   friend bool TP_UTILS_SHARED_EXPORT operator==(const StringID& a, const StringID& b);
   friend bool TP_UTILS_SHARED_EXPORT operator!=(const StringID& a, const StringID& b);
   friend struct std::hash<tp_utils::StringID>;
@@ -45,27 +32,15 @@ public:
   StringID(StringID&& other) noexcept;
 
   //################################################################################################
-  //! Fetch a string id from a manager
-  /*!
-  This is how StringID's are stored in databases and in files, it will use the key to get the full
-  details of the StringID from the manager. Comparison of StringID's generated in this way is just
-  as fast as any other.
-
-  \param manager - The manager that can convert the key into a valid string.
-  \param key - The key of the desired StringID in this manager.
-  */
-  StringID(StringIDManager* manager, int64_t key);
-
-  //################################################################################################
   //! Construct a StringID from a string
   /*!
   If you are declaring a StringID's to be used in your application or across a module, it is
   recommended that you use \link TP_DECLARE_ID \endlink and \link TP_DEFINE_ID \endlink. First
   declare the id in a public header file in your modules namespace, and them define them in a source
   file again in your modules namespace.
-  \param toString - The string to generate the StringID from.
+  \param string - The string to generate the StringID from.
   */
-  StringID(const std::string& toString);
+  StringID(const std::string& string);
 
   //################################################################################################
   //! Construct a StringID from a string
@@ -75,9 +50,9 @@ public:
   declare the id in a public header file in your modules namespace, and them define them in a source
   file again in your modules namespace.
 
-  \param toString - The null terminated string to generate the StringID from.
+  \param string - The null terminated string to generate the StringID from.
   */
-  StringID(const char* toString);
+  StringID(const char* string);
 
   //################################################################################################
   //! Copy another StringID
@@ -86,18 +61,6 @@ public:
   //################################################################################################
   //! Decrement the reference count and clean up
   ~StringID();
-
-  //################################################################################################
-  //! Return the key that manager uses to reference this string id
-  /*!
-  This will return the key that manager uses to index this StringID, this is often an index in a
-  database.
-
-  \param manager - The manager to fetch, or create the key from.
-  \return - A key or 0 if there was a problem.
-  \sa \link StringIDManager::key() \endlink
-  */
-  int64_t key(StringIDManager* manager) const;
 
   //################################################################################################
   //! Returns the string that this StringID represents
@@ -117,14 +80,12 @@ public:
   static std::vector<StringID> fromStringList(const std::vector<std::string>& stringIDs);
 
 private:
-  static void managerDestroyed(StringIDManager* manager);
-
   struct SharedData;
   SharedData* sd;
   friend struct SharedData;
 
   struct StaticData;
-  static StaticData& staticData();
+  static StaticData& staticData(size_t hash);
   friend struct StaticData;
 };
 

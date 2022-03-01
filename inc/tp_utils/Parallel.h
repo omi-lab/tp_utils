@@ -22,8 +22,8 @@ void parallel(T worker)
   auto locker = [&](auto closure){closure();};
   worker(locker);
 #else
-  TPMutex mutex;
-  auto locker = [&](auto closure){mutex.locked(closure);};
+  TPMutex mutex{TPM};
+  auto locker = [&](auto closure){mutex.locked(TPMc closure);};
 
   size_t threads = std::thread::hardware_concurrency();
   std::vector<std::thread> workers;

@@ -229,7 +229,7 @@ Progress* Progress::addChildStep(const std::string& message, float completeFract
 {
   Progress* childProgress{nullptr};
 
-  d->mutex.locked([&]
+  d->mutex.locked(TPMc [&]
   {
     float min=0.0f;
 
