@@ -165,6 +165,14 @@ std::string FunctionTimeStats::takeResults()
 }
 
 //##################################################################################################
+void FunctionTimeStats::reset()
+{
+  auto i = instance();
+  TP_MUTEX_LOCKER(i->mutex);
+  i->stats.clear();
+}
+
+//##################################################################################################
 std::map<std::string, size_t> FunctionTimeStats::keyValueResults()
 {
   std::map<std::string, size_t> result;
