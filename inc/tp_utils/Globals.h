@@ -3,6 +3,7 @@
 
 #include "lib_platform/Warnings.h"
 #include "lib_platform/RandomDevice.h"
+#include "lib_platform/Globals.h"
 
 #include <functional>
 

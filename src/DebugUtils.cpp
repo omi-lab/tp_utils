@@ -42,8 +42,7 @@ std::string getCurrentTimestamp()
 
   auto millis = transformed % 1000;
 
-  std::time_t tt;
-  tt = system_clock::to_time_t( currentTime );
+  time_t tt = system_clock::to_time_t( currentTime );
   auto timeinfo = localtime(&tt);
 
   char bufferA[80];
