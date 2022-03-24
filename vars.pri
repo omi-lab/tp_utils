@@ -51,6 +51,9 @@ HEADERS += inc/tp_utils/SignalHandler.h
 SOURCES += src/Translation.cpp
 HEADERS += inc/tp_utils/Translation.h
 
+SOURCES += src/Garbage.cpp
+HEADERS += inc/tp_utils/Garbage.h
+
 HEADERS += inc/tp_utils/Parallel.h
 
 HEADERS += inc/tp_utils/CallbackCollection.h

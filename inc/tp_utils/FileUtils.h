@@ -83,6 +83,9 @@ bool TP_UTILS_SHARED_EXPORT rm(const std::string& path, bool recursive);
 bool TP_UTILS_SHARED_EXPORT setCWD(const std::string& path);
 
 //##################################################################################################
+std::string TP_UTILS_SHARED_EXPORT cwd();
+
+//##################################################################################################
 enum perms : unsigned
 {
   owner_read = 0400 , // S_IRUSR, Read permission, owner
@@ -123,6 +126,7 @@ extern bool TP_UTILS_SHARED_EXPORT (*rmCallback)(const std::string& path, bool r
 extern bool TP_UTILS_SHARED_EXPORT (*existsCallback)(const std::string& path);
 extern size_t TP_UTILS_SHARED_EXPORT (*fileSizeCallback)(const std::string& path);
 extern bool TP_UTILS_SHARED_EXPORT (*setCWDCallback)(const std::string& path);
+extern std::string TP_UTILS_SHARED_EXPORT (*cwdCallback)();
 extern bool TP_UTILS_SHARED_EXPORT (*setPermissionsCallback)(const std::string& path, unsigned permissionsh);
 
 }

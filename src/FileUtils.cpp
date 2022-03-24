@@ -139,6 +139,7 @@ bool (*rmCallback)(const std::string& path, bool recursive)=nullptr;
 bool (*existsCallback)(const std::string& path)=nullptr;
 size_t (*fileSizeCallback)(const std::string& path)=nullptr;
 bool (*setCWDCallback)(const std::string& path)=nullptr;
+std::string (*cwdCallback)()=nullptr;
 bool (*setPermissionsCallback)(const std::string& path, unsigned permissionsh)=nullptr;
 
 //##################################################################################################
@@ -193,6 +194,12 @@ size_t fileSize(const std::string& path)
 bool setCWD(const std::string& path)
 {
   return setCWDCallback?setCWDCallback(path):false;
+}
+
+//##################################################################################################
+std::string cwd()
+{
+  return cwdCallback?cwdCallback():std::string();
 }
 
 namespace
