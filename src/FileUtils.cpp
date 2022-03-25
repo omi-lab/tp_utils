@@ -221,7 +221,11 @@ bool setPermissions(const std::string& path, unsigned permissions)
 std::string fileName(const std::string& path)
 {
   std::vector<std::string> results;
-  tpSplit(results, path, del, SplitBehavior::SkipEmptyParts);
+
+  std::string s = path;
+  std::replace(s.begin(), s.end(), '\\', '/');
+
+  tpSplit(results, s, '/', SplitBehavior::SkipEmptyParts);
   return results.empty()?"":results.back();
 }
 
@@ -238,6 +242,11 @@ std::string directoryName(const std::string& path)
 std::string pathAppend(const std::string& path, const std::string& part)
 {
   auto result = path;
+
+  if(del == '\\')
+    std::replace(result.begin(), result.end(), '/', '\\');
+  else
+    std::replace(result.begin(), result.end(), '\\', '/');
 
   if(!result.empty())
     if(!tpEndsWith(result, std::string(1, del)))
