@@ -12,37 +12,37 @@ namespace tp_utils
 {
 
 //##################################################################################################
-[[nodiscard]]std::string TP_UTILS_SHARED_EXPORT readTextFile(const std::string& fileName);
+[[nodiscard]]std::string TP_UTILS_SHARED_EXPORT readTextFile(const std::string& filename);
 
 //##################################################################################################
-[[nodiscard]]std::string TP_UTILS_SHARED_EXPORT readBinaryFile(const std::string& fileName);
-
-//##################################################################################################
-//! Writes a string to a file
-/*!
-\param fileName - The path to the file to write to
-\param textOutput - The text to write out
-\return True if the file was written, else false.
- */
-bool TP_UTILS_SHARED_EXPORT writeTextFile(const std::string& fileName, const std::string& textOutput, bool append=false);
+[[nodiscard]]std::string TP_UTILS_SHARED_EXPORT readBinaryFile(const std::string& filename);
 
 //##################################################################################################
 //! Writes a string to a file
 /*!
-\param fileName - The path to the file to write to
+\param filename - The path to the file to write to
 \param textOutput - The text to write out
 \return True if the file was written, else false.
  */
-bool TP_UTILS_SHARED_EXPORT writeBinaryFile(const std::string& fileName, const std::string& binaryOutput);
+bool TP_UTILS_SHARED_EXPORT writeTextFile(const std::string& filename, const std::string& textOutput, bool append=false);
 
 //##################################################################################################
-[[nodiscard]]nlohmann::json TP_UTILS_SHARED_EXPORT readJSONFile(const std::string& fileName);
+//! Writes a string to a file
+/*!
+\param filename - The path to the file to write to
+\param textOutput - The text to write out
+\return True if the file was written, else false.
+ */
+bool TP_UTILS_SHARED_EXPORT writeBinaryFile(const std::string& filename, const std::string& binaryOutput);
 
 //##################################################################################################
-bool TP_UTILS_SHARED_EXPORT writeJSONFile(const std::string& fileName, const nlohmann::json& j, int indent = -1);
+[[nodiscard]]nlohmann::json TP_UTILS_SHARED_EXPORT readJSONFile(const std::string& filename);
 
 //##################################################################################################
-bool TP_UTILS_SHARED_EXPORT writePrettyJSONFile(const std::string& fileName, const nlohmann::json& j);
+bool TP_UTILS_SHARED_EXPORT writeJSONFile(const std::string& filename, const nlohmann::json& j, int indent = -1);
+
+//##################################################################################################
+bool TP_UTILS_SHARED_EXPORT writePrettyJSONFile(const std::string& filename, const nlohmann::json& j);
 
 //##################################################################################################
 //!
@@ -108,7 +108,7 @@ enum perms : unsigned
 bool TP_UTILS_SHARED_EXPORT setPermissions(const std::string& path, unsigned permissions);
 
 //##################################################################################################
-[[nodiscard]]std::string TP_UTILS_SHARED_EXPORT fileName(const std::string& path);
+[[nodiscard]]std::string TP_UTILS_SHARED_EXPORT filename(const std::string& path);
 
 //##################################################################################################
 [[nodiscard]]std::string TP_UTILS_SHARED_EXPORT directoryName(const std::string& path);

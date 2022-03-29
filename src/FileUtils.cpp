@@ -7,11 +7,11 @@ namespace tp_utils
 {
 
 //##################################################################################################
-std::string TP_UTILS_SHARED_EXPORT readTextFile(const std::string& fileName)
+std::string TP_UTILS_SHARED_EXPORT readTextFile(const std::string& filename)
 {
   try
   {
-    std::ifstream in(fileName);
+    std::ifstream in(filename);
     return std::string((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
   }
   catch(...)
@@ -21,11 +21,11 @@ std::string TP_UTILS_SHARED_EXPORT readTextFile(const std::string& fileName)
 }
 
 //##################################################################################################
-std::string TP_UTILS_SHARED_EXPORT readBinaryFile(const std::string& fileName)
+std::string TP_UTILS_SHARED_EXPORT readBinaryFile(const std::string& filename)
 {
   try
   {
-    std::ifstream in(fileName, std::ios::binary | std::ios::ate);
+    std::ifstream in(filename, std::ios::binary | std::ios::ate);
     std::string results;
     auto size = in.tellg();
     if(size>0)
@@ -52,16 +52,16 @@ std::string TP_UTILS_SHARED_EXPORT readBinaryFile(const std::string& fileName)
 }
 
 //##################################################################################################
-bool TP_UTILS_SHARED_EXPORT writeTextFile(const std::string& fileName, const std::string& textOutput, bool append)
+bool TP_UTILS_SHARED_EXPORT writeTextFile(const std::string& filename, const std::string& textOutput, bool append)
 {
   try
   {
     std::ofstream out;
 
     if(append)
-      out.open(fileName, std::ios_base::out | std::ios_base::app);
+      out.open(filename, std::ios_base::out | std::ios_base::app);
     else
-      out.open(fileName, std::ios_base::out | std::ios_base::trunc);
+      out.open(filename, std::ios_base::out | std::ios_base::trunc);
 
     out << textOutput;
     return true;
@@ -73,11 +73,11 @@ bool TP_UTILS_SHARED_EXPORT writeTextFile(const std::string& fileName, const std
 }
 
 //##################################################################################################
-bool TP_UTILS_SHARED_EXPORT writeBinaryFile(const std::string& fileName, const std::string& binaryOutput)
+bool TP_UTILS_SHARED_EXPORT writeBinaryFile(const std::string& filename, const std::string& binaryOutput)
 {
   try
   {
-    std::ofstream out(fileName, std::ios::binary);
+    std::ofstream out(filename, std::ios::binary);
     out << binaryOutput;
     return true;
   }
@@ -88,11 +88,11 @@ bool TP_UTILS_SHARED_EXPORT writeBinaryFile(const std::string& fileName, const s
 }
 
 //##################################################################################################
-nlohmann::json TP_UTILS_SHARED_EXPORT readJSONFile(const std::string& fileName)
+nlohmann::json TP_UTILS_SHARED_EXPORT readJSONFile(const std::string& filename)
 {
   try
   {
-    std::string str = readTextFile(fileName);
+    std::string str = readTextFile(filename);
     return nlohmann::json::parse(str);
   }
   catch(...)
@@ -102,12 +102,12 @@ nlohmann::json TP_UTILS_SHARED_EXPORT readJSONFile(const std::string& fileName)
 }
 
 //##################################################################################################
-bool writeJSONFile(const std::string& fileName, const nlohmann::json& j, int indent)
+bool writeJSONFile(const std::string& filename, const nlohmann::json& j, int indent)
 {
   try
   {
     std::string s = j.dump(indent);
-    return writeTextFile(fileName, s);
+    return writeTextFile(filename, s);
   }
   catch(...)
   {
@@ -116,12 +116,12 @@ bool writeJSONFile(const std::string& fileName, const nlohmann::json& j, int ind
 }
 
 //##################################################################################################
-bool writePrettyJSONFile(const std::string& fileName, const nlohmann::json& j)
+bool writePrettyJSONFile(const std::string& filename, const nlohmann::json& j)
 {
   try
   {
     std::string s = j.dump(2);
-    return writeTextFile(fileName, s);
+    return writeTextFile(filename, s);
   }
   catch(...)
   {
@@ -218,7 +218,7 @@ bool setPermissions(const std::string& path, unsigned permissions)
 }
 
 //##################################################################################################
-std::string fileName(const std::string& path)
+std::string filename(const std::string& path)
 {
   std::vector<std::string> results;
 
