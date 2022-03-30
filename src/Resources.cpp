@@ -1,4 +1,5 @@
 #include "tp_utils/Resources.h"
+#include "tp_utils/FileUtils.h"
 
 namespace tp_utils
 {
@@ -36,5 +37,12 @@ void addResource(const std::string& name, const char* data, size_t size)
   r.data = data;
   r.size = size;
 }
+
+//##################################################################################################
+void TP_UTILS_SHARED_EXPORT writeResource(const std::string& from, const std::string& to)
+{
+  auto r = tp_utils::resource(from);
+  tp_utils::writeTextFile(to, std::string(r.data, r.size));
+};
 
 }

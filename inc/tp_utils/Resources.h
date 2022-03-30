@@ -36,6 +36,9 @@ std::string TP_UTILS_SHARED_EXPORT resourceString(const std::string& name);
 //##################################################################################################
 void TP_UTILS_SHARED_EXPORT addResource(const std::string& name,  const char* data, size_t size);
 
+//##################################################################################################
+void TP_UTILS_SHARED_EXPORT writeResource(const std::string& from, const std::string& to);
+
 }
 
 #endif
