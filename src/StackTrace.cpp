@@ -757,7 +757,7 @@ std::string formatStackTrace(EXCEPTION_POINTERS* pExceptionPtrs)
       IMAGEHLP_LINE64 line;
       line.SizeOfStruct = sizeof(line);
       if(SymGetLineFromAddr64(process, stackFrame.AddrPC.Offset, &offsetFromSymbol, &line))
-        result += ' ' + std::string(line.Filename) + ':' + std::to_string(line.LineNumber);
+        result += ' ' + std::string(line.FileName) + ':' + std::to_string(line.LineNumber);
 
       result += '\n';
     }
