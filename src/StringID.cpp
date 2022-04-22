@@ -46,6 +46,7 @@ struct StringID::SharedData
 
   int referenceCount{0};
 
+  //################################################################################################
   SharedData(const StringHash_lt& hash_):
     hash(hash_)
   {
@@ -63,11 +64,7 @@ StringID::StringID():
 StringID::StringID(const StringID& other):
   sd(other.sd)
 {
-  if(sd)
-  {
-    TP_MUTEX_LOCKER(sd->mutex);
-    sd->referenceCount++;
-  }
+  attach();
 }
 
 //##################################################################################################
@@ -81,65 +78,14 @@ StringID::StringID(StringID&& other) noexcept:
 StringID::StringID(const std::string& string):
   sd(nullptr)
 {
-  if(string.empty())
-    return;
-
-  StringHash_lt hash;
-  hash.string = string;
-  hash.hash = std::hash<std::string>()(hash.string);
-
-  StaticData& staticData(StringID::staticData(hash.hash));
-  staticData.mutex.lock(TPM);
-
-  sd = tpGetMapValue(staticData.allKeys, hash);
-
-  if(!sd)
-  {
-    sd = new SharedData(hash);
-    sd->referenceCount++;
-    staticData.allKeys[hash] = sd;
-  }
-  else
-  {
-    sd->mutex.lock(TPM);
-    sd->referenceCount++;
-    sd->mutex.unlock(TPM);
-  }
-
-  staticData.mutex.unlock(TPM);
+  fromString(string);
 }
 
 //##################################################################################################
-StringID::StringID(const char* string_):
+StringID::StringID(const char* string):
   sd(nullptr)
 {
-  std::string string(string_);
-  if(string.empty())
-    return;
-
-  StringHash_lt hash;
-  hash.string = string;
-  hash.hash = std::hash<std::string>()(hash.string);
-
-  StaticData& staticData(StringID::staticData(hash.hash));
-  staticData.mutex.lock(TPM);
-
-  sd = tpGetMapValue(staticData.allKeys, hash);
-
-  if(!sd)
-  {
-    sd = new SharedData(hash);
-    sd->referenceCount++;
-    staticData.allKeys[hash] = sd;
-  }
-  else
-  {
-    sd->mutex.lock(TPM);
-    sd->referenceCount++;
-    sd->mutex.unlock(TPM);
-  }
-
-  staticData.mutex.unlock(TPM);
+  fromString(string);
 }
 
 //##################################################################################################
@@ -148,33 +94,27 @@ StringID& StringID::operator=(const StringID& other)
   if(&other == this || other.sd == sd)
     return *this;
 
-  if(sd)
-  {
-    sd->mutex.lock(TPM);
-    sd->referenceCount--;
-
-    //Delete unused shared data
-    if(!sd->referenceCount)
-    {
-      StaticData& staticData(StringID::staticData(sd->hash.hash));
-      staticData.mutex.lock(TPM);
-      staticData.allKeys.erase(sd->hash);
-      staticData.mutex.unlock(TPM);
-      sd->mutex.unlock(TPM);
-      delete sd;
-    }
-    else
-      sd->mutex.unlock(TPM);
-  }
-
+  detach();
   sd = other.sd;
+  attach();
 
-  if(sd)
-  {
-    sd->mutex.lock(TPM);
-    sd->referenceCount++;
-    sd->mutex.unlock(TPM);
-  }
+  return *this;
+}
+
+//##################################################################################################
+StringID& StringID::operator=(const char* string)
+{
+  detach();
+  fromString(string);
+
+  return *this;
+}
+
+//##################################################################################################
+StringID& StringID::operator=(const std::string& string)
+{
+  detach();
+  fromString(string);
 
   return *this;
 }
@@ -182,24 +122,7 @@ StringID& StringID::operator=(const StringID& other)
 //##################################################################################################
 StringID::~StringID()
 {
-  if(!sd)
-    return;
-
-  sd->mutex.lock(TPM);
-  sd->referenceCount--;
-
-  //Delete unused shared data
-  if(!sd->referenceCount)
-  {    
-    StaticData& staticData(StringID::staticData(sd->hash.hash));
-    staticData.mutex.lock(TPM);
-    staticData.allKeys.erase(sd->hash);
-    staticData.mutex.unlock(TPM);
-    sd->mutex.unlock(TPM);
-    delete sd;
-  }
-  else
-    sd->mutex.unlock(TPM);
+  detach();
 }
 
 //##################################################################################################
@@ -242,6 +165,70 @@ std::vector<StringID> StringID::fromStringList(const std::vector<std::string>& s
     result.emplace_back(*s);
 
   return result;
+}
+
+//##################################################################################################
+void StringID::fromString(const std::string& string)
+{
+  if(string.empty())
+    return;
+
+  StringHash_lt hash;
+  hash.string = string;
+  hash.hash = std::hash<std::string>()(hash.string);
+
+  StaticData& staticData(StringID::staticData(hash.hash));
+  TP_MUTEX_LOCKER(staticData.mutex);
+
+  sd = tpGetMapValue(staticData.allKeys, hash);
+
+  if(!sd)
+  {
+    sd = new SharedData(hash);
+    sd->referenceCount++;
+    staticData.allKeys[hash] = sd;
+  }
+  else
+  {
+    sd->mutex.lock(TPM);
+    sd->referenceCount++;
+    sd->mutex.unlock(TPM);
+  }
+}
+
+//##################################################################################################
+void StringID::attach()
+{
+  if(sd)
+  {
+    TP_MUTEX_LOCKER(sd->mutex);
+    sd->referenceCount++;
+  }
+}
+
+//##################################################################################################
+void StringID::detach()
+{
+  if(sd)
+  {
+    StaticData& staticData(StringID::staticData(sd->hash.hash));
+    TP_MUTEX_LOCKER(staticData.mutex);
+
+    sd->mutex.lock(TPM);
+    sd->referenceCount--;
+
+    //Delete unused shared data
+    if(!sd->referenceCount)
+    {
+      sd->mutex.unlock(TPM);
+      staticData.allKeys.erase(sd->hash);
+      delete sd;
+    }
+    else
+      sd->mutex.unlock(TPM);
+
+    sd = nullptr;
+  }
 }
 
 //##################################################################################################

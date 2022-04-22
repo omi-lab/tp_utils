@@ -59,6 +59,14 @@ public:
   StringID& operator=(const StringID& other);
 
   //################################################################################################
+  //! Copy another string
+  StringID& operator=(const char* string);
+
+  //################################################################################################
+  //! Copy another string
+  StringID& operator=(const std::string& string);
+
+  //################################################################################################
   //! Decrement the reference count and clean up
   ~StringID();
 
@@ -80,6 +88,15 @@ public:
   static std::vector<StringID> fromStringList(const std::vector<std::string>& stringIDs);
 
 private:
+  //################################################################################################
+  void fromString(const std::string& string);
+
+  //################################################################################################
+  void attach();
+
+  //################################################################################################
+  void detach();
+
   struct SharedData;
   SharedData* sd;
   friend struct SharedData;
