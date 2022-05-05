@@ -59,6 +59,10 @@ public:
   StringID& operator=(const StringID& other);
 
   //################################################################################################
+  //! Move another StringID
+  StringID& operator=(StringID&& other) noexcept;
+
+  //################################################################################################
   //! Copy another string
   StringID& operator=(const char* string);
 
