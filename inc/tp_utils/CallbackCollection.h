@@ -39,7 +39,7 @@ class CallbackCollection<R(Args...)>
   void clear()
   {
     for(auto unrefCallback : m_unrefCallbacks)
-      (*unrefCallback)(this);
+      (*unrefCallback)(this, nullptr);
 
     tpDeleteAll(m_nonRemovableCallbacks);
 
@@ -80,10 +80,24 @@ class CallbackCollection<R(Args...)>
     return; //Force void
   }
 
+  //################################################################################################
+  void swap(CallbackCollection<T>& other)
+  {
+    std::swap(m_nonRemovableCallbacks, other.m_nonRemovableCallbacks);
+    std::swap(m_callbacks, other.m_callbacks);
+    std::swap(m_unrefCallbacks, other.m_unrefCallbacks);
+
+    for(const auto& callback : m_unrefCallbacks)
+      (*callback)(&other, this);
+
+    for(const auto& callback : other.m_unrefCallbacks)
+      (*callback)(this, &other);
+  }
+
   private:
   std::vector<std::function<T>*> m_nonRemovableCallbacks;
   std::vector<std::function<T>*> m_callbacks;
-  std::vector<std::function<void(CallbackCollection<T>*)>*> m_unrefCallbacks;
+  std::vector<std::function<void(CallbackCollection<T>*, CallbackCollection<T>*)>*> m_unrefCallbacks;
 };
 
 //##################################################################################################
@@ -96,16 +110,14 @@ class Callback<R(Args...)>
   using T = R(Args...);
 
   //################################################################################################
-  Callback():
-    m_unrefCallback([&](C c){tpRemoveOne(m_collections, c);})
+  Callback()
   {
 
   }
 
   //################################################################################################
   Callback(const std::function<T>& callback):
-    m_callback(callback),
-    m_unrefCallback([&](C c){tpRemoveOne(m_collections, c);})
+    m_callback(callback)
   {
 
   }
@@ -113,8 +125,7 @@ class Callback<R(Args...)>
   //################################################################################################
   template<typename F>
   Callback(const F& callback):
-    m_callback(callback),
-    m_unrefCallback([&](C c){tpRemoveOne(m_collections, c);})
+    m_callback(callback)
   {
 
   }
@@ -166,7 +177,14 @@ class Callback<R(Args...)>
   private:
   std::function<T> m_callback;
   std::vector<C> m_collections;
-  std::function<void(C)> m_unrefCallback;
+
+  //################################################################################################
+  std::function<void(C,C)> m_unrefCallback=[&](C oc, C nc)
+  {
+    tpRemoveOne(m_collections, oc);
+    if(nc)
+      m_collections.push_back(nc);
+  };
 };
 
 }
