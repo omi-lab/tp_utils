@@ -118,7 +118,10 @@ StringID& StringID::operator=(StringID&& other) noexcept
 StringID& StringID::operator=(const char* string)
 {
   detach();
-  fromString(string);
+  if(string)
+    fromString(string);
+  else
+    fromString("");
 
   return *this;
 }
