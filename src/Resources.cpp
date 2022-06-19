@@ -43,6 +43,6 @@ void TP_UTILS_SHARED_EXPORT writeResource(const std::string& from, const std::st
 {
   auto r = tp_utils::resource(from);
   tp_utils::writeTextFile(to, std::string(r.data, r.size));
-};
+}
 
 }
