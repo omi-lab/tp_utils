@@ -56,6 +56,7 @@ struct SignalHandler::Private
 
   TPMutex mutex{TPM};
   TPWaitCondition waitCondition;
+  bool shouldExit{false};
 
   static Private* instance;
 
@@ -195,17 +196,18 @@ struct SignalHandler::Private
   //################################################################################################
   static void exitWake(int sig)
   {
-    std::cout << "Signal caught: " << sig << '\n';
+    std::cout << "\nSignal caught: " << sig << std::endl;
     if(instance->exitOnInt)
       saveCrashReportAndExit();
 
+    instance->shouldExit = true;
     instance->waitCondition.wakeAll();
   }
 
   //################################################################################################
   [[noreturn]]static void exitNow(int sig)
   {
-    std::cout << "Fatal signal caught: " << sig << '\n';
+    std::cout << "\nFatal signal caught: " << sig << std::endl;
     saveCrashReportAndExit();
   }
 };
@@ -231,6 +233,12 @@ void SignalHandler::waitCtrlC()
 {
   TP_MUTEX_LOCKER(d->mutex);
   d->waitCondition.wait(TPMc d->mutex);
+}
+
+//##################################################################################################
+bool SignalHandler::shouldExit() const
+{
+  return d->shouldExit;
 }
 
 }
