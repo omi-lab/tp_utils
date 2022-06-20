@@ -1,7 +1,6 @@
 #include "tp_utils/StackTrace.h"
 #include "tp_utils/DebugUtils.h"
 #include "tp_utils/FileUtils.h"
-
 //PLATFORM_ABSTRACTIONS
 #if defined(TP_ANDROID)
 #  define ANDROID_STACKTRACE
@@ -393,13 +392,13 @@ std::string TP_UTILS_SHARED_EXPORT formatStackTrace()
 //##################################################################################################
 void TP_UTILS_SHARED_EXPORT printStackTrace()
 {
-  emscripten_run_script("console.log(stackTrace());");
+  emscripten_run_script("console.log((new Error()).stack);");
 }
 
 //##################################################################################################
 std::string TP_UTILS_SHARED_EXPORT formatStackTrace()
 {
-  return emscripten_run_script_string("stackTrace();");
+  return emscripten_run_script_string("(new Error()).stack;");
 }
 
 #elif defined(ANDROID_STACKTRACE)

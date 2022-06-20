@@ -102,10 +102,26 @@ StringID& StringID::operator=(const StringID& other)
 }
 
 //##################################################################################################
+StringID& StringID::operator=(StringID&& other) noexcept
+{
+  if(&other == this || other.sd == sd)
+    return *this;
+
+  detach();
+  sd = other.sd;
+  other.sd = nullptr;
+
+  return *this;
+}
+
+//##################################################################################################
 StringID& StringID::operator=(const char* string)
 {
   detach();
-  fromString(string);
+  if(string)
+    fromString(string);
+  else
+    fromString("");
 
   return *this;
 }
