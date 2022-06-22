@@ -1,6 +1,8 @@
 #include "tp_utils/Garbage.h"
 #include "tp_utils/MutexUtils.h"
 
+#include "lib_platform/SetThreadName.h"
+
 #include <thread>
 #include <queue>
 
@@ -16,30 +18,33 @@ struct Garbage
   Garbage()
   {
     for(size_t i=0; i<4; i++)
-    threads.push_back(new std::thread([&]
     {
-      TP_MUTEX_LOCKER(mutex);
-      while(!finish || !queue.empty())
+      threads.push_back(new std::thread([&]
       {
-        if(queue.empty())
-          waitCondition.wait(mutex);
-        else
+        lib_platform::setThreadName("Garbage");
+        TP_MUTEX_LOCKER(mutex);
+        while(!finish || !queue.empty())
         {
-          auto closure = queue.front();
-          queue.pop();
+          if(queue.empty())
+            waitCondition.wait(TPMc mutex);
+          else
           {
-            TP_MUTEX_UNLOCKER(mutex);
-            closure();
+            auto closure = queue.front();
+            queue.pop();
+            {
+              TP_MUTEX_UNLOCKER(mutex);
+              closure();
+            }
           }
         }
-      }
-    }));
+      }));
+    }
   }
 
   //################################################################################################
   ~Garbage()
   {
-    mutex.locked([&]{finish = true;});
+    mutex.locked(TPMc [&]{finish = true;});
     waitCondition.wakeAll();
     while(!threads.empty())
     {
@@ -52,7 +57,7 @@ struct Garbage
   //################################################################################################
   void garbage(const std::function<void()>& closure)
   {
-    mutex.locked([&]{queue.push(closure);});
+    mutex.locked(TPMc [&]{queue.push(closure);});
     waitCondition.wakeOne();
   }
 
