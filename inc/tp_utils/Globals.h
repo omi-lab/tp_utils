@@ -1,7 +1,7 @@
 #ifndef tp_utils_Globals_h
 #define tp_utils_Globals_h
 
-#include "lib_platform/Warnings.h"
+#include "lib_platform/Warnings.h" // IWYU pragma: keep
 #include "lib_platform/RandomDevice.h"
 #include "lib_platform/Globals.h"
 
