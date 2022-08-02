@@ -154,6 +154,7 @@ void Progress::setProgress(float fraction, const std::string& description)
     d->description = description;
   });
 
+  d->checkPrint(description);
   callChanged();
 }
 
