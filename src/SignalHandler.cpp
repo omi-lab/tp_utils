@@ -36,8 +36,6 @@ using SignalHandlerT = sighandler_t;
 using SignalHandlerT = void (*)(int);
 #endif
 
-
-
 //##################################################################################################
 struct SignalHandler::Private
 {
@@ -45,6 +43,7 @@ struct SignalHandler::Private
   TP_NONCOPYABLE(Private);
 
   bool exitOnInt;
+  void (*handler)(int);
 
   SignalHandlerT sigint;
   SignalHandlerT sigterm;
@@ -61,8 +60,9 @@ struct SignalHandler::Private
   static Private* instance;
 
   //################################################################################################
-  Private(bool exitOnInt_):
-    exitOnInt(exitOnInt_)
+  Private(bool exitOnInt_, void (*handler_)(int)):
+    exitOnInt(exitOnInt_),
+    handler(handler_)
   {
     instance = this;
 
@@ -197,6 +197,13 @@ struct SignalHandler::Private
   static void exitWake(int sig)
   {
     std::cout << "\nSignal caught: " << sig << std::endl;
+
+    if(instance->handler)
+    {
+      instance->handler(sig);
+      return;
+    }
+
     if(instance->exitOnInt)
       saveCrashReportAndExit();
 
@@ -216,8 +223,8 @@ struct SignalHandler::Private
 SignalHandler::Private* SignalHandler::Private::instance{nullptr};
 
 //##################################################################################################
-SignalHandler::SignalHandler(bool exitOnInt):
-  d(new Private(exitOnInt))
+SignalHandler::SignalHandler(bool exitOnInt, void (*handler)(int)):
+  d(new Private(exitOnInt, handler))
 {
 
 }
@@ -226,6 +233,12 @@ SignalHandler::SignalHandler(bool exitOnInt):
 SignalHandler::~SignalHandler()
 {
   delete d;
+}
+
+//##################################################################################################
+void SignalHandler::setExitOnInt(bool exitOnInt)
+{
+  d->exitOnInt = exitOnInt;
 }
 
 //##################################################################################################
