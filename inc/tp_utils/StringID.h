@@ -155,15 +155,6 @@ struct hash<tp_utils::StringID>
 };
 }
 
-//namespace tp_utils
-//{
-////##################################################################################################
-//inline size_t TP_UTILS_SHARED_EXPORT qHash(const StringID& stringID)
-//{
-//  return size_t(std::hash<StringID>()(stringID));
-//}
-//}
-
 //##################################################################################################
 //! Declare a global string id
 /*!
@@ -200,6 +191,6 @@ the first letter of each word, followed by SID at the end.
   void ANONYMOUS_FUNCTION()
 
 #include "tp_utils/Globals.h"
-#include "tp_utils/RefCount.h"
+//#include "tp_utils/RefCount.h"
 
 #endif
