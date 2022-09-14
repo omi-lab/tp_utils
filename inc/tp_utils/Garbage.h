@@ -1,7 +1,7 @@
 #ifndef tp_utils_Garbage_h
 #define tp_utils_Garbage_h
 
-#include "tp_utils/Globals.h"
+#include "tp_utils/Globals.h" // IWYU pragma: keep
 
 #include <functional>
 

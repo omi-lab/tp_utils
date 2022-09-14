@@ -1,7 +1,7 @@
 #ifndef tp_utils_ExtendArgs_h
 #define tp_utils_ExtendArgs_h
 
-#include "tp_utils/Globals.h"
+#include "tp_utils/Globals.h" // IWYU pragma: keep
 
 namespace tp_utils
 {

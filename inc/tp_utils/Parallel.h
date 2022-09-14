@@ -1,7 +1,7 @@
 #ifndef tp_utils_Parallel_h
 #define tp_utils_Parallel_h
 
-#include "tp_utils/Globals.h"
+#include "tp_utils/Globals.h" // IWYU pragma: keep
 
 //#define TP_NO_THREADS
 

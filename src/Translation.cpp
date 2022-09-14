@@ -1,7 +1,7 @@
+#ifdef TP_ENABLE_TRANSLATION
 #include "tp_utils/Translation.h"
 #include "tp_utils/MutexUtils.h"
 
-#ifdef TP_ENABLE_TRANSLATION
 
 namespace tp_utils
 {

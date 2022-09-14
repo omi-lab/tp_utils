@@ -2,12 +2,13 @@
 #define tp_utils_RefCount_h
 
 #include "tp_utils/Globals.h"
+
+#ifdef TP_REF_COUNT
 #include "tp_utils/StringID.h"
 
 #include <unordered_map>
 #include <map>
 
-#ifdef TP_REF_COUNT
 namespace tp_utils
 {
 
