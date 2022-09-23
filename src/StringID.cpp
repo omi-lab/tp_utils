@@ -142,6 +142,21 @@ StringID::~StringID()
 }
 
 //##################################################################################################
+WeakStringID StringID::weak() const
+{
+  return sd;
+}
+
+//##################################################################################################
+StringID StringID::fromWeak(WeakStringID weak)
+{
+  StringID stringID;
+  stringID.sd = static_cast<SharedData*>(weak);
+  stringID.attach();
+  return stringID;
+}
+
+//##################################################################################################
 const std::string& StringID::toString() const
 {
   static const std::string emptyString;

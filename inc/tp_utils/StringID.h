@@ -6,6 +6,8 @@
 namespace tp_utils
 {
 
+typedef void* WeakStringID;
+
 //##################################################################################################
 //! A class that implements efficent string based identifiers
 /*!
@@ -73,6 +75,16 @@ public:
   //################################################################################################
   //! Decrement the reference count and clean up
   ~StringID();
+
+  //################################################################################################
+  //! An instance of the StringID must remain valid for the life of the WeakStringID.
+  /*!
+  Using TP_DEFINE_ID will ensure that the StringID remains valid.
+  */
+  WeakStringID weak() const;
+
+  //################################################################################################
+  static StringID fromWeak(WeakStringID weak);
 
   //################################################################################################
   //! Returns the string that this StringID represents
