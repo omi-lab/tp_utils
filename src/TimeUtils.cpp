@@ -91,7 +91,10 @@ struct FunctionTimeStatsDetails_lt
   int64_t count{0};
   int64_t max{0};
   int64_t total{0};
+  int64_t mainThreadTotal{0};
 };
+
+const std::thread::id mainThreadId = std::this_thread::get_id();
 }
 
 //##################################################################################################
@@ -111,6 +114,9 @@ void FunctionTimeStats::add(int64_t timeMicroseconds, const char* file, int line
   s.count++;
   s.max = tpMax(s.max, timeMicroseconds);
   s.total += timeMicroseconds;
+
+  if(mainThreadId == std::this_thread::get_id())
+    s.mainThreadTotal += timeMicroseconds;
 }
 
 //##################################################################################################
@@ -136,28 +142,37 @@ std::string FunctionTimeStats::takeResults()
   size_t c=20;
   size_t d=20;
   size_t e=20;
+  size_t f=20;
 
-  result += '+' + std::string(a, '-') + '+' + std::string(b, '-') + '+' + std::string(c, '-') + '+' + std::string(d, '-') + '+' + std::string(e, '-') + "+\n";
+  auto addLine = [&]
+  {
+    result += '+' + std::string(a, '-') + '+' + std::string(b, '-') + '+' + std::string(c, '-') + '+' + std::string(d, '-') + '+' + std::string(e, '-') + '+' + std::string(f, '-') + "+\n";
+  };
+
+  addLine();
 
   result += '|' + fixedWidthKeepLeft("Name", a, ' ') + '|';
   result += fixedWidthKeepLeft("Count", b, ' ') + '|';
   result += fixedWidthKeepLeft("Total ms", c, ' ') + '|';
   result += fixedWidthKeepLeft("Max ms", d, ' ') + '|';
-  result += fixedWidthKeepLeft("Average micro", e, ' ') + "|\n";
+  result += fixedWidthKeepLeft("Main thread ms", e, ' ') + '|';
+  result += fixedWidthKeepLeft("Average micro", f, ' ') + "|\n";
 
-  result += '+' + std::string(a, '-') + '+' + std::string(b, '-') + '+' + std::string(c, '-') + '+' + std::string(d, '-') + '+' + std::string(e, '-') + "+\n";
+  addLine();
 
   for(const auto& details : detailsList)
   {
     auto average = details.second.total / details.second.count;
 
     result += '|' + details.first + '|';
-    result += fixedWidthKeepRight(std::to_string(details.second.count     ), b, ' ') + '|';
-    result += fixedWidthKeepRight(std::to_string(details.second.total/1000), c, ' ') + '|';
-    result += fixedWidthKeepRight(std::to_string(details.second.max  /1000), d, ' ') + '|';
-    result += fixedWidthKeepRight(std::to_string(average                  ), e, ' ') + "|\n";
+    result += fixedWidthKeepRight(std::to_string(details.second.count               ), b, ' ') + '|';
+    result += fixedWidthKeepRight(std::to_string(details.second.total          /1000), c, ' ') + '|';
+    result += fixedWidthKeepRight(std::to_string(details.second.max            /1000), d, ' ') + '|';
+    result += fixedWidthKeepRight(std::to_string(details.second.mainThreadTotal/1000), e, ' ') + '|';
+    result += fixedWidthKeepRight(std::to_string(average                            ), f, ' ') + "|\n";
   }
-  result += '+' + std::string(a, '-') + '+' + std::string(b, '-') + '+' + std::string(c, '-') + '+' + std::string(d, '-') + '+' + std::string(e, '-') + "+\n";
+
+  addLine();
 
   return result;
 }
