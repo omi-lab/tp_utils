@@ -89,7 +89,7 @@ public:
   \param completeFraction the progress of this once the child step is complete.
   \return A pointer to new Progress object, owned by this.
   */
-  Progress* addChildStep(const std::string& message, float completeFraction);
+  TP_NODISCARD Progress* addChildStep(const std::string& message, float completeFraction);
 
   //################################################################################################
   //! Log a message that will be kept in the tree of messages.
