@@ -50,6 +50,19 @@
 #endif
 #endif
 
+
+//##################################################################################################
+#if TP_CPP_VERSION>=20
+#define TP_LIKELY(x)      (x)[[likely]]
+#define TP_UNLIKELY(x)    (x)[[unlikely]]
+#elif defined(__clang__) || defined(__GNUC__) || defined(__GNUG__)
+#define TP_LIKELY(x)      (__builtin_expect(!!(x), 1))
+#define TP_UNLIKELY(x)    (__builtin_expect(!!(x), 0))
+#else
+#define TP_LIKELY(x)      (x)
+#define TP_UNLIKELY(x)    (x)
+#endif
+
 //##################################################################################################
 //TP_SIZEOF
 template<int s> struct __TP_SIZEOF;
