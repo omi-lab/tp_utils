@@ -7,7 +7,7 @@ namespace tp_utils
 {
 
 //##################################################################################################
-class TP_UTILS_SHARED_EXPORT AbstractTimerCallback
+class TP_UTILS_EXPORT AbstractTimerCallback
 {
   TP_NONCOPYABLE(AbstractTimerCallback);
 public:
@@ -33,7 +33,7 @@ private:
 };
 
 //##################################################################################################
-class TP_UTILS_SHARED_EXPORT AbstractTimerCallbackFactory
+class TP_UTILS_EXPORT AbstractTimerCallbackFactory
 {
   TP_NONCOPYABLE(AbstractTimerCallbackFactory);
 public:
@@ -59,7 +59,7 @@ class TimerCallbackFactoryTemplate : public AbstractTimerCallbackFactory
 };
 
 //##################################################################################################
-class TP_UTILS_SHARED_EXPORT PolledTimerCallbackFactory: public AbstractTimerCallbackFactory
+class TP_UTILS_EXPORT PolledTimerCallbackFactory: public AbstractTimerCallbackFactory
 {
 public:
   //################################################################################################

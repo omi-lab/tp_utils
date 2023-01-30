@@ -13,17 +13,17 @@ namespace tp_utils
 /*!
 \return the current time as a 64 bit Unix time stamp
 */
-int64_t TP_UTILS_SHARED_EXPORT currentTime();
+int64_t TP_UTILS_EXPORT currentTime();
 
 //##################################################################################################
 //! Returns the current time as ms since SinceEpoch
 /*!
 \return the current time as ms since since the epoch
 */
-int64_t TP_UTILS_SHARED_EXPORT currentTimeMS();
+int64_t TP_UTILS_EXPORT currentTimeMS();
 
 //##################################################################################################
-class TP_UTILS_SHARED_EXPORT ElapsedTimer
+class TP_UTILS_EXPORT ElapsedTimer
 {
   TP_NONCOPYABLE(ElapsedTimer);
 public:
@@ -60,7 +60,7 @@ private:
 #ifdef TP_ENABLE_FUNCTION_TIME
 
 //##################################################################################################
-class TP_UTILS_SHARED_EXPORT FunctionTimeStats
+class TP_UTILS_EXPORT FunctionTimeStats
 {
 public:
   //################################################################################################

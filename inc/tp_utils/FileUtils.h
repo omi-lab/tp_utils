@@ -12,19 +12,10 @@ namespace tp_utils
 {
 
 //##################################################################################################
-[[nodiscard]]std::string TP_UTILS_SHARED_EXPORT readTextFile(const std::string& filename);
+[[nodiscard]]std::string TP_UTILS_EXPORT readTextFile(const std::string& filename);
 
 //##################################################################################################
-[[nodiscard]]std::string TP_UTILS_SHARED_EXPORT readBinaryFile(const std::string& filename);
-
-//##################################################################################################
-//! Writes a string to a file
-/*!
-\param filename - The path to the file to write to
-\param textOutput - The text to write out
-\return True if the file was written, else false.
- */
-bool TP_UTILS_SHARED_EXPORT writeTextFile(const std::string& filename, const std::string& textOutput, bool append=false);
+[[nodiscard]]std::string TP_UTILS_EXPORT readBinaryFile(const std::string& filename);
 
 //##################################################################################################
 //! Writes a string to a file
@@ -33,16 +24,25 @@ bool TP_UTILS_SHARED_EXPORT writeTextFile(const std::string& filename, const std
 \param textOutput - The text to write out
 \return True if the file was written, else false.
  */
-bool TP_UTILS_SHARED_EXPORT writeBinaryFile(const std::string& filename, const std::string& binaryOutput);
+bool TP_UTILS_EXPORT writeTextFile(const std::string& filename, const std::string& textOutput, bool append=false);
 
 //##################################################################################################
-[[nodiscard]]nlohmann::json TP_UTILS_SHARED_EXPORT readJSONFile(const std::string& filename);
+//! Writes a string to a file
+/*!
+\param filename - The path to the file to write to
+\param textOutput - The text to write out
+\return True if the file was written, else false.
+ */
+bool TP_UTILS_EXPORT writeBinaryFile(const std::string& filename, const std::string& binaryOutput);
 
 //##################################################################################################
-bool TP_UTILS_SHARED_EXPORT writeJSONFile(const std::string& filename, const nlohmann::json& j, int indent = -1);
+[[nodiscard]]nlohmann::json TP_UTILS_EXPORT readJSONFile(const std::string& filename);
 
 //##################################################################################################
-bool TP_UTILS_SHARED_EXPORT writePrettyJSONFile(const std::string& filename, const nlohmann::json& j);
+bool TP_UTILS_EXPORT writeJSONFile(const std::string& filename, const nlohmann::json& j, int indent = -1);
+
+//##################################################################################################
+bool TP_UTILS_EXPORT writePrettyJSONFile(const std::string& filename, const nlohmann::json& j);
 
 //##################################################################################################
 //!
@@ -51,7 +51,7 @@ bool TP_UTILS_SHARED_EXPORT writePrettyJSONFile(const std::string& filename, con
 \param extensions File extensions to search in the format "*.png".
 \return A list of absolute paths.
 */
-[[nodiscard]]std::vector<std::string> TP_UTILS_SHARED_EXPORT listFiles(const std::string& path, const std::unordered_set<std::string>& extensions);
+[[nodiscard]]std::vector<std::string> TP_UTILS_EXPORT listFiles(const std::string& path, const std::unordered_set<std::string>& extensions);
 
 //##################################################################################################
 //!
@@ -59,31 +59,31 @@ bool TP_UTILS_SHARED_EXPORT writePrettyJSONFile(const std::string& filename, con
 \param path The directory to list directories in.
 \return A list of absolute paths.
 */
-[[nodiscard]]std::vector<std::string> TP_UTILS_SHARED_EXPORT listDirectories(const std::string& path);
+[[nodiscard]]std::vector<std::string> TP_UTILS_EXPORT listDirectories(const std::string& path);
 
 //##################################################################################################
-[[nodiscard]]int64_t TP_UTILS_SHARED_EXPORT fileTimeMS(const std::string& path);
+[[nodiscard]]int64_t TP_UTILS_EXPORT fileTimeMS(const std::string& path);
 
 //##################################################################################################
-bool TP_UTILS_SHARED_EXPORT copyFile(const std::string& pathFrom, const std::string& pathTo);
+bool TP_UTILS_EXPORT copyFile(const std::string& pathFrom, const std::string& pathTo);
 
 //##################################################################################################
-bool TP_UTILS_SHARED_EXPORT mkdir(const std::string& path, CreateFullPath createFullPath);
+bool TP_UTILS_EXPORT mkdir(const std::string& path, CreateFullPath createFullPath);
 
 //##################################################################################################
-bool TP_UTILS_SHARED_EXPORT rm(const std::string& path, bool recursive);
+bool TP_UTILS_EXPORT rm(const std::string& path, bool recursive);
 
 //##################################################################################################
-[[nodiscard]]bool TP_UTILS_SHARED_EXPORT exists(const std::string& path);
+[[nodiscard]]bool TP_UTILS_EXPORT exists(const std::string& path);
 
 //##################################################################################################
-[[nodiscard]]size_t TP_UTILS_SHARED_EXPORT fileSize(const std::string& path);
+[[nodiscard]]size_t TP_UTILS_EXPORT fileSize(const std::string& path);
 
 //##################################################################################################
-bool TP_UTILS_SHARED_EXPORT setCWD(const std::string& path);
+bool TP_UTILS_EXPORT setCWD(const std::string& path);
 
 //##################################################################################################
-std::string TP_UTILS_SHARED_EXPORT cwd();
+std::string TP_UTILS_EXPORT cwd();
 
 //##################################################################################################
 enum perms : unsigned
@@ -105,29 +105,29 @@ enum perms : unsigned
 };
 
 //##################################################################################################
-bool TP_UTILS_SHARED_EXPORT setPermissions(const std::string& path, unsigned permissions);
+bool TP_UTILS_EXPORT setPermissions(const std::string& path, unsigned permissions);
 
 //##################################################################################################
-[[nodiscard]]std::string TP_UTILS_SHARED_EXPORT filename(const std::string& path);
+[[nodiscard]]std::string TP_UTILS_EXPORT filename(const std::string& path);
 
 //##################################################################################################
-[[nodiscard]]std::string TP_UTILS_SHARED_EXPORT directoryName(const std::string& path);
+[[nodiscard]]std::string TP_UTILS_EXPORT directoryName(const std::string& path);
 
 //##################################################################################################
-[[nodiscard]]std::string TP_UTILS_SHARED_EXPORT pathAppend(const std::string& path, const std::string& part);
+[[nodiscard]]std::string TP_UTILS_EXPORT pathAppend(const std::string& path, const std::string& part);
 
 //##################################################################################################
-extern std::vector<std::string> TP_UTILS_SHARED_EXPORT (*listFilesCallback)(const std::string& path, const std::unordered_set<std::string>& extensions);
-extern std::vector<std::string> TP_UTILS_SHARED_EXPORT (*listDirectoriesCallback)(const std::string& path);
-extern int64_t TP_UTILS_SHARED_EXPORT (*fileTimeMSCallback)(const std::string& path);
-extern bool TP_UTILS_SHARED_EXPORT (*copyFileCallback)(const std::string& pathFrom, const std::string& pathTo);
-extern bool TP_UTILS_SHARED_EXPORT (*mkdirCallback)(const std::string& path, CreateFullPath createFullPath);
-extern bool TP_UTILS_SHARED_EXPORT (*rmCallback)(const std::string& path, bool recursive);
-extern bool TP_UTILS_SHARED_EXPORT (*existsCallback)(const std::string& path);
-extern size_t TP_UTILS_SHARED_EXPORT (*fileSizeCallback)(const std::string& path);
-extern bool TP_UTILS_SHARED_EXPORT (*setCWDCallback)(const std::string& path);
-extern std::string TP_UTILS_SHARED_EXPORT (*cwdCallback)();
-extern bool TP_UTILS_SHARED_EXPORT (*setPermissionsCallback)(const std::string& path, unsigned permissionsh);
+extern std::vector<std::string> TP_UTILS_EXPORT (*listFilesCallback)(const std::string& path, const std::unordered_set<std::string>& extensions);
+extern std::vector<std::string> TP_UTILS_EXPORT (*listDirectoriesCallback)(const std::string& path);
+extern int64_t TP_UTILS_EXPORT (*fileTimeMSCallback)(const std::string& path);
+extern bool TP_UTILS_EXPORT (*copyFileCallback)(const std::string& pathFrom, const std::string& pathTo);
+extern bool TP_UTILS_EXPORT (*mkdirCallback)(const std::string& path, CreateFullPath createFullPath);
+extern bool TP_UTILS_EXPORT (*rmCallback)(const std::string& path, bool recursive);
+extern bool TP_UTILS_EXPORT (*existsCallback)(const std::string& path);
+extern size_t TP_UTILS_EXPORT (*fileSizeCallback)(const std::string& path);
+extern bool TP_UTILS_EXPORT (*setCWDCallback)(const std::string& path);
+extern std::string TP_UTILS_EXPORT (*cwdCallback)();
+extern bool TP_UTILS_EXPORT (*setPermissionsCallback)(const std::string& path, unsigned permissionsh);
 
 }
 

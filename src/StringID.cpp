@@ -296,7 +296,7 @@ std::string join(const std::vector<StringID>& ids)
 }
 
 //##################################################################################################
-std::string TP_UTILS_SHARED_EXPORT join(const std::vector<StringID>& ids, const std::string& del)
+std::string TP_UTILS_EXPORT join(const std::vector<StringID>& ids, const std::string& del)
 {
   std::string result;
   for(const StringID& id : ids)
@@ -309,7 +309,7 @@ std::string TP_UTILS_SHARED_EXPORT join(const std::vector<StringID>& ids, const 
 }
 
 //##################################################################################################
-std::string TP_UTILS_SHARED_EXPORT join(const std::vector<std::string>& parts, const std::string& del)
+std::string TP_UTILS_EXPORT join(const std::vector<std::string>& parts, const std::string& del)
 {
   std::string result;
   for(const auto& part : parts)

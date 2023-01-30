@@ -14,10 +14,10 @@ typedef void* WeakStringID;
 This is probably the most important class in tp Toolkit, a majority of the other components are
 linked together by strings, and this class is used to make this efficent.
 */
-class  TP_UTILS_SHARED_EXPORT StringID final
+class  TP_UTILS_EXPORT StringID final
 {
-  friend bool TP_UTILS_SHARED_EXPORT operator==(const StringID& a, const StringID& b);
-  friend bool TP_UTILS_SHARED_EXPORT operator!=(const StringID& a, const StringID& b);
+  friend bool TP_UTILS_EXPORT operator==(const StringID& a, const StringID& b);
+  friend bool TP_UTILS_EXPORT operator!=(const StringID& a, const StringID& b);
   friend struct std::hash<tp_utils::StringID>;
 
 public:
@@ -122,8 +122,8 @@ private:
   friend struct StaticData;
 };
 
-bool TP_UTILS_SHARED_EXPORT operator==(const StringID& a, const StringID& b);
-bool TP_UTILS_SHARED_EXPORT operator!=(const StringID& a, const StringID& b);
+bool TP_UTILS_EXPORT operator==(const StringID& a, const StringID& b);
+bool TP_UTILS_EXPORT operator!=(const StringID& a, const StringID& b);
 
 //##################################################################################################
 //! Used for sorting StringID's
@@ -137,7 +137,7 @@ qSort(listOfIDs.begin(), listOfIDs.end(), tp_utils::lessThanStringID);
 \param rhs - Right hand side of less than
 \return true if lhs is less than rhs
 */
-bool TP_UTILS_SHARED_EXPORT lessThanStringID(const StringID& lhs, const StringID& rhs);
+bool TP_UTILS_EXPORT lessThanStringID(const StringID& lhs, const StringID& rhs);
 
 //##################################################################################################
 //! Concatenate a list of StringID key strings.
@@ -145,13 +145,13 @@ bool TP_UTILS_SHARED_EXPORT lessThanStringID(const StringID& lhs, const StringID
 \param ids - List of StringIDs to concatenate.
 \return  Concatenated string, comma separated.
 */
-std::string TP_UTILS_SHARED_EXPORT join(const std::vector<StringID>& ids);
+std::string TP_UTILS_EXPORT join(const std::vector<StringID>& ids);
 
 //##################################################################################################
-std::string TP_UTILS_SHARED_EXPORT join(const std::vector<StringID>& ids, const std::string& del);
+std::string TP_UTILS_EXPORT join(const std::vector<StringID>& ids, const std::string& del);
 
 //##################################################################################################
-std::string TP_UTILS_SHARED_EXPORT join(const std::vector<std::string>& parts, const std::string& del);
+std::string TP_UTILS_EXPORT join(const std::vector<std::string>& parts, const std::string& del);
 
 }
 

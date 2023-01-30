@@ -15,9 +15,9 @@
 #include <stdexcept>
 
 #if defined(TP_UTILS_LIBRARY)
-#  define TP_UTILS_SHARED_EXPORT TP_EXPORT
+#  define TP_UTILS_EXPORT TP_EXPORT
 #else
-#  define TP_UTILS_SHARED_EXPORT TP_IMPORT
+#  define TP_UTILS_EXPORT TP_IMPORT
 #endif
 
 //##################################################################################################
@@ -136,18 +136,18 @@ T tpMax(T a, T b)
 }
 
 //##################################################################################################
-std::string TP_UTILS_SHARED_EXPORT tpFromHEX(const std::string& input);
+std::string TP_UTILS_EXPORT tpFromHEX(const std::string& input);
 
 //##################################################################################################
-std::string TP_UTILS_SHARED_EXPORT tpToHex(const std::string& input);
+std::string TP_UTILS_EXPORT tpToHex(const std::string& input);
 
 //##################################################################################################
 //! Returns true if input starts with the string in s
-bool TP_UTILS_SHARED_EXPORT tpStartsWith(const std::string& input, const std::string& s);
+bool TP_UTILS_EXPORT tpStartsWith(const std::string& input, const std::string& s);
 
 //##################################################################################################
 //! Returns true if input ends with the string in s
-bool TP_UTILS_SHARED_EXPORT tpEndsWith(const std::string& input, const std::string& s);
+bool TP_UTILS_EXPORT tpEndsWith(const std::string& input, const std::string& s);
 
 //##################################################################################################
 std::string tpToLower(const std::string& str);
@@ -160,7 +160,7 @@ std::string tpTrim(const std::string& str, const std::string& whitespace = " \n\
 
 //##################################################################################################
 //! Returns true if input contains the string in s
-bool TP_UTILS_SHARED_EXPORT tpContains(const std::string& input, const std::string& s);
+bool TP_UTILS_EXPORT tpContains(const std::string& input, const std::string& s);
 
 //##################################################################################################
 template<class B, class E>
@@ -172,7 +172,7 @@ void tpRandomShuffle(B begin, E end)
 }
 
 //##################################################################################################
-void TP_UTILS_SHARED_EXPORT* tpVoidLiteral(size_t value);
+void TP_UTILS_EXPORT* tpVoidLiteral(size_t value);
 
 namespace tp_utils
 {
@@ -194,21 +194,21 @@ enum class CreateFullPath
 
 //##################################################################################################
 //! Split a string on a delimiter
-void TP_UTILS_SHARED_EXPORT tpSplit(std::vector<std::string>& result,
+void TP_UTILS_EXPORT tpSplit(std::vector<std::string>& result,
                                     const std::string& input,
                                     const std::string& del,
                                     tp_utils::SplitBehavior behavior=tp_utils::SplitBehavior::KeepEmptyParts);
 
 //##################################################################################################
 //! Split a string on a delimiter
-void TP_UTILS_SHARED_EXPORT tpSplit(std::vector<std::string>& result,
+void TP_UTILS_EXPORT tpSplit(std::vector<std::string>& result,
                                     const std::string& input,
                                     char del,
                                     tp_utils::SplitBehavior behavior=tp_utils::SplitBehavior::KeepEmptyParts);
 
 //##################################################################################################
 //! Remove all instances of a character from a string.
-void TP_UTILS_SHARED_EXPORT tpRemoveChar(std::string& s, char c);
+void TP_UTILS_EXPORT tpRemoveChar(std::string& s, char c);
 
 //##################################################################################################
 template<typename T>
@@ -361,13 +361,13 @@ typename std::vector<typename T::key_type> tpKeys(const T& map)
 }
 
 //##################################################################################################
-std::string TP_UTILS_SHARED_EXPORT tpToUTF8(const std::u16string& source);
+std::string TP_UTILS_EXPORT tpToUTF8(const std::u16string& source);
 
 //##################################################################################################
-std::string TP_UTILS_SHARED_EXPORT tpToUTF8(const std::wstring& source);
+std::string TP_UTILS_EXPORT tpToUTF8(const std::wstring& source);
 
 //##################################################################################################
-std::u16string TP_UTILS_SHARED_EXPORT tpFromUTF8(const std::string& source);
+std::u16string TP_UTILS_EXPORT tpFromUTF8(const std::string& source);
 
 //##################################################################################################
 std::wstring tpWStringFromUTF8(const std::string& source);
@@ -446,26 +446,26 @@ namespace tp_utils
 {
 
 //##################################################################################################
-void TP_UTILS_SHARED_EXPORT leftJustified(std::string& text, size_t maxLength, char padding=' ');
+void TP_UTILS_EXPORT leftJustified(std::string& text, size_t maxLength, char padding=' ');
 
 //##################################################################################################
-void TP_UTILS_SHARED_EXPORT rightJustified(std::string& text, size_t maxLength, char padding=' ');
+void TP_UTILS_EXPORT rightJustified(std::string& text, size_t maxLength, char padding=' ');
 
 //##################################################################################################
-std::string TP_UTILS_SHARED_EXPORT fixedWidthKeepRight(std::string data, size_t len, char pad);
+std::string TP_UTILS_EXPORT fixedWidthKeepRight(std::string data, size_t len, char pad);
 
 //##################################################################################################
-std::string TP_UTILS_SHARED_EXPORT fixedWidthKeepLeft(std::string data, size_t len, char pad);
+std::string TP_UTILS_EXPORT fixedWidthKeepLeft(std::string data, size_t len, char pad);
 
 //##################################################################################################
 //! Replace key with value in result.
 void replace(std::string& result, const std::string& key, const std::string& value);
 
 //##################################################################################################
-bool TP_UTILS_SHARED_EXPORT parseColor(const std::string& color, uint8_t& r, uint8_t& g, uint8_t& b, uint8_t& a);
+bool TP_UTILS_EXPORT parseColor(const std::string& color, uint8_t& r, uint8_t& g, uint8_t& b, uint8_t& a);
 
 //##################################################################################################
-bool TP_UTILS_SHARED_EXPORT parseColorF(const std::string& color, float& r, float& g, float& b, float& a);
+bool TP_UTILS_EXPORT parseColorF(const std::string& color, float& r, float& g, float& b, float& a);
 
 }
 

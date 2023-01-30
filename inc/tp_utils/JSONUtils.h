@@ -23,15 +23,15 @@ namespace tp_utils
 {
 
 //##################################################################################################
-[[nodiscard]] nlohmann::json TP_UTILS_SHARED_EXPORT jsonFromString(const std::string& json);
+[[nodiscard]] nlohmann::json TP_UTILS_EXPORT jsonFromString(const std::string& json);
 
 //##################################################################################################
-[[nodiscard]] nlohmann::json TP_UTILS_SHARED_EXPORT getJSON(const nlohmann::json& j,
+[[nodiscard]] nlohmann::json TP_UTILS_EXPORT getJSON(const nlohmann::json& j,
                                                             const std::string& key,
                                                             const nlohmann::json& defaultValue=nlohmann::json());
 
 //##################################################################################################
-[[nodiscard]] float TP_UTILS_SHARED_EXPORT getJSONFloat(const nlohmann::json& j,
+[[nodiscard]] float TP_UTILS_EXPORT getJSONFloat(const nlohmann::json& j,
                                                         const std::string& key,
                                                         float defaultValue=nlohmann::json());
 
@@ -65,25 +65,25 @@ template<typename T>
 
 
 //##################################################################################################
-[[nodiscard]] std::string TP_UTILS_SHARED_EXPORT getJSONString(const nlohmann::json& j,
+[[nodiscard]] std::string TP_UTILS_EXPORT getJSONString(const nlohmann::json& j,
                                                                const std::string& key,
                                                                const std::string& defaultValue=std::string());
 
 //##################################################################################################
-[[nodiscard]] bool TP_UTILS_SHARED_EXPORT getJSONBool(const nlohmann::json& j,
+[[nodiscard]] bool TP_UTILS_EXPORT getJSONBool(const nlohmann::json& j,
                                                       const std::string& key,
                                                       const bool& defaultValue=bool());
 
 //##################################################################################################
-[[nodiscard]] std::vector<std::string> TP_UTILS_SHARED_EXPORT getJSONStringList(const nlohmann::json& j,
+[[nodiscard]] std::vector<std::string> TP_UTILS_EXPORT getJSONStringList(const nlohmann::json& j,
                                                                                 const std::string& key);
 
 //##################################################################################################
-[[nodiscard]] std::vector<nlohmann::json> TP_UTILS_SHARED_EXPORT getJSONArray(const nlohmann::json& j,
+[[nodiscard]] std::vector<nlohmann::json> TP_UTILS_EXPORT getJSONArray(const nlohmann::json& j,
                                                                               const std::string& key);
 
 //##################################################################################################
-[[nodiscard]] std::vector<StringID> TP_UTILS_SHARED_EXPORT getJSONStringIDs(const nlohmann::json& j,
+[[nodiscard]] std::vector<StringID> TP_UTILS_EXPORT getJSONStringIDs(const nlohmann::json& j,
                                                                             const std::string& key);
 
 //##################################################################################################

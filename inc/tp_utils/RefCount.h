@@ -14,7 +14,7 @@ namespace tp_utils
 
 //################################################################################################
 //! This holds the count for a single type
-struct TP_UTILS_SHARED_EXPORT InstanceDetails
+struct TP_UTILS_EXPORT InstanceDetails
 {
   int count;     //!< The current count of live objects.
   int64_t total; //!< The total count including instances that have been deleted.
@@ -33,7 +33,7 @@ program runs. To count the number of instances of any given class call \link #TP
 in the constructor and \link #TP_UNREF(type) \endlink in the destructor, do not call ref() and
 unref() directly. The type should be the namespace::class of your class.
 */
-class TP_UTILS_SHARED_EXPORT RefCount
+class TP_UTILS_EXPORT RefCount
 {
   RefCount(){}
 public:

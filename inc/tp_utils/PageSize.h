@@ -8,7 +8,7 @@ namespace tp_utils
 
 //##################################################################################################
 //! Returns the virtual memory page size or 0
-size_t TP_UTILS_SHARED_EXPORT pageSize();
+size_t TP_UTILS_EXPORT pageSize();
 
 }
 
@@ -18,7 +18,7 @@ size_t TP_UTILS_SHARED_EXPORT pageSize();
 namespace tp_utils
 {
 //##################################################################################################
-inline size_t TP_UTILS_SHARED_EXPORT pageSize()
+inline size_t TP_UTILS_EXPORT pageSize()
 {
   size_t n;
   int u;
@@ -44,7 +44,7 @@ inline size_t TP_UTILS_SHARED_EXPORT pageSize()
 namespace tp_utils
 {
 //##################################################################################################
-inline size_t TP_UTILS_SHARED_EXPORT pageSize()
+inline size_t TP_UTILS_EXPORT pageSize()
 {
   return 0;
 }

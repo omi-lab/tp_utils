@@ -39,7 +39,7 @@ void addResource(const std::string& name, const char* data, size_t size)
 }
 
 //##################################################################################################
-void TP_UTILS_SHARED_EXPORT writeResource(const std::string& from, const std::string& to)
+void TP_UTILS_EXPORT writeResource(const std::string& from, const std::string& to)
 {
   auto r = tp_utils::resource(from);
   tp_utils::writeTextFile(to, std::string(r.data, r.size));

@@ -13,7 +13,7 @@ namespace detail
 {
 //##################################################################################################
 template<class T = void>
-struct TP_UTILS_SHARED_EXPORT _LogStatsTimer
+struct TP_UTILS_EXPORT _LogStatsTimer
 {
   //################################################################################################
   _LogStatsTimer(const std::string& path, int64_t intervalMS, const std::function<std::string()>& take, bool append=false)

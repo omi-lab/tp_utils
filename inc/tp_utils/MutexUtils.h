@@ -16,7 +16,7 @@
 #define TP_MUTEX_LOCKER(m)std::lock_guard<std::mutex> TP_CONCAT(locker, __LINE__)(m); TP_UNUSED(TP_CONCAT(locker, __LINE__))
 #define TP_MUTEX_UNLOCKER(mutex)TPMutexUnlocker TP_CONCAT(locker, __LINE__)(&mutex); TP_UNUSED(TP_CONCAT(locker, __LINE__))
 
-class TP_UTILS_SHARED_EXPORT TPMutex: public std::mutex
+class TP_UTILS_EXPORT TPMutex: public std::mutex
 {
 public:
   //################################################################################################
@@ -30,7 +30,7 @@ public:
 };
 
 //##################################################################################################
-class TP_UTILS_SHARED_EXPORT TPMutexUnlocker
+class TP_UTILS_EXPORT TPMutexUnlocker
 {
   TP_NONCOPYABLE(TPMutexUnlocker);
   TPMutex* m_mutex;
@@ -71,7 +71,7 @@ The only method on this that is of use externally is takeResults() this returns 
 that can be used to debug mutex contention. The intended use of this is to write the stats out to
 file every few seconds, then someone who is debugging the system can watch the file.
 */
-class TP_UTILS_SHARED_EXPORT LockStats
+class TP_UTILS_EXPORT LockStats
 {
 public:
   //################################################################################################
@@ -132,7 +132,7 @@ private:
 }
 
 //##################################################################################################
-class TP_UTILS_SHARED_EXPORT TPMutex: public std::timed_mutex
+class TP_UTILS_EXPORT TPMutex: public std::timed_mutex
 {
   int m_id;
 public:
@@ -213,7 +213,7 @@ public:
 };
 
 //##################################################################################################
-class TP_UTILS_SHARED_EXPORT TPMutexUnlocker
+class TP_UTILS_EXPORT TPMutexUnlocker
 {
   TPMutex* m_mutex;
   const char* m_file;
@@ -239,7 +239,7 @@ public:
 #endif
 
 //##################################################################################################
-class TP_UTILS_SHARED_EXPORT TPWaitCondition
+class TP_UTILS_EXPORT TPWaitCondition
 {
   TP_NONCOPYABLE(TPWaitCondition);
 public:

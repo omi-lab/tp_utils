@@ -48,19 +48,19 @@ enum class DebugType
   Table
 };
 //##################################################################################################
-std::string TP_UTILS_SHARED_EXPORT getCurrentTimestamp();
+std::string TP_UTILS_EXPORT getCurrentTimestamp();
 
 //##################################################################################################
-void TP_UTILS_SHARED_EXPORT installSignalHandler();
+void TP_UTILS_EXPORT installSignalHandler();
 
 //##################################################################################################
-void TP_UTILS_SHARED_EXPORT installMessageHandler(const std::function<void(MessageType, const std::string&)>& callback);
+void TP_UTILS_EXPORT installMessageHandler(const std::function<void(MessageType, const std::string&)>& callback);
 
 //##################################################################################################
-void TP_UTILS_SHARED_EXPORT installDateTimeMessageHandler();
+void TP_UTILS_EXPORT installDateTimeMessageHandler();
 
 //##################################################################################################
-class TP_UTILS_SHARED_EXPORT DebugMode
+class TP_UTILS_EXPORT DebugMode
 {
   TP_NONCOPYABLE(DebugMode);
 public:
@@ -93,7 +93,7 @@ private:
 };
 
 //##################################################################################################
-class TP_UTILS_SHARED_EXPORT DebugBuffer : public std::stringbuf
+class TP_UTILS_EXPORT DebugBuffer : public std::stringbuf
 {
 public:
   //################################################################################################
@@ -103,7 +103,7 @@ public:
 namespace DBG
 {
 //##################################################################################################
-struct TP_UTILS_SHARED_EXPORT Base
+struct TP_UTILS_EXPORT Base
 {
   TP_NONCOPYABLE(Base);
 
@@ -113,7 +113,7 @@ struct TP_UTILS_SHARED_EXPORT Base
 };
 
 //##################################################################################################
-struct TP_UTILS_SHARED_EXPORT FactoryBase
+struct TP_UTILS_EXPORT FactoryBase
 {
   TP_NONCOPYABLE(FactoryBase);
 
@@ -137,7 +137,7 @@ struct FactoryTemplate : public FactoryBase
 };
 
 //##################################################################################################
-struct TP_UTILS_SHARED_EXPORT Manager
+struct TP_UTILS_EXPORT Manager
 {
   Manager();
   ~Manager();
@@ -159,7 +159,7 @@ struct TP_UTILS_SHARED_EXPORT Manager
 }
 
 //##################################################################################################
-struct TP_UTILS_SHARED_EXPORT DebugHelper
+struct TP_UTILS_EXPORT DebugHelper
 {
   TP_NONCOPYABLE(DebugHelper);
 
@@ -171,7 +171,7 @@ struct TP_UTILS_SHARED_EXPORT DebugHelper
 };
 
 //##################################################################################################
-void TP_UTILS_SHARED_EXPORT installDefaultMessageHandler();
+void TP_UTILS_EXPORT installDefaultMessageHandler();
 
 }
 

@@ -7,7 +7,7 @@ namespace tp_utils
 {
 
 //##################################################################################################
-class TP_UTILS_SHARED_EXPORT TimerThread
+class TP_UTILS_EXPORT TimerThread
 {
   TP_NONCOPYABLE(TimerThread);
 public:

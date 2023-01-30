@@ -10,7 +10,7 @@ namespace detail
 {
 //##################################################################################################
 template<class T = void>
-struct TP_UTILS_SHARED_EXPORT _SaveFunctionTimeStatsTimer : public LogStatsTimer
+struct TP_UTILS_EXPORT _SaveFunctionTimeStatsTimer : public LogStatsTimer
 {
   _SaveFunctionTimeStatsTimer(const std::string& path, int64_t intervalMS):
     LogStatsTimer(path, intervalMS, FunctionTimeStats::takeResults)

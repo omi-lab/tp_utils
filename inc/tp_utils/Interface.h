@@ -14,7 +14,7 @@ namespace tp_utils
 
 //##################################################################################################
 //! This provides a generic way to pass interfaces to different classes.
-class TP_UTILS_SHARED_EXPORT Interface final
+class TP_UTILS_EXPORT Interface final
 {
 public:
 

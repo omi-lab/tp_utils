@@ -23,15 +23,15 @@ Otherwise, all entries on the stack are printed.
 \param context - Pointer to a ucontext_t structure supplied to signal handler, or null if not
                  called by signal handler.
 */
-void TP_UTILS_SHARED_EXPORT printStackTrace();
+void TP_UTILS_EXPORT printStackTrace();
 
 //##################################################################################################
-void TP_UTILS_SHARED_EXPORT printAddr2Line();
+void TP_UTILS_EXPORT printAddr2Line();
 
 
 //##################################################################################################
 //! Returns a stack trace as a string
-std::string TP_UTILS_SHARED_EXPORT formatStackTrace();
+std::string TP_UTILS_EXPORT formatStackTrace();
 
 //##################################################################################################
 void saveCrashReport();
@@ -41,16 +41,16 @@ void saveCrashReport();
 
 #ifdef TP_WIN32_MSVC
 //##################################################################################################
-void TP_UTILS_SHARED_EXPORT createMiniDump(EXCEPTION_POINTERS* pExceptionPtrs);
+void TP_UTILS_EXPORT createMiniDump(EXCEPTION_POINTERS* pExceptionPtrs);
 
 //##################################################################################################
-[[noreturn]]void TP_UTILS_SHARED_EXPORT saveCrashReportAndExit(EXCEPTION_POINTERS* pExceptionPtrs);
+[[noreturn]]void TP_UTILS_EXPORT saveCrashReportAndExit(EXCEPTION_POINTERS* pExceptionPtrs);
 
 //##################################################################################################
-void TP_UTILS_SHARED_EXPORT printStackTrace(EXCEPTION_POINTERS* pExceptionPtrs);
+void TP_UTILS_EXPORT printStackTrace(EXCEPTION_POINTERS* pExceptionPtrs);
 
 //##################################################################################################
-std::string TP_UTILS_SHARED_EXPORT formatStackTrace(EXCEPTION_POINTERS* pExceptionPtrs);
+std::string TP_UTILS_EXPORT formatStackTrace(EXCEPTION_POINTERS* pExceptionPtrs);
 
 #endif
 

@@ -277,7 +277,7 @@ static bool demangle(const char* symbol, std::string& output)
 }
 
 //##################################################################################################
-void TP_UTILS_SHARED_EXPORT printStackTrace()
+void TP_UTILS_EXPORT printStackTrace()
 {
   //Get the backtrace
   std::array<void*, MAX_LEVELS> array = tpMakeArray<void*, MAX_LEVELS>(nullptr);
@@ -315,7 +315,7 @@ void TP_UTILS_SHARED_EXPORT printStackTrace()
 }
 
 //##################################################################################################
-void TP_UTILS_SHARED_EXPORT printAddr2Line()
+void TP_UTILS_EXPORT printAddr2Line()
 {
   //Get the backtrace
   std::array<void*, MAX_LEVELS> array = tpMakeArray<void*, MAX_LEVELS>(nullptr);
@@ -370,7 +370,7 @@ void TP_UTILS_SHARED_EXPORT printAddr2Line()
 }
 
 //##################################################################################################
-std::string TP_UTILS_SHARED_EXPORT formatStackTrace()
+std::string TP_UTILS_EXPORT formatStackTrace()
 {
   //Get the backtrace
   std::array<void*, MAX_LEVELS> array = tpMakeArray<void*, MAX_LEVELS>(nullptr);
@@ -390,13 +390,13 @@ std::string TP_UTILS_SHARED_EXPORT formatStackTrace()
 
 #elif defined(EMSCRIPTEN_STACKTRACE)
 //##################################################################################################
-void TP_UTILS_SHARED_EXPORT printStackTrace()
+void TP_UTILS_EXPORT printStackTrace()
 {
   emscripten_run_script("console.log((new Error()).stack);");
 }
 
 //##################################################################################################
-std::string TP_UTILS_SHARED_EXPORT formatStackTrace()
+std::string TP_UTILS_EXPORT formatStackTrace()
 {
   return emscripten_run_script_string("(new Error()).stack;");
 }
@@ -427,7 +427,7 @@ static _Unwind_Reason_Code android_unwind_callback(struct _Unwind_Context* conte
 }
 
 //##################################################################################################
-void TP_UTILS_SHARED_EXPORT printStackTrace()
+void TP_UTILS_EXPORT printStackTrace()
 {
   tpWarning() << "\nandroid stack dump";
 
@@ -464,7 +464,7 @@ void TP_UTILS_SHARED_EXPORT printStackTrace()
   tpWarning() << "android stack dump done\n";
 }
 
-std::string TP_UTILS_SHARED_EXPORT formatStackTrace()
+std::string TP_UTILS_EXPORT formatStackTrace()
 {
   return std::string();
 }
@@ -472,7 +472,7 @@ std::string TP_UTILS_SHARED_EXPORT formatStackTrace()
 #elif defined(OSX_STACKTRACE)
 
 //##################################################################################################
-void TP_UTILS_SHARED_EXPORT printStackTrace()
+void TP_UTILS_EXPORT printStackTrace()
 {
   void* callstack[128];
   int i, frames = backtrace(callstack, 128);
@@ -483,7 +483,7 @@ void TP_UTILS_SHARED_EXPORT printStackTrace()
 }
 
 //##################################################################################################
-std::string TP_UTILS_SHARED_EXPORT formatStackTrace()
+std::string TP_UTILS_EXPORT formatStackTrace()
 {
   return std::string();
 }
@@ -791,11 +791,11 @@ void printStackTrace(EXCEPTION_POINTERS* pExceptionPtrs)
 //-- Not Supported ---------------------------------------------------------------------------------
 //##################################################################################################
 #else
-void TP_UTILS_SHARED_EXPORT printStackTrace()
+void TP_UTILS_EXPORT printStackTrace()
 {
 }
 
-std::string TP_UTILS_SHARED_EXPORT formatStackTrace()
+std::string TP_UTILS_EXPORT formatStackTrace()
 {
   return std::string();
 }

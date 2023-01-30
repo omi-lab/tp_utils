@@ -7,7 +7,7 @@ namespace tp_utils
 {
 
 //##################################################################################################
-std::string TP_UTILS_SHARED_EXPORT readTextFile(const std::string& filename)
+std::string TP_UTILS_EXPORT readTextFile(const std::string& filename)
 {
   try
   {
@@ -21,7 +21,7 @@ std::string TP_UTILS_SHARED_EXPORT readTextFile(const std::string& filename)
 }
 
 //##################################################################################################
-std::string TP_UTILS_SHARED_EXPORT readBinaryFile(const std::string& filename)
+std::string TP_UTILS_EXPORT readBinaryFile(const std::string& filename)
 {
   try
   {
@@ -52,7 +52,7 @@ std::string TP_UTILS_SHARED_EXPORT readBinaryFile(const std::string& filename)
 }
 
 //##################################################################################################
-bool TP_UTILS_SHARED_EXPORT writeTextFile(const std::string& filename, const std::string& textOutput, bool append)
+bool TP_UTILS_EXPORT writeTextFile(const std::string& filename, const std::string& textOutput, bool append)
 {
   try
   {
@@ -73,7 +73,7 @@ bool TP_UTILS_SHARED_EXPORT writeTextFile(const std::string& filename, const std
 }
 
 //##################################################################################################
-bool TP_UTILS_SHARED_EXPORT writeBinaryFile(const std::string& filename, const std::string& binaryOutput)
+bool TP_UTILS_EXPORT writeBinaryFile(const std::string& filename, const std::string& binaryOutput)
 {
   try
   {
@@ -88,7 +88,7 @@ bool TP_UTILS_SHARED_EXPORT writeBinaryFile(const std::string& filename, const s
 }
 
 //##################################################################################################
-nlohmann::json TP_UTILS_SHARED_EXPORT readJSONFile(const std::string& filename)
+nlohmann::json TP_UTILS_EXPORT readJSONFile(const std::string& filename)
 {
   try
   {

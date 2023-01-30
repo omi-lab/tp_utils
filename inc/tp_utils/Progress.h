@@ -30,7 +30,7 @@ struct ProgressMessage
 /*!
 
 */
-class TP_UTILS_SHARED_EXPORT Progress
+class TP_UTILS_EXPORT Progress
 {
 public:
   //################################################################################################
