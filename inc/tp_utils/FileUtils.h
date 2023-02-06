@@ -117,6 +117,9 @@ bool TP_UTILS_EXPORT setPermissions(const std::string& path, unsigned permission
 [[nodiscard]]std::string TP_UTILS_EXPORT pathAppend(const std::string& path, const std::string& part);
 
 //##################################################################################################
+[[nodiscard]]std::string TP_UTILS_EXPORT appendPaths(const std::vector<std::string>& paths);
+
+//##################################################################################################
 extern std::vector<std::string> TP_UTILS_EXPORT (*listFilesCallback)(const std::string& path, const std::unordered_set<std::string>& extensions);
 extern std::vector<std::string> TP_UTILS_EXPORT (*listDirectoriesCallback)(const std::string& path);
 extern int64_t TP_UTILS_EXPORT (*fileTimeMSCallback)(const std::string& path);

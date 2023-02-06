@@ -254,5 +254,15 @@ std::string pathAppend(const std::string& path, const std::string& part)
 
   return result + part;
 }
+//##################################################################################################
+[[nodiscard]]std::string TP_UTILS_EXPORT appendPaths(const std::vector<std::string>& paths)
+{
+  std::string result;
+
+  for(const auto& path : paths)
+    result = result.empty()?path:pathAppend(result, path);
+
+  return result;
+}
 
 }
