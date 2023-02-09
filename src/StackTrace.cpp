@@ -312,11 +312,16 @@ void TP_UTILS_EXPORT printStackTrace()
     else
       tpWarning() << "Frame " << i << ": " << symbol;
   }
+#ifdef TP_ADDR2LINE
+  execAddr2Line();
+#endif
 }
 
 //##################################################################################################
-void TP_UTILS_EXPORT printAddr2Line()
+std::vector<std::string> TP_UTILS_EXPORT addr2Line()
 {
+  std::vector<std::string> results;
+
   //Get the backtrace
   std::array<void*, MAX_LEVELS> array = tpMakeArray<void*, MAX_LEVELS>(nullptr);
 
@@ -338,7 +343,6 @@ void TP_UTILS_EXPORT printAddr2Line()
   int size = backtrace(array.data(), MAX_LEVELS);
 #endif
   std::unique_ptr<char*, decltype(&free)> strings(backtrace_symbols(array.data(), size), &free);
-  std::string output;
   for(int i = startOffset; i < size; ++i)
   {
     const char* symbol = strings.get()[i];
@@ -356,17 +360,37 @@ void TP_UTILS_EXPORT printAddr2Line()
 
         if(!partsC.empty())
         {
+          std::string output;
           output += " addr2line ";
           output += partsC.front();
           output += " -f -C -e ";
           output += partsA.front();
-          output += '\n';
+          results.push_back(output);
         }
       }
     }
   }
 
-  std::cout << output << std::endl;
+  return results;
+}
+
+//##################################################################################################
+void TP_UTILS_EXPORT printAddr2Line()
+{
+  for(const auto& line : addr2Line())
+    std::cout << line << std::endl;
+}
+
+//##################################################################################################
+void TP_UTILS_EXPORT execAddr2Line()
+{
+  auto lines = addr2Line();
+  for(size_t l=0; l<lines.size(); l++)
+  {
+    std::cerr << "Frame " << l << ":" << std::endl;
+    const auto& line = lines.at(l);
+    std::system(line.c_str());
+  }
 }
 
 //##################################################################################################

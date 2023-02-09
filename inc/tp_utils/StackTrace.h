@@ -26,8 +26,13 @@ Otherwise, all entries on the stack are printed.
 void TP_UTILS_EXPORT printStackTrace();
 
 //##################################################################################################
+std::vector<std::string> TP_UTILS_EXPORT addr2Line();
+
+//##################################################################################################
 void TP_UTILS_EXPORT printAddr2Line();
 
+//##################################################################################################
+void TP_UTILS_EXPORT execAddr2Line();
 
 //##################################################################################################
 //! Returns a stack trace as a string
