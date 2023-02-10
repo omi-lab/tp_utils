@@ -128,7 +128,7 @@ namespace tp_utils
 //-- GCC -------------------------------------------------------------------------------------------
 //##################################################################################################
 #if defined(GCC_STACKTRACE)
-static bool demangle(const char* symbol, std::string& output)
+static bool demangle(const char* symbol, std::string& output, std::string& offset)
 {
   std::unique_ptr<char, decltype(&free)> symbol2(strdup(symbol), &free);
 
@@ -270,6 +270,8 @@ static bool demangle(const char* symbol, std::string& output)
       output += "() + ";
       output += begin_offset;
     }
+
+    offset = begin_offset;
   }
   else
   {
@@ -315,7 +317,8 @@ void TP_UTILS_EXPORT printStackTrace()
 
     //Extract name and address
     std::string demangled;
-    if(demangle(symbol, demangled))
+    std::string offset;
+    if(demangle(symbol, demangled, offset))
       tpWarning() << "Frame " << i << ": " << demangled;
     else
       tpWarning() << "Frame " << i << ": " << symbol;
@@ -356,6 +359,10 @@ std::vector<std::string> TP_UTILS_EXPORT addr2Line()
   {
     const char* symbol = strings.get()[i];
 
+    std::string demangled;
+    std::string offset;
+    demangle(symbol, demangled, offset);
+
     std::vector<std::string> partsA;
     tpSplit(partsA, symbol, '(', SplitBehavior::SkipEmptyParts);
     if(partsA.size()==2)
@@ -371,7 +378,7 @@ std::vector<std::string> TP_UTILS_EXPORT addr2Line()
         {
           std::string output;
           output += " addr2line ";
-          output += partsC.front();
+          output += offset;
           output += " -f -C -e ";
           output += partsA.front();
           results.push_back(output);
