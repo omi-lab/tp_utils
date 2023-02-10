@@ -283,6 +283,10 @@ static bool demangle(const char* symbol, std::string& output)
 //##################################################################################################
 void TP_UTILS_EXPORT printStackTrace()
 {
+#ifdef TP_ADDR2LINE
+  execAddr2Line();
+#endif
+
   //Get the backtrace
   std::array<void*, MAX_LEVELS> array = tpMakeArray<void*, MAX_LEVELS>(nullptr);
 
@@ -316,9 +320,6 @@ void TP_UTILS_EXPORT printStackTrace()
     else
       tpWarning() << "Frame " << i << ": " << symbol;
   }
-#ifdef TP_ADDR2LINE
-  execAddr2Line();
-#endif
 
   std::cerr << "Sleep for 1 hour." << std::endl;
   std::this_thread::sleep_for(std::chrono::hours(1));
