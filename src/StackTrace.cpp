@@ -1,6 +1,10 @@
 #include "tp_utils/StackTrace.h"
 #include "tp_utils/DebugUtils.h"
 #include "tp_utils/FileUtils.h"
+
+#include <chrono>
+#include <thread>
+
 //PLATFORM_ABSTRACTIONS
 #if defined(TP_ANDROID)
 #  define ANDROID_STACKTRACE
@@ -315,6 +319,8 @@ void TP_UTILS_EXPORT printStackTrace()
 #ifdef TP_ADDR2LINE
   execAddr2Line();
 #endif
+
+  std::this_thread::sleep_for(std::chrono::hours(1));
 }
 
 //##################################################################################################
@@ -387,8 +393,9 @@ void TP_UTILS_EXPORT execAddr2Line()
   auto lines = addr2Line();
   for(size_t l=0; l<lines.size(); l++)
   {
-    std::cerr << "Frame " << l << ":" << std::endl;
     const auto& line = lines.at(l);
+    std::cerr << "Frame " << l << ":" << std::endl;
+    std::cerr << line << std::endl;
     std::system(line.c_str());
   }
 }
