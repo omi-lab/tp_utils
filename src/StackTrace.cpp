@@ -323,10 +323,6 @@ void TP_UTILS_EXPORT printStackTrace()
     else
       tpWarning() << "Frame " << i << ": " << symbol;
   }
-
-  std::cerr << "Sleep for 1 hour." << std::endl;
-  std::this_thread::sleep_for(std::chrono::hours(1));
-  std::cerr << "Done." << std::endl;
 }
 
 //##################################################################################################
