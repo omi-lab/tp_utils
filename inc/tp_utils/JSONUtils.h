@@ -16,7 +16,6 @@
 #define TPJSONDouble    tp_utils::getJSONNumber<double>
 #define TPJSONBool      tp_utils::getJSONBool
 #define TPJSONList      tp_utils::getJSONStringList
-#define TPJSONArray     tp_utils::getJSONArray
 #define TPJSONStringIDs tp_utils::getJSONStringIDs
 
 namespace tp_utils
@@ -27,13 +26,13 @@ namespace tp_utils
 
 //##################################################################################################
 [[nodiscard]] nlohmann::json TP_UTILS_EXPORT getJSON(const nlohmann::json& j,
-                                                            const std::string& key,
-                                                            const nlohmann::json& defaultValue=nlohmann::json());
+                                                     const std::string& key,
+                                                     const nlohmann::json& defaultValue=nlohmann::json());
 
 //##################################################################################################
 [[nodiscard]] float TP_UTILS_EXPORT getJSONFloat(const nlohmann::json& j,
-                                                        const std::string& key,
-                                                        float defaultValue=nlohmann::json());
+                                                 const std::string& key,
+                                                 float defaultValue=nlohmann::json());
 
 //##################################################################################################
 template<typename T>
@@ -41,21 +40,14 @@ template<typename T>
                               const std::string& key,
                               const T& defaultValue=T())
 {
-  if(j.is_object())
+  if(const auto i = j.find(key); i != j.end() && i->is_number())
   {
-    const auto it = j.find(key);
-    if(it != j.end())
+    try
     {
-      if(it->is_number())
-      {
-        try
-        {
-          return it->get<T>();
-        }
-        catch(...)
-        {
-        }
-      }
+      return i->get<T>();
+    }
+    catch(...)
+    {
     }
   }
 
@@ -66,25 +58,21 @@ template<typename T>
 
 //##################################################################################################
 [[nodiscard]] std::string TP_UTILS_EXPORT getJSONString(const nlohmann::json& j,
-                                                               const std::string& key,
-                                                               const std::string& defaultValue=std::string());
+                                                        const std::string& key,
+                                                        const std::string& defaultValue=std::string());
 
 //##################################################################################################
 [[nodiscard]] bool TP_UTILS_EXPORT getJSONBool(const nlohmann::json& j,
-                                                      const std::string& key,
-                                                      const bool& defaultValue=bool());
+                                               const std::string& key,
+                                               const bool& defaultValue=bool());
 
 //##################################################################################################
 [[nodiscard]] std::vector<std::string> TP_UTILS_EXPORT getJSONStringList(const nlohmann::json& j,
-                                                                                const std::string& key);
-
-//##################################################################################################
-[[nodiscard]] std::vector<nlohmann::json> TP_UTILS_EXPORT getJSONArray(const nlohmann::json& j,
-                                                                              const std::string& key);
+                                                                         const std::string& key);
 
 //##################################################################################################
 [[nodiscard]] std::vector<StringID> TP_UTILS_EXPORT getJSONStringIDs(const nlohmann::json& j,
-                                                                            const std::string& key);
+                                                                     const std::string& key);
 
 //##################################################################################################
 [[nodiscard]] nlohmann::json stringIDsToJSON(const std::vector<StringID>& stringIDs);

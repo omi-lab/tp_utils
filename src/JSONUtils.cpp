@@ -31,21 +31,14 @@ std::string getJSONString(const nlohmann::json& j,
                           const std::string& key,
                           const std::string& defaultValue)
 {
-  if(j.is_object())
+  if(const auto i = j.find(key); i != j.end() && i->is_string())
   {
-    const auto it = j.find(key);
-    if(it != j.end())
+    try
     {
-      if(it->is_string())
-      {
-        try
-        {
-          return it->get<std::string>();
-        }
-        catch(...)
-        {
-        }
-      }
+      return i->get<std::string>();
+    }
+    catch(...)
+    {
     }
   }
 
@@ -57,21 +50,14 @@ bool getJSONBool(const nlohmann::json& j,
                  const std::string& key,
                  const bool& defaultValue)
 {
-  if(j.is_object())
+  if(const auto i = j.find(key); i != j.end() && i->is_boolean())
   {
-    const auto it = j.find(key);
-    if(it != j.end())
+    try
     {
-      if(it->is_boolean())
-      {
-        try
-        {
-          return it->get<bool>();
-        }
-        catch(...)
-        {
-        }
-      }
+      return i->get<bool>();
+    }
+    catch(...)
+    {
     }
   }
 
@@ -100,37 +86,13 @@ std::vector<std::string> getJSONStringList(const nlohmann::json& j,
 }
 
 //##################################################################################################
-std::vector<nlohmann::json> getJSONArray(const nlohmann::json& j,
-                                         const std::string& key)
-{
-  std::vector<nlohmann::json> result;
-
-  if(auto i=j.find(key); i!=j.end() && i->is_array())
-  {
-    result.reserve(size_t(i->size()));
-    for(const nlohmann::json& ii : *i)
-    {
-      try
-      {
-        result.push_back(ii);
-      }
-      catch(...)
-      {
-      }
-    }
-  }
-  return result;
-}
-
-
-//##################################################################################################
 std::vector<StringID> getJSONStringIDs(const nlohmann::json& j,
                                        const std::string& key)
 {
   std::vector<StringID> ids;
-  auto i = j.find(key);
-  if(i!=j.end() && i.value().is_array())
+  if(auto i = j.find(key); i!=j.end() && i.value().is_array())
   {
+    ids.reserve(i->size());
     for(const auto& jj : i.value())
     {
       if(jj.is_string())
