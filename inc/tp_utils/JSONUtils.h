@@ -77,6 +77,35 @@ template<typename T>
 //##################################################################################################
 [[nodiscard]] nlohmann::json stringIDsToJSON(const std::vector<StringID>& stringIDs);
 
+//##################################################################################################
+template<typename K, typename V>
+void mapFromJson(const nlohmann::json& j, const std::string& key, std::unordered_map<K, V>& result)
+{
+  result.clear();
+  try
+  {
+    if(const auto& i = j.find(key); i != j.end() && i->is_object()){
+      for(auto j =  i->begin(); j!=i->end(); ++j){
+        result[j.key()].loadState(j.value());
+      }
+    }
+  }
+  catch(...)
+  {
+  }
 }
+
+//##################################################################################################
+template<typename K, typename V>
+[[nodiscard]] nlohmann::json mapToJson(std::unordered_map<K, V> const& objectsMap)
+{
+  nlohmann::json object;
+  for(auto& i: objectsMap)
+    object[i.first.toString()] = i.second.saveState();
+  return object;
+}
+
+}
+
 
 #endif
