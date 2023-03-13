@@ -5,6 +5,8 @@
 
 #include "json.hpp"
 
+#include <unordered_map>
+
 #define TPJSON          tp_utils::getJSON
 #define TPJSONString    tp_utils::getJSONString
 #define TPJSONInt       tp_utils::getJSONNumber<int>
