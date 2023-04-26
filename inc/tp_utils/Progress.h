@@ -2,10 +2,12 @@
 #define tp_utils_Progress_h
 
 #include "tp_utils/CallbackCollection.h"
+#include "tp_utils/TPPixel.h"
 
 namespace tp_utils
 {
 class AbstractCrossThreadCallbackFactory;
+class AbstractProgressStore;
 
 //##################################################################################################
 struct ProgressMessage
@@ -14,8 +16,10 @@ struct ProgressMessage
   bool error{false};
   size_t indentation{0};
 
+  //################################################################################################
   ProgressMessage() = default;
 
+  //################################################################################################
   ProgressMessage(const std::string& message_, bool error_, size_t indentation_):
     message(message_),
     error(error_),
@@ -26,6 +30,63 @@ struct ProgressMessage
 };
 
 //##################################################################################################
+struct ProgressEvent
+{
+  AbstractProgressStore* store{nullptr};
+
+  size_t id{0};
+  size_t parentId{0};
+  std::vector<size_t> relatedIds;
+  std::string name;
+
+  int64_t start{0};
+  int64_t end{0};
+  float fraction{0.0f};
+  TPPixel color{176, 215, 136};
+};
+
+//##################################################################################################
+class AbstractProgressStore
+{
+public:
+  //################################################################################################
+  AbstractProgressStore();
+
+  //################################################################################################
+  virtual ~AbstractProgressStore();
+
+  //################################################################################################
+  //! Add the progress event to the list and set its id.
+  virtual void initProgressEvent(ProgressEvent& progressEvent)=0;
+
+  //################################################################################################
+  virtual void updateProgressEvent(const ProgressEvent& progressEvent)=0;
+};
+
+//##################################################################################################
+class RAMProgressStore : public AbstractProgressStore
+{
+public:
+  //################################################################################################
+  RAMProgressStore();
+
+  //################################################################################################
+  ~RAMProgressStore() override;
+
+  //################################################################################################
+  void initProgressEvent(ProgressEvent& progressEvent) override;
+
+  //################################################################################################
+  void updateProgressEvent(const ProgressEvent& progressEvent) override;
+
+private:
+  struct Private;
+  friend struct Private;
+  Private* d;
+};
+
+//##################################################################################################
+extern AbstractProgressStore* globalProgressStore_;
 
 //##################################################################################################
 //! A class for recording the progress of an operation.
@@ -37,15 +98,17 @@ class TP_UTILS_EXPORT Progress
 public:
   //################################################################################################
   //! Thread safe constructor.
-  Progress(AbstractCrossThreadCallbackFactory* crossThreadCallbackFactory);
+  Progress(AbstractCrossThreadCallbackFactory* crossThreadCallbackFactory,
+           AbstractProgressStore* progressStore=nullptr);
 
   //################################################################################################
   //! Blocking operation constructor.
-  Progress(const std::function<bool()>& poll);
+  Progress(const std::function<bool()>& poll,
+           AbstractProgressStore* progressStore=nullptr);
 
   //################################################################################################
   //! Child step constructor.
-  Progress(Progress* parent);
+  Progress(Progress* parent, const std::string& message);
 
   //################################################################################################
   virtual ~Progress();
@@ -125,6 +188,15 @@ public:
 
   //################################################################################################
   bool poll();
+
+  //################################################################################################
+  AbstractProgressStore* progressStore() const;
+
+  //################################################################################################
+  void updateProgressEvent(const std::function<void(ProgressEvent&)>& closure) const;
+
+  //################################################################################################
+  void viewProgressEvent(const std::function<void(const ProgressEvent&)>& closure) const;
 
   //################################################################################################
   CallbackCollection<void()> changed;
