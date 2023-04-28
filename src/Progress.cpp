@@ -41,7 +41,12 @@ struct RAMProgressStore::Private
 RAMProgressStore::RAMProgressStore():
   d(new Private())
 {
-
+  ProgressEvent& progressEvent = d->progressEvents.emplace_back();
+  progressEvent.store = this;
+  progressEvent.id = 0;
+  progressEvent.name = "Root";
+  progressEvent.start = currentTimeMS();
+  progressEvent.end = currentTimeMS();
 }
 
 //##################################################################################################
@@ -55,7 +60,7 @@ void RAMProgressStore::initProgressEvent(ProgressEvent& progressEvent)
 {
   TP_MUTEX_LOCKER(d->mutex);
   progressEvent.store = this;
-  progressEvent.id = d->progressEvents.size()+1;
+  progressEvent.id = d->progressEvents.size();
   d->progressEvents.push_back(progressEvent);
 }
 
@@ -66,6 +71,32 @@ void RAMProgressStore::updateProgressEvent(const ProgressEvent& progressEvent)
   assert(progressEvent.store == this);
   if(progressEvent.id<d->progressEvents.size())
     d->progressEvents[progressEvent.id] = progressEvent;
+}
+
+//##################################################################################################
+void RAMProgressStore::viewProgressEvents(const std::function<void(const std::vector<ProgressEvent>&)>& closure)
+{
+  TP_MUTEX_LOCKER(d->mutex);
+  closure(d->progressEvents);
+}
+
+//##################################################################################################
+std::string RAMProgressStore::saveState() const
+{
+  std::string result;
+
+  d->progressEvents.front().end = currentTimeMS();
+
+  for(const auto& progressEvent : d->progressEvents)
+  {
+    result += std::to_string(progressEvent.id) + " ";
+    result += std::to_string(progressEvent.parentId) + " ";
+    result += progressEvent.name + " ";
+    result += std::to_string(progressEvent.start) + " ";
+    result += std::to_string(progressEvent.end) + "\n";
+  }
+
+  return result;
 }
 
 //##################################################################################################
@@ -178,20 +209,34 @@ struct Progress::Private
       progressStore->updateProgressEvent(*progressEvent);
     }
   }
+
+  //################################################################################################
+  void updateProgressEventEnd(ChildStep_lt& childStep)
+  {
+    updateProgressEvent([&](ProgressEvent& progressEvent)
+    {
+      progressEvent.fraction = childStep.max - childStep.min;
+      progressEvent.fraction *= childStep.fraction;
+      progressEvent.fraction += childStep.min;
+      progressEvent.end = currentTimeMS();
+    });
+  }
 };
 
 //##################################################################################################
 Progress::Progress(AbstractCrossThreadCallbackFactory* crossThreadCallbackFactory,
+                   const std::string& message,
                    AbstractProgressStore* progressStore):
-  d(new Private(this, progressStore, nullptr, {}))
+  d(new Private(this, progressStore, nullptr, message))
 {
   d->crossThreadCallback.reset(crossThreadCallbackFactory->produce([&]{changed();}));
 }
 
 //##################################################################################################
 Progress::Progress(const std::function<bool()>& poll,
+                   const std::string& message,
                    AbstractProgressStore* progressStore):
-  d(new Private(this, progressStore, nullptr, {}))
+  d(new Private(this, progressStore, nullptr, message))
 {
   d->poll = poll;
 }
@@ -222,7 +267,7 @@ void Progress::setProgress(float fraction)
   d->updateThis([&](ChildStep_lt& childStep)
   {
     childStep.fraction = fraction;
-
+    d->updateProgressEventEnd(childStep);
   });
 
   callChanged();
@@ -235,14 +280,7 @@ void Progress::setProgress(float fraction, const std::string& description)
   {
     childStep.fraction = fraction;
     d->description = description;
-
-    d->updateProgressEvent([&](ProgressEvent& progressEvent)
-    {
-      progressEvent.fraction = childStep.max - childStep.min;
-      progressEvent.fraction *= fraction;
-      progressEvent.fraction += childStep.min;
-      progressEvent.end = currentTimeMS();
-    });
+    d->updateProgressEventEnd(childStep);
   });
 
   d->checkPrint(description);
@@ -361,6 +399,8 @@ Progress* Progress::addChildStep(const std::string& message, float completeFract
     childStep.fraction = 0.0f;
 
     childProgress = childStep.childProgress;
+
+    d->updateProgressEventEnd(childStep);
   });
 
   callChanged();  

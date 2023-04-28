@@ -43,6 +43,7 @@ struct ProgressEvent
   int64_t end{0};
   float fraction{0.0f};
   TPPixel color{176, 215, 136};
+  bool active{true};
 };
 
 //##################################################################################################
@@ -79,6 +80,12 @@ public:
   //################################################################################################
   void updateProgressEvent(const ProgressEvent& progressEvent) override;
 
+  //################################################################################################
+  void viewProgressEvents(const std::function<void(const std::vector<ProgressEvent>&)>& closure);
+
+  //################################################################################################
+  std::string saveState() const;
+
 private:
   struct Private;
   friend struct Private;
@@ -99,11 +106,13 @@ public:
   //################################################################################################
   //! Thread safe constructor.
   Progress(AbstractCrossThreadCallbackFactory* crossThreadCallbackFactory,
+           const std::string& message,
            AbstractProgressStore* progressStore=nullptr);
 
   //################################################################################################
   //! Blocking operation constructor.
   Progress(const std::function<bool()>& poll,
+           const std::string& message,
            AbstractProgressStore* progressStore=nullptr);
 
   //################################################################################################
