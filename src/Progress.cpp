@@ -92,6 +92,9 @@ std::string RAMProgressStore::saveState() const
     result += std::to_string(progressEvent.id) + " ";
     result += std::to_string(progressEvent.parentId) + " ";
     result += progressEvent.name + " ";
+    result += std::to_string(progressEvent.color.r) + ",";
+    result += std::to_string(progressEvent.color.g) + ",";
+    result += std::to_string(progressEvent.color.b) + " ";
     result += std::to_string(progressEvent.start) + " ";
     result += std::to_string(progressEvent.end) + "\n";
   }

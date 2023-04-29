@@ -36,7 +36,6 @@ struct ProgressEvent
 
   size_t id{0};
   size_t parentId{0};
-  std::vector<size_t> relatedIds;
   std::string name;
 
   int64_t start{0};
