@@ -157,6 +157,12 @@ struct Progress::Private
   {
     for(const auto& childStep : childSteps)
       delete childStep.childProgress;
+
+    if(progressEvent)
+    {
+      progressEvent->active = false;
+      progressStore->updateProgressEvent(*progressEvent);
+    }
   }
 
   //################################################################################################
@@ -214,7 +220,7 @@ struct Progress::Private
   }
 
   //################################################################################################
-  void updateProgressEventEnd(ChildStep_lt& childStep)
+  void updateProgressEventEnd(ChildStep_lt& childStep, bool active)
   {
     updateProgressEvent([&](ProgressEvent& progressEvent)
     {
@@ -222,6 +228,7 @@ struct Progress::Private
       progressEvent.fraction *= childStep.fraction;
       progressEvent.fraction += childStep.min;
       progressEvent.end = currentTimeMS();
+      progressEvent.active = active;
     });
   }
 };
@@ -270,7 +277,7 @@ void Progress::setProgress(float fraction)
   d->updateThis([&](ChildStep_lt& childStep)
   {
     childStep.fraction = fraction;
-    d->updateProgressEventEnd(childStep);
+    d->updateProgressEventEnd(childStep, fraction<=0.99999f);
   });
 
   callChanged();
@@ -283,7 +290,7 @@ void Progress::setProgress(float fraction, const std::string& description)
   {
     childStep.fraction = fraction;
     d->description = description;
-    d->updateProgressEventEnd(childStep);
+    d->updateProgressEventEnd(childStep, fraction<=0.99999f);
   });
 
   d->checkPrint(description);
@@ -392,6 +399,8 @@ Progress* Progress::addChildStep(const std::string& message, float completeFract
         min = childStep.max;
       else
         min = childStep.fraction;
+
+      d->updateProgressEventEnd(childStep, false);
     }
 
     ChildStep_lt& childStep = d->childSteps.emplace_back();
@@ -403,7 +412,7 @@ Progress* Progress::addChildStep(const std::string& message, float completeFract
 
     childProgress = childStep.childProgress;
 
-    d->updateProgressEventEnd(childStep);
+    d->updateProgressEventEnd(childStep, true);
   });
 
   callChanged();  
@@ -427,9 +436,11 @@ void Progress::addMessage(const std::string& message)
 //##################################################################################################
 void Progress::addError(const std::string& error)
 {
+
   d->updateThis([&](ChildStep_lt& childStep)
   {
     childStep.messages.emplace_back(error, true, 0);
+    d->updateProgressEventEnd(childStep, false);
   });
 
   callChanged();
