@@ -2,6 +2,10 @@
 #include "tp_utils/TimeUtils.h"
 #include "tp_utils/RefCount.h"
 
+#ifdef TP_ENABLE_MUTEX_TIME
+#include "tp_utils/StackTrace.h"
+#endif
+
 #include "lib_platform/Polyfill.h"
 
 #include <condition_variable>
