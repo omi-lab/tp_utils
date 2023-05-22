@@ -42,6 +42,12 @@ HEADERS += inc/tp_utils/AbstractTimerCallback.h
 SOURCES += src/Progress.cpp
 HEADERS += inc/tp_utils/Progress.h
 
+SOURCES += src/Profiler.cpp
+HEADERS += inc/tp_utils/Profiler.h
+
+SOURCES += src/ProfilerController.cpp
+HEADERS += inc/tp_utils/ProfilerController.h
+
 SOURCES += src/Resources.cpp
 HEADERS += inc/tp_utils/Resources.h
 
