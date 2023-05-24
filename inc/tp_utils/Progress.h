@@ -4,6 +4,8 @@
 #include "tp_utils/CallbackCollection.h"
 #include "tp_utils/TPPixel.h"
 
+#include "json.hpp"
+
 namespace tp_utils
 {
 class AbstractCrossThreadCallbackFactory;
@@ -43,6 +45,12 @@ struct ProgressEvent
   float fraction{0.0f};
   TPPixel color{176, 215, 136};
   bool active{true};
+
+  //################################################################################################
+  nlohmann::json saveState() const;
+
+  //################################################################################################
+  void loadState(const nlohmann::json& j);
 };
 
 //##################################################################################################
@@ -82,8 +90,11 @@ public:
   //################################################################################################
   void viewProgressEvents(const std::function<void(const std::vector<ProgressEvent>&)>& closure);
 
+  //################################################################################################  
+  nlohmann::json saveState() const;
+
   //################################################################################################
-  std::string saveState() const;
+  static std::vector<ProgressEvent> loadState(const nlohmann::json& j);
 
 private:
   struct Private;

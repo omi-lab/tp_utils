@@ -4,6 +4,7 @@
 #include "tp_utils/RefCount.h"
 #include "tp_utils/AbstractCrossThreadCallback.h"
 #include "tp_utils/TimeUtils.h"
+#include "tp_utils/JSONUtils.h"
 
 #include <optional>
 
@@ -22,6 +23,38 @@ struct ChildStep_lt
   float max{1.0f};
   float fraction{0.0f};
 };
+}
+
+//##################################################################################################
+nlohmann::json ProgressEvent::saveState() const
+{
+  nlohmann::json j;
+
+  j["id"] = id;
+  j["parentId"] = parentId;
+  j["name"] = name;
+
+  j["start"] = start;
+  j["end"] = end;
+  j["fraction"] = fraction;
+  j["color"] = color.toString();
+  j["active"] = active;
+
+  return j;
+}
+
+//##################################################################################################
+void ProgressEvent::loadState(const nlohmann::json& j)
+{
+  id = TPJSONSizeT(j, "id");
+  parentId = TPJSONSizeT(j, "parentId");
+  name = TPJSONString(j, "name");
+
+  start = TPJSONInt64T(j, "start");
+  end = TPJSONInt64T(j, "end");
+  fraction = TPJSONFloat(j, "fraction");
+  color = TPPixel(TPJSONString(j, "color"));
+  active = TPJSONBool(j, "active");
 }
 
 //##################################################################################################
@@ -81,26 +114,56 @@ void RAMProgressStore::viewProgressEvents(const std::function<void(const std::ve
 }
 
 //##################################################################################################
-std::string RAMProgressStore::saveState() const
+nlohmann::json RAMProgressStore::saveState() const
 {
-  std::string result;
+  nlohmann::json j = nlohmann::json::array();
 
-  d->progressEvents.front().end = currentTimeMS();
-
-  for(const auto& progressEvent : d->progressEvents)
   {
-    result += std::to_string(progressEvent.id) + " ";
-    result += std::to_string(progressEvent.parentId) + " ";
-    result += progressEvent.name + " ";
-    result += std::to_string(progressEvent.color.r) + ",";
-    result += std::to_string(progressEvent.color.g) + ",";
-    result += std::to_string(progressEvent.color.b) + " ";
-    result += std::to_string(progressEvent.start) + " ";
-    result += std::to_string(progressEvent.end) + "\n";
+    TP_MUTEX_LOCKER(d->mutex);
+    j.get_ptr<nlohmann::json::array_t*>()->reserve(d->progressEvents.size());
+    for(const auto& progressEvent : d->progressEvents)
+      j.push_back(progressEvent.saveState());
   }
 
-  return result;
+  return j;
 }
+
+//##################################################################################################
+std::vector<ProgressEvent> RAMProgressStore::loadState(const nlohmann::json& j)
+{
+  std::vector<ProgressEvent> progressEvents;
+  if(!j.is_array())
+    return progressEvents;
+
+  progressEvents.reserve(j.size());
+
+  for(const auto& jj : j)
+    progressEvents.emplace_back().loadState(jj);
+
+  return progressEvents;
+}
+
+////##################################################################################################
+//std::string RAMProgressStore::saveState() const
+//{
+//  std::string result;
+
+//  d->progressEvents.front().end = currentTimeMS();
+
+//  for(const auto& progressEvent : d->progressEvents)
+//  {
+//    result += std::to_string(progressEvent.id) + " ";
+//    result += std::to_string(progressEvent.parentId) + " ";
+//    result += progressEvent.name + " ";
+//    result += std::to_string(progressEvent.color.r) + ",";
+//    result += std::to_string(progressEvent.color.g) + ",";
+//    result += std::to_string(progressEvent.color.b) + " ";
+//    result += std::to_string(progressEvent.start) + " ";
+//    result += std::to_string(progressEvent.end) + "\n";
+//  }
+
+//  return result;
+//}
 
 //##################################################################################################
 AbstractProgressStore* globalProgressStore_{nullptr};

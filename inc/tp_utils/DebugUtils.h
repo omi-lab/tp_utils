@@ -54,10 +54,24 @@ std::string TP_UTILS_EXPORT getCurrentTimestamp();
 void TP_UTILS_EXPORT installSignalHandler();
 
 //##################################################################################################
-void TP_UTILS_EXPORT installMessageHandler(const std::function<void(MessageType, const std::string&)>& callback);
+std::function<void(MessageType, const std::string&)> TP_UTILS_EXPORT installMessageHandler(const std::function<void(MessageType, const std::string&)>& callback);
 
 //##################################################################################################
 void TP_UTILS_EXPORT installDateTimeMessageHandler();
+
+//##################################################################################################
+class TeeMessageHandler
+{
+public:
+  //################################################################################################
+  TeeMessageHandler(const std::string& path);
+
+  //################################################################################################
+  ~TeeMessageHandler();
+
+private:
+  std::function<void(MessageType, const std::string&)> m_previous;
+};
 
 //##################################################################################################
 class TP_UTILS_EXPORT DebugMode

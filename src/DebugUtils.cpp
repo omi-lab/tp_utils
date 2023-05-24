@@ -1,6 +1,7 @@
 #include "tp_utils/DebugUtils.h"
 #include "tp_utils/MutexUtils.h"
 #include "tp_utils/StackTrace.h"
+#include "tp_utils/FileUtils.h"
 #include "tp_utils/RefCount.h"
 
 #include <csignal>
@@ -66,20 +67,42 @@ void installSignalHandler()
 }
 
 //##################################################################################################
-void installMessageHandler(const std::function<void(MessageType, const std::string&)>& callback)
+std::function<void(MessageType, const std::string&)> installMessageHandler(const std::function<void(MessageType, const std::string&)>& callback)
 {
   TP_MUTEX_LOCKER(debugMutex);
+  auto previous = debugCallback;
   debugCallback = callback;
+  return previous;
 }
 
 //##################################################################################################
 void installDateTimeMessageHandler()
 {
-  tp_utils::installMessageHandler([](tp_utils::MessageType, const std::string& message)
+  installMessageHandler([](tp_utils::MessageType, const std::string& message)
   {
     std::cout << getCurrentTimestamp() << message;
     std::cout.flush();
   });
+}
+
+
+//##################################################################################################
+TeeMessageHandler::TeeMessageHandler(const std::string& path)
+{
+  auto closure = [=](tp_utils::MessageType type, const std::string& message)
+  {
+    writeTextFile(path, getCurrentTimestamp() + message, true);
+    if(m_previous)
+      m_previous(type, message);
+  };
+
+  m_previous = installMessageHandler(closure);
+}
+
+//##################################################################################################
+TeeMessageHandler::~TeeMessageHandler()
+{
+  installMessageHandler(m_previous);
 }
 
 //##################################################################################################
