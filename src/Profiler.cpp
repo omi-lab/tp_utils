@@ -1,7 +1,8 @@
+#ifdef TP_ENABLE_PROFILING
+
 #include "tp_utils/Profiler.h"
 #include "tp_utils/Progress.h"
 #include "tp_utils/TimeUtils.h"
-#include "tp_utils/DebugUtils.h"
 #include "tp_utils/ProfilerController.h"
 
 #include <memory>
@@ -14,42 +15,32 @@ namespace tp_utils
 //##################################################################################################
 struct Profiler::Private
 {
-  Private()
-  {
-  }
-  
+  ProfilerController* controller;
   std::string name;
   std::unique_ptr<RAMProgressStore> progressStore{std::make_unique<RAMProgressStore>()};
-  bool recording{false};
 
-  struct SummaryGenerator
-  {
-    std::string label;
-    std::function<double(const std::vector<ProgressEvent>&)> calcfun{nullptr};
-    std::function<std::string(double)> printer{nullptr};
-  };
+  bool recording{false};
 
   std::vector<SummaryGenerator> summaryGenerators;
   std::stack<tp_utils::ProgressEvent> eventStack;
-  ProfilerResults results;
+
+  Private(ProfilerController* controller_):
+    controller(controller_)
+  {
+  }
 };
 
 //##################################################################################################
-Profiler::Profiler(const std::string& name):
-  d(new Private())
+Profiler::Profiler(ProfilerController* controller, const StringID& id_):
+  id(id_),
+  d(new Private(controller))
 {
-  setName(name.empty() ? "Profiler" : name);
-#ifdef TP_ENABLE_PROFILING
-  tp_utils::globalProfilerController_->registerProfiler(this);
-#endif
 }
 
 //##################################################################################################
 Profiler::~Profiler()
 {
-#ifdef TP_ENABLE_PROFILING
-tp_utils::globalProfilerController_->deregisterProfiler(this);
-#endif
+  d->controller->profilerDeleted(this);
   delete d;
 }
 
@@ -60,37 +51,10 @@ std::string Profiler::name() const
 }
 
 //##################################################################################################
-std::string Profiler::setName(const std::string& name_)
+void Profiler::setName(const std::string& name)
 {
-  if(d->recording || name_ == d->name)
-    return d->name;
-
-  std::string newName = name_;
-
-#ifdef TP_ENABLE_PROFILING
-  std::string oldName = d->name;
-
-  bool nameIsValid = tp_utils::globalProfilerController_->isNameAvailable(newName);
-  size_t counter = 0;
-  while(!nameIsValid)
-  {
-    std::stringstream ss;
-    ss << name_ << counter++;
-    newName = ss.str();
-    nameIsValid = tp_utils::globalProfilerController_->isNameAvailable(newName);
-  }
-  
-  tp_utils::globalProfilerController_->onProfilerNameChanged(oldName, newName);
-#endif
-
-  d->name = newName;
-  return name_;
-}
-
-//##################################################################################################
-bool Profiler::isRecording() const
-{
-  return d->recording;
+  d->name = name;
+  d->controller->changed();
 }
 
 //##################################################################################################
@@ -118,7 +82,7 @@ void Profiler::rangePop()
 {
   if(!d->recording)
     return;
-    
+
   auto& progressEvent = d->eventStack.top();
   progressEvent.end = tp_utils::currentTimeMS();
   progressEvent.active = false;
@@ -126,66 +90,54 @@ void Profiler::rangePop()
   d->eventStack.pop();
 }
 
-//################################################################################################
-void Profiler::viewResults(const std::function<void(const ProfilerResults&)>& closure)
+//##################################################################################################
+void Profiler::viewProgressEvents(const std::function<void(const std::vector<ProgressEvent>&)>& closure) const
 {
-  d->progressStore->viewProgressEvents([&](const auto& p){
-    d->results.events = p;
-
-    d->results.summaries.clear();
-    for(auto summaryGene : d->summaryGenerators)
-    {
-        auto& summaryItem = d->results.summaries.emplace_back();
-        summaryItem.label = summaryGene.label;
-        summaryItem.value = summaryGene.calcfun(d->results.events);
-        if(summaryGene.printer)
-        {
-            summaryItem.formattedOutput = summaryGene.printer(summaryItem.value);
-        }
-        else
-        {
-            std::stringstream ss;
-            ss << summaryItem.label << ": "<<summaryItem.value;
-            summaryItem.formattedOutput = ss.str();
-        }
-    }
-    closure(d->results);
-  });
-
-
-}
-
-//################################################################################################
-void Profiler::addSummaryGenerator(const std::string& label, const std::function<double(const std::vector<ProgressEvent>&)>& calcFunc, const std::function<std::string(double)>& printer)
-{
-  auto& summaryGenerator = d->summaryGenerators.emplace_back();
-  summaryGenerator.label = label;
-  summaryGenerator.calcfun = calcFunc;
-  summaryGenerator.printer = printer;
+  d->progressStore->viewProgressEvents(closure);
 }
 
 //##################################################################################################
-void Profiler::reset()
+std::vector<std::pair<std::string, std::string>> Profiler::summaries() const
+{
+  std::vector<std::pair<std::string, std::string>> summaries;
+  for(const auto& summaryGenerator : d->summaryGenerators)
+    summaryGenerator(*this, summaries);
+  return summaries;
+}
+
+//##################################################################################################
+void Profiler::addSummaryGenerator(const SummaryGenerator& summaryGenerator)
+{
+  d->summaryGenerators.push_back(summaryGenerator);
+}
+
+//##################################################################################################
+void Profiler::startRecording()
 {
   d->progressStore.reset(new RAMProgressStore());
+  d->recording = true;
+  d->controller->changed();
 }
 
 //##################################################################################################
-bool Profiler::record()
-{
-  if(!d->recording)
-  {
-    d->recording = true;
-    return true;
-  }
-  return false;
-}
-
-//##################################################################################################
-bool Profiler::stop()
+void Profiler::stopRecording()
 {
   d->recording = false;
-  return true;
+  d->controller->changed();
+}
+
+//##################################################################################################
+nlohmann::json Profiler::saveState() const
+{
+  return d->progressStore->saveState();
+}
+
+//##################################################################################################
+bool Profiler::isRecording() const
+{
+  return d->recording;
 }
 
 }
+
+#endif

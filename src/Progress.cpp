@@ -35,10 +35,10 @@ nlohmann::json ProgressEvent::saveState() const
   j["name"] = name;
 
   j["start"] = start;
-  j["end"] = end==0?currentTimeMS():end;
+  j["end"] = (end==0)?currentTimeMS():end;
   j["fraction"] = fraction;
   j["color"] = color.toString();
-  j["active"] = active;
+  j["active"] = false;
 
   return j;
 }

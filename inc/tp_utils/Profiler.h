@@ -1,81 +1,72 @@
 #ifndef tp_utils_Profiler_h
 #define tp_utils_Profiler_h
 
+#ifdef TP_ENABLE_PROFILING
+
 #include "tp_utils/TPPixel.h"
+#include "tp_utils/StringID.h"
+
+#include "json.hpp"
 
 #include <string>
 
 
 namespace tp_utils
 {
+class Profiler;
 class ProfilerController;
 struct ProgressEvent;
 
 //##################################################################################################
-struct ProfilerSummaryItem
-{
-  std::string label;
-  double value;
-  std::string formattedOutput;
-};
-
-//##################################################################################################
-struct ProfilerResults
-{
- std::vector<ProgressEvent> events;
- std::vector<ProfilerSummaryItem> summaries;
-};
+using SummaryGenerator = std::function<void(const Profiler&, std::vector<std::pair<std::string, std::string>>&)>;
 
 //##################################################################################################
 class Profiler
 { 
+  TP_NONCOPYABLE(Profiler);
 
+  //################################################################################################
+  Profiler(ProfilerController* controller, const StringID& id_);
 public:
-  //##################################################################################################
-  Profiler() = delete;
 
-  //##################################################################################################
-  Profiler(const std::string& name);
+  //################################################################################################
+  ~Profiler();
 
-  //##################################################################################################
-  virtual ~Profiler();
+  //################################################################################################
+  const StringID id;
 
-  //##################################################################################################
-  Profiler(const Profiler&) = delete;
-
-  //##################################################################################################
-  Profiler& operator=(const Profiler&) = delete;
-
-  //##################################################################################################
+  //################################################################################################
   std::string name() const;
 
-  //##################################################################################################
-  std::string setName(const std::string& name_);
+  //################################################################################################
+ void setName(const std::string& name);
 
-  //##################################################################################################
-  bool isRecording() const;
-
-  //##################################################################################################
+  //################################################################################################
   void rangePush(const std::string& label, TPPixel colour);
 
-  //##################################################################################################
+  //################################################################################################
   void rangePop();
 
   //################################################################################################
-  void viewResults(const std::function<void(const ProfilerResults&)>& closure);
+  void viewProgressEvents(const std::function<void(const std::vector<ProgressEvent>&)>& closure) const;
 
   //################################################################################################
-  void addSummaryGenerator(const std::string& label, const std::function<double(const std::vector<ProgressEvent>&)>& calcFunc, const std::function<std::string(double)>& printer = nullptr);
+  std::vector<std::pair<std::string, std::string>> summaries() const;
 
-protected:
-  //##################################################################################################
-  void reset();
+  //################################################################################################
+  void addSummaryGenerator(const SummaryGenerator& summaryGenerator);
 
-  //##################################################################################################
-  bool record();
+  //################################################################################################
+  void startRecording();
 
-  //##################################################################################################
-  bool stop();
+  //################################################################################################
+  void stopRecording();
+
+  //################################################################################################
+  bool isRecording() const;
+
+  //################################################################################################
+  nlohmann::json saveState() const;
 
 private:
   friend class ProfilerController;
@@ -87,8 +78,7 @@ private:
 //##################################################################################################
 class ScopedProfilerRange
 {
-//##################################################################################################
-  ScopedProfilerRange() = delete;
+  TP_NONCOPYABLE(ScopedProfilerRange);
 public:
 //##################################################################################################
   ScopedProfilerRange(Profiler* profiler_, const std::string label_, TPPixel colour_):
@@ -110,6 +100,8 @@ private:
 };
 
 }
+
+#endif
 
 #ifdef TP_ENABLE_PROFILING
 #define INITIALIZE_PROFILER(name, profiler) profiler = std::make_unique<tp_utils::Profiler>(name);
