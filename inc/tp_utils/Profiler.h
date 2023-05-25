@@ -54,6 +54,9 @@ public:
   std::vector<std::pair<std::string, std::string>> summaries() const;
 
   //################################################################################################
+  void clearSummaryGenerators();
+
+  //################################################################################################
   void addSummaryGenerator(const SummaryGenerator& summaryGenerator);
 
   //################################################################################################
@@ -103,11 +106,6 @@ private:
 
 #endif
 
-#ifdef TP_ENABLE_PROFILING
-#define INITIALIZE_PROFILER(name, profiler) profiler = std::make_unique<tp_utils::Profiler>(name);
-#else
-#define INITIALIZE_PROFILER(name, profiler) profiler.reset()
-#endif
 
 #ifdef TP_ENABLE_PROFILING
 #define PRF_ADD_SUMMARY_GENERATOR(profiler, label, calcFunc, printer) if(profiler) profiler->addSummaryGenerator(label, calcFunc, printer)

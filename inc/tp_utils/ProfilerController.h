@@ -14,7 +14,6 @@
 namespace tp_utils
 {
 class Profiler;
-struct ProfilerResults;
 class ProfilerController;
 
 //##################################################################################################

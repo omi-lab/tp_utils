@@ -112,6 +112,12 @@ void Profiler::addSummaryGenerator(const SummaryGenerator& summaryGenerator)
 }
 
 //##################################################################################################
+void Profiler::clearSummaryGenerators()
+{
+  d->summaryGenerators.clear();
+}
+
+//##################################################################################################
 void Profiler::startRecording()
 {
   d->progressStore.reset(new RAMProgressStore());
@@ -122,8 +128,11 @@ void Profiler::startRecording()
 //##################################################################################################
 void Profiler::stopRecording()
 {
-  d->recording = false;
-  d->controller->changed();
+  if(d->recording)
+  {
+    d->recording = false;
+    d->controller->changed();
+  }
 }
 
 //##################################################################################################
