@@ -402,7 +402,8 @@ void TP_UTILS_EXPORT execAddr2Line()
     const auto& line = lines.at(l);
     std::cerr << "Frame " << l << ":" << std::endl;
     std::cerr << line << std::endl;
-    std::system(line.c_str());
+    if(std::system(line.c_str()) != 0)
+      break;
   }
 }
 
