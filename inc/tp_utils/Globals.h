@@ -81,9 +81,19 @@ template<int s> struct __TP_SIZEOF;
 #define TP_CONCAT(s1, s2) TP_CONCAT_(s1, s2)
 
 //##################################################################################################
+//TP_INIT
+//! Scoped initialization.
+#define TP_INIT(init) TPInit TP_CONCAT(tpInit, __LINE__){(init)}
+
+//##################################################################################################
 //TP_CLEANUP
-//! Create an object on the stack and call cleanup when it falls out of scope.
-#define TP_CLEANUP(cleanup) TPCleanUp TP_CONCAT(tpCleanUp, __LINE__)(cleanup); TP_UNUSED(TP_CONCAT(tpCleanUp, __LINE__))
+//! Scoped cleanup.
+#define TP_CLEANUP(cleanup) TPCleanUp TP_CONCAT(tpCleanUp, __LINE__){(cleanup)}
+
+//##################################################################################################
+//TP_INIT_AND_CLEANUP
+//! Scoped initialization and cleanup.
+#define TP_INIT_AND_CLEANUP(init, cleanup) TPInitAndCleanup TP_CONCAT(tpInitAndCleanup, __LINE__){(init), (cleanup)}
 
 #define TP_DEFINE_FLAGS(C) \
   inline C operator|(C lhs, C rhs) \
@@ -435,6 +445,31 @@ class TPCleanUp
 public:
   TPCleanUp(const T& cleanup):m_cleanup(cleanup){}
   ~TPCleanUp(){m_cleanup();}
+};
+
+//##################################################################################################
+class TPInitAndCleanup
+{
+  TP_NONCOPYABLE(TPInitAndCleanup);
+  std::function<void()> m_cleanup;
+public:
+  TPInitAndCleanup(const std::function<void()>& init, const std::function<void()>& cleanup):
+    m_cleanup(cleanup)
+  {
+    init();
+  }
+  ~TPInitAndCleanup(){m_cleanup();}
+};
+
+//##################################################################################################
+class TPInit
+{
+  TP_NONCOPYABLE(TPInit);
+public:
+  TPInit(const std::function<void()>& init)
+  {
+    init();
+  }
 };
 
 //##################################################################################################
