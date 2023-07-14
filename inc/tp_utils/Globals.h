@@ -100,18 +100,18 @@ template<int s> struct __TP_SIZEOF;
 { \
   using T = std::underlying_type_t <C>; \
   return static_cast<C>(static_cast<T>(lhs) | static_cast<T>(rhs)); \
-} \
+  } \
   inline C& operator |= (C& lhs, C rhs) \
 { \
   lhs = lhs | rhs; \
   return lhs; \
-} \
+  } \
   inline bool operator&(C lhs, C rhs) \
 { \
   using T = std::underlying_type_t <C>; \
   return (static_cast<T>(lhs) & static_cast<T>(rhs))!=0; \
-} \
-struct TP_CONCAT(TP_DEFINE_FLAGS_, __LINE__)
+  } \
+  struct TP_CONCAT(TP_DEFINE_FLAGS_, __LINE__)
 
 //##################################################################################################
 //! Return a const object
@@ -205,16 +205,16 @@ enum class CreateFullPath
 //##################################################################################################
 //! Split a string on a delimiter
 void TP_UTILS_EXPORT tpSplit(std::vector<std::string>& result,
-                                    const std::string& input,
-                                    const std::string& del,
-                                    tp_utils::SplitBehavior behavior=tp_utils::SplitBehavior::KeepEmptyParts);
+                             const std::string& input,
+                             const std::string& del,
+                             tp_utils::SplitBehavior behavior=tp_utils::SplitBehavior::KeepEmptyParts);
 
 //##################################################################################################
 //! Split a string on a delimiter
 void TP_UTILS_EXPORT tpSplit(std::vector<std::string>& result,
-                                    const std::string& input,
-                                    char del,
-                                    tp_utils::SplitBehavior behavior=tp_utils::SplitBehavior::KeepEmptyParts);
+                             const std::string& input,
+                             char del,
+                             tp_utils::SplitBehavior behavior=tp_utils::SplitBehavior::KeepEmptyParts);
 
 //##################################################################################################
 //! Remove all instances of a character from a string.
@@ -389,23 +389,23 @@ bool tpNumber(const std::string& s, T& n, T d=T())
   try
   {
     if constexpr (std::is_same_v<T, int>)
-      n = std::stoi(s);
+        n = std::stoi(s);
     else if constexpr (std::is_same_v<T, long>)
-      n = std::stol(s);
+        n = std::stol(s);
     else if constexpr (std::is_same_v<T, unsigned long>)
-      n = std::stoul(s);
+        n = std::stoul(s);
     else if constexpr (std::is_same_v<T, long long>)
-      n = std::stoll(s);
+        n = std::stoll(s);
     else if constexpr (std::is_same_v<T, unsigned long long>)
-      n = std::stoull(s);
+        n = std::stoull(s);
     else if constexpr (std::is_same_v<T, float>)
-      n = std::stof(s);
+        n = std::stof(s);
     else if constexpr (std::is_same_v<T, double>)
-      n = std::stod(s);
+        n = std::stod(s);
     else if constexpr (std::is_same_v<T, long double>)
-      n = std::stold(s);
+        n = std::stold(s);
     else
-      n = T(std::stoi(s));
+    n = T(std::stoi(s));
     return true;
   }
   catch(const std::invalid_argument&)
