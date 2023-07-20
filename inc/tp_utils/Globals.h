@@ -170,7 +170,7 @@ std::string tpTrim(const std::string& str, const std::string& whitespace = " \n\
 
 //##################################################################################################
 //! Returns true if input contains the string in s
-bool TP_UTILS_EXPORT tpContains(const std::string& input, const std::string& s);
+bool TP_UTILS_EXPORT tpStrContains(const std::string& input, const std::string& s);
 
 //##################################################################################################
 template<class B, class E>
@@ -279,34 +279,68 @@ bool tpContainsKey(const T& container, const typename T::key_type& key)
 template<typename T>
 bool tpContainsValue(const T& container, const typename T::mapped_type& value)
 {
-  return (std::find(container.begin(), container.end(), value) != container.end());
+  return (container.find(value) != container.end());
 }
 
 //##################################################################################################
-template<typename T>
-bool tpContains(const T& container, const typename T::value_type& value)
+template<typename V, typename T>
+bool tpContains(const T& container, const V& value)
 {
-  return (std::find(container.begin(), container.end(), value) != container.end());
+  // for containers with built-in find() method, because this is much faster than std::find()
+  return (container.find(value) != container.end());
 }
 
 //##################################################################################################
-template<typename T>
-void tpRemoveOne(T& container, const typename T::value_type& value)
+template<typename V>
+bool tpContains(const std::vector<V>& vec, const V& value)
 {
-  auto i = std::find(container.begin(), container.end(), value);
+  // std::vector doesn't have find() method, so we need to use std::find() instead
+  return (std::find(vec.begin(), vec.end(), value) != vec.end());
+}
+
+//##################################################################################################
+template<typename T, typename V>
+void tpRemoveOne(T& container, const V& value)
+{
+  // for containers with built-in find() method, because this is much faster than std::find()
+  auto i = container.find(value);
   if(i != container.end())
     container.erase(i);
+}
+
+//##################################################################################################
+template<typename V>
+void tpRemoveOne(std::vector<V>& vec, const V& value)
+{
+  // std::vector doesn't have find() method, so we need to use std::find() instead
+  auto i = std::find(vec.begin(), vec.end(), value);
+  if(i != vec.end())
+    vec.erase(i);
 }
 
 //##################################################################################################
 template<typename T>
 void tpRemoveAll(T& container, const typename T::value_type& value)
 {
-  auto i = std::find(container.begin(), container.end(), value);
+  // for containers with built-in find() method, because this is much faster than std::find()
+  auto i = container.find(value);
   while(i != container.end())
   {
     container.erase(i);
-    i = std::find(container.begin(), container.end(), value);
+    i = container.find(value);
+  }
+}
+
+//##################################################################################################
+template<typename V>
+void tpRemoveAll(std::vector<V>& vec, const V& value)
+{
+  // std::vector doesn't have find() method, so we need to use std::find() instead
+  auto i = std::find(vec.begin(), vec.end(), value);
+  while(i != vec.end())
+  {
+    vec.erase(i);
+    i = std::find(vec.begin(), vec.end(), value);
   }
 }
 
@@ -318,10 +352,27 @@ void tpRemoveAt(T& container, I index)
 }
 
 //##################################################################################################
-template<typename T>
-size_t tpIndexOf(const T& container, const typename T::value_type& value)
+template<typename T, typename V>
+size_t tpIndexOf(const T& container, const V& value)
 {
-  return size_t(std::find(container.begin(), container.end(), value) - container.begin());
+  // for containers with built-in find() method, because this is much faster than std::find()
+  return size_t(container.find(value) - container.begin());
+}
+
+//##################################################################################################
+template<typename V>
+size_t tpIndexOf(const std::vector<V>& vec, const V& value)
+{
+  // std::vector doesn't have find() method, so we need to use std::find instead
+  return size_t(std::find(vec.begin(), vec.end(), value) - vec.begin());
+}
+
+//##################################################################################################
+template<typename V, std::size_t N>
+size_t tpIndexOf(const std::array<V,N>& arr, const V& value)
+{
+  // std::array doesn't have find() method, so we need to use std::find instead
+  return size_t(std::find(arr.begin(), arr.end(), value) - arr.begin());
 }
 
 //##################################################################################################

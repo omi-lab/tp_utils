@@ -106,7 +106,7 @@ std::string tpTrim(const std::string& str, const std::string& whitespace)
 }
 
 //##################################################################################################
-bool tpContains(const std::string& input, const std::string& s)
+bool tpStrContains(const std::string& input, const std::string& s)
 {
   return(input.find(s) != std::string::npos);
 }
