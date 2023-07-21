@@ -170,7 +170,11 @@ std::string tpTrim(const std::string& str, const std::string& whitespace = " \n\
 
 //##################################################################################################
 //! Returns true if input contains the string in s
-bool TP_UTILS_EXPORT tpStrContains(const std::string& input, const std::string& s);
+bool TP_UTILS_EXPORT tpContains(const std::string& input, const std::string& s);
+
+//##################################################################################################
+//! Returns true if input contains the string in s
+bool TP_UTILS_EXPORT tpContains(const std::string& input, const char* s);
 
 //##################################################################################################
 template<class B, class E>
