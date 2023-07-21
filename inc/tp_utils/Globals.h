@@ -287,19 +287,27 @@ bool tpContainsValue(const T& container, const typename T::mapped_type& value)
 }
 
 //##################################################################################################
-template<typename V, typename T>
-bool tpContains(const T& container, const V& value)
-{
-  // for containers with built-in find() method, because this is much faster than std::find()
-  return (container.find(value) != container.end());
-}
-
-//##################################################################################################
 template<typename V>
 bool tpContains(const std::vector<V>& vec, const V& value)
 {
   // std::vector doesn't have find() method, so we need to use std::find() instead
   return (std::find(vec.begin(), vec.end(), value) != vec.end());
+}
+
+//##################################################################################################
+template<typename V, typename T>
+bool tpContains(const std::vector<T>& vec, const V& value)
+{
+  // std::vector doesn't have find() method, so we need to use std::find() instead
+  return (std::find(vec.begin(), vec.end(), value) != vec.end());
+}
+
+//##################################################################################################
+template<typename V, typename T>
+bool tpContains(const T& container, const V& value)
+{
+  // for containers with built-in find() method, because this is much faster than std::find()
+  return (container.find(value) != container.end());
 }
 
 //##################################################################################################

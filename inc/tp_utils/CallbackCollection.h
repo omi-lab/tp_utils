@@ -51,7 +51,6 @@ class CallbackCollection<R(Args...)>
   void addCallback(std::function<T>* callback)
   {
     assert(callback);
-    assert(*callback);
     m_callbacks.push_back(callback);
   }
 
@@ -67,7 +66,6 @@ class CallbackCollection<R(Args...)>
   void removeCallback(std::function<T>* callback)
   {
     assert(callback);
-    assert(*callback);
     tpRemoveOne(m_callbacks, callback);
   }
 
@@ -75,7 +73,8 @@ class CallbackCollection<R(Args...)>
   R operator()(Args... args) const
   {
     for(size_t i=0; i<m_callbacks.size(); i++)
-      (*m_callbacks.at(i))(args...);
+      if(const auto& c=*m_callbacks.at(i); c)
+        c(args...);
 
     return; //Force void
   }
