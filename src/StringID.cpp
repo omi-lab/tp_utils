@@ -272,18 +272,6 @@ StringID::StaticData& StringID::staticData(size_t hash)
 }
 
 //##################################################################################################
-bool operator==(const StringID& a, const StringID& b)
-{
-  return (a.sd == b.sd);
-}
-
-//##################################################################################################
-bool operator!=(const StringID& a, const StringID& b)
-{
-  return !(a == b);
-}
-
-//##################################################################################################
 bool lessThanStringID(const StringID& lhs, const StringID& rhs)
 {
   return lhs.toString() < rhs.toString();

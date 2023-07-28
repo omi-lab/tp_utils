@@ -16,8 +16,8 @@ linked together by strings, and this class is used to make this efficent.
 */
 class  TP_UTILS_EXPORT StringID final
 {
-  friend bool TP_UTILS_EXPORT operator==(const StringID& a, const StringID& b);
-  friend bool TP_UTILS_EXPORT operator!=(const StringID& a, const StringID& b);
+  friend bool operator==(const StringID& a, const StringID& b);
+  friend bool operator!=(const StringID& a, const StringID& b);
   friend struct std::hash<tp_utils::StringID>;
 
 public:
@@ -122,8 +122,17 @@ private:
   friend struct StaticData;
 };
 
-bool TP_UTILS_EXPORT operator==(const StringID& a, const StringID& b);
-bool TP_UTILS_EXPORT operator!=(const StringID& a, const StringID& b);
+//##################################################################################################
+inline bool operator==(const StringID& a, const StringID& b)
+{
+  return (a.sd == b.sd);
+}
+
+//##################################################################################################
+inline bool operator!=(const StringID& a, const StringID& b)
+{
+  return !(a == b);
+}
 
 //##################################################################################################
 //! Used for sorting StringID's
