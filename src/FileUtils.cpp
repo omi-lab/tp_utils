@@ -2,6 +2,7 @@
 
 #include <fstream>
 #include <streambuf>
+#include <filesystem> 
 
 namespace tp_utils
 {
@@ -11,7 +12,8 @@ std::string TP_UTILS_EXPORT readTextFile(const std::string& filename)
 {
   try
   {
-    std::ifstream in(filename);
+    std::filesystem::path path = std::filesystem::u8path(filename);
+    std::ifstream in(path);
     return std::string((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
   }
   catch(...)
@@ -25,7 +27,8 @@ std::string TP_UTILS_EXPORT readBinaryFile(const std::string& filename)
 {
   try
   {
-    std::ifstream in(filename, std::ios::binary | std::ios::ate);
+    std::filesystem::path path = std::filesystem::u8path(filename);
+    std::ifstream in(path, std::ios::binary | std::ios::ate);
     std::string results;
     auto size = in.tellg();
     if(size>0)
@@ -56,12 +59,13 @@ bool TP_UTILS_EXPORT writeTextFile(const std::string& filename, const std::strin
 {
   try
   {
+    std::filesystem::path path = std::filesystem::u8path(filename);
     std::ofstream out;
 
     if(append)
-      out.open(filename, std::ios_base::out | std::ios_base::app);
+      out.open(path, std::ios_base::out | std::ios_base::app);
     else
-      out.open(filename, std::ios_base::out | std::ios_base::trunc);
+      out.open(path, std::ios_base::out | std::ios_base::trunc);
 
     out << textOutput;
     return true;
@@ -77,7 +81,8 @@ bool TP_UTILS_EXPORT writeBinaryFile(const std::string& filename, const std::str
 {
   try
   {
-    std::ofstream out(filename, std::ios::binary);
+    std::filesystem::path path = std::filesystem::u8path(filename);
+    std::ofstream out(path, std::ios::binary);
     out << binaryOutput;
     return true;
   }
