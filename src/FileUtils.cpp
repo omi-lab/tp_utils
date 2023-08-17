@@ -12,8 +12,7 @@ std::string TP_UTILS_EXPORT readTextFile(const std::string& filename)
 {
   try
   {
-    std::filesystem::path path = std::filesystem::u8path(filename);
-    std::ifstream in(path);
+    std::ifstream in(std::filesystem::u8path(filename));
     return std::string((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
   }
   catch(...)
@@ -27,8 +26,7 @@ std::string TP_UTILS_EXPORT readBinaryFile(const std::string& filename)
 {
   try
   {
-    std::filesystem::path path = std::filesystem::u8path(filename);
-    std::ifstream in(path, std::ios::binary | std::ios::ate);
+    std::ifstream in(std::filesystem::u8path(filename), std::ios::binary | std::ios::ate);
     std::string results;
     auto size = in.tellg();
     if(size>0)
@@ -59,13 +57,12 @@ bool TP_UTILS_EXPORT writeTextFile(const std::string& filename, const std::strin
 {
   try
   {
-    std::filesystem::path path = std::filesystem::u8path(filename);
     std::ofstream out;
 
     if(append)
-      out.open(path, std::ios_base::out | std::ios_base::app);
+      out.open(std::filesystem::u8path(filename), std::ios_base::out | std::ios_base::app);
     else
-      out.open(path, std::ios_base::out | std::ios_base::trunc);
+      out.open(std::filesystem::u8path(filename), std::ios_base::out | std::ios_base::trunc);
 
     out << textOutput;
     return true;
