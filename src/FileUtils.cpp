@@ -78,8 +78,7 @@ bool TP_UTILS_EXPORT writeBinaryFile(const std::string& filename, const std::str
 {
   try
   {
-    std::filesystem::path path = std::filesystem::u8path(filename);
-    std::ofstream out(path, std::ios::binary);
+    std::ofstream out(std::filesystem::u8path(filename), std::ios::binary);
     out << binaryOutput;
     return true;
   }
