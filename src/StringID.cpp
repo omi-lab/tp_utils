@@ -1,5 +1,6 @@
 #include "tp_utils/StringID.h"
 #include "tp_utils/MutexUtils.h"
+#include "tp_utils/TimeUtils.h"
 
 #include <unordered_map>
 #include <mutex>
@@ -201,6 +202,8 @@ std::vector<StringID> StringID::fromStringList(const std::vector<std::string>& s
 //##################################################################################################
 void StringID::fromString(const std::string& string)
 {
+  TP_FUNCTION_TIME("StringID::fromString");
+
   if(string.empty())
     return;
 
@@ -242,6 +245,8 @@ void StringID::detach()
 {
   if(sd)
   {
+    TP_FUNCTION_TIME("StringID::detach");
+
     StaticData& staticData(StringID::staticData(sd->hash.hash));
     TP_MUTEX_LOCKER(staticData.mutex);
 
