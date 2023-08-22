@@ -55,7 +55,7 @@ std::string getCurrentTimestamp()
 #endif
 
   char bufferB[100];
-  sprintf(bufferB, "%s:%03d] ", bufferA, int(millis));
+  snprintf(bufferB, sizeof(bufferB),  "%s:%03d] ", bufferA, int(millis));
 
   return std::string(bufferB);
 }
