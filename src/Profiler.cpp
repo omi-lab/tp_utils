@@ -148,5 +148,12 @@ bool Profiler::isRecording() const
 }
 
 }
+#else
+
+// Silence warning for empty .o file
+int profiler_cpp()
+{
+  return 0;
+}
 
 #endif

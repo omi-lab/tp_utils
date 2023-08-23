@@ -76,5 +76,13 @@ void ProfilerController::profilerDeleted(Profiler* profiler)
 }
 
 }
+#else
+
+// Silence warning for empty .o file
+int profilerController_cpp()
+{
+  return 0;
+}
+
 
 #endif
