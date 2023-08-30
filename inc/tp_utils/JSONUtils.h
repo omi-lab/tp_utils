@@ -205,14 +205,15 @@ struct saveValueToJSON<T, typename std::enable_if<type_is_set_container<T>::valu
   {
     try
     {
-      nlohmann::json j=nlohmann::json::array();
-      j.get_ptr<nlohmann::json::array_t*>()->reserve(d.size());
+      nlohmann::json arr=nlohmann::json::array();
+      arr.get_ptr<nlohmann::json::array_t*>()->reserve(d.size());
       for(const auto& item : d)
       {
         nlohmann::json object;
         saveValueToJSON<typename T::value_type>(item).saveState(object);
-        j.emplace_back(object);
+        arr.emplace_back(object);
       }
+      j = arr;
     }
     catch(...)
     {
