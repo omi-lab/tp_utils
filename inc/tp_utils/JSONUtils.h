@@ -133,6 +133,7 @@ template<> struct type_is_atomic<signed long long>  { static const bool value = 
 template<> struct type_is_atomic<float>    { static const bool value = true;  };
 template<> struct type_is_atomic<double>   { static const bool value = true;  };
 template<> struct type_is_atomic<long double>   { static const bool value = true;  };
+template<> struct type_is_atomic<std::string>   { static const bool value = true;  };
 
 
 template <typename T>
