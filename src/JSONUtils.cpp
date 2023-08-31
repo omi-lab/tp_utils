@@ -176,18 +176,18 @@ void unitTestJSONSerialization()
   {
     nlohmann::json json;
     tp_utils::saveStateToJSON(json,"test",x);
-    tp_utils::writeJSONFile("D:/json_file_testA.json", json, 2);
+    tp_utils::writeJSONFile("json_save_load_testA.json", json, 2);
   }
 
   //! reloading and saving into different JSON file for comparison
   {
-    nlohmann::json json =  tp_utils::readJSONFile("D:/json_file_testA.json");
+    nlohmann::json json =  tp_utils::readJSONFile("json_save_load_testA.json");
     std::list<std::map<float, std::unordered_map<tp_utils::StringID, std::set<float>>>> y;
     loadStateFromJSON(json,"test",y);
     {
       nlohmann::json json;
       saveStateToJSON(json,"test",y);
-      tp_utils::writeJSONFile("D:/json_file_testB.json", json, 2);
+      tp_utils::writeJSONFile("json_save_load_testB.json", json, 2);
     }
   }
 }
