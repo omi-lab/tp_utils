@@ -376,7 +376,7 @@ struct loadValueFromJSON<T, typename std::enable_if<type_is_map_container<T, typ
       for(auto i = j.begin(); i != j.end(); ++i){
         typename T::mapped_type item;
         loadValueFromJSON<typename T::mapped_type>(item).loadState(i.value());
-        d.emplace(from_json_key<T::key_type>(i.key()), item);
+        d.emplace(from_json_key<typename T::key_type>(i.key()), item);
       }
     }
     catch(...)
