@@ -59,7 +59,9 @@ struct VirtualMemory
 //##################################################################################################
 inline void addMemoryUsageProducer(detail::KeyValueLogStatsTimer& keyValueStatsTimer)
 {
-#ifdef TP_LINUX
+#ifndef TP_LINUX
+  TP_UNUSED(keyValueStatsTimer);
+#else
   keyValueStatsTimer.addProducer("Memory ", [=]
   {
     detail::VirtualMemory virtualMemory;
