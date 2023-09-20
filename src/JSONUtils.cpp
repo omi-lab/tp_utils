@@ -1,5 +1,6 @@
 #include "tp_utils/JSONUtils.h"
 #include "tp_utils/FileUtils.h"
+#include "tp_utils/DebugUtils.h"
 
 namespace tp_utils
 {
@@ -173,21 +174,29 @@ void unitTestJSONSerialization()
 
 
   //! saving results to JSON
+  std::string s1;
   {
     nlohmann::json json;
     tp_utils::saveStateToJSON(json,"test",x);
+    s1 = json.dump(2);
     tp_utils::writeJSONFile("json_save_load_testA.json", json, 2);
   }
 
   //! reloading and saving into different JSON file for comparison
   {
-    nlohmann::json json =  tp_utils::readJSONFile("json_save_load_testA.json");
+    //nlohmann::json json =  tp_utils::readJSONFile("json_save_load_testA.json");
+    auto json = nlohmann::json::parse(s1);
     std::list<std::map<float, std::unordered_map<tp_utils::StringID, std::set<float>>>> y;
     loadStateFromJSON(json,"test",y);
     {
       nlohmann::json json;
       saveStateToJSON(json,"test",y);
+      auto s2 = json.dump(2);
       tp_utils::writeJSONFile("json_save_load_testB.json", json, 2);
+      if(s1 == s2)
+        tpWarning() << "JSON TEST PASSED!";
+      else
+        tpWarning() << "JSON TEST FAILED!";
     }
   }
 }
