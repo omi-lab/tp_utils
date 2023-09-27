@@ -205,15 +205,13 @@ struct saveValueToJSON<T, typename std::enable_if<type_is_set_container<T>::valu
   {
     try
     {
-      nlohmann::json arr=nlohmann::json::array();
-      arr.get_ptr<nlohmann::json::array_t*>()->reserve(d.size());
+      j = nlohmann::json::array();
+      j.get_ptr<nlohmann::json::array_t*>()->reserve(d.size());
+      size_t counter = 0;
       for(const auto& item : d)
       {
-        nlohmann::json object;
-        saveValueToJSON<typename T::value_type>(item).saveState(object);
-        arr.emplace_back(object);
+        saveValueToJSON<typename T::value_type>(item).saveState(j[counter++]);
       }
-      j = arr;
     }
     catch(...)
     {
@@ -264,15 +262,13 @@ struct saveValueToJSON<T, typename std::enable_if<type_is_list_container<T>::val
   {
     try
     {
-      nlohmann::json arr=nlohmann::json::array();
-      arr.get_ptr<nlohmann::json::array_t*>()->reserve(d.size());
+      j = nlohmann::json::array();
+      j.get_ptr<nlohmann::json::array_t*>()->reserve(d.size());
+      size_t counter = 0;
       for(const auto& item : d)
       {
-        nlohmann::json object;
-        saveValueToJSON<typename T::value_type>(item).saveState(object);
-        arr.emplace_back(object);
+        saveValueToJSON<typename T::value_type>(item).saveState(j[counter++]);
       }
-      j = arr;
     }
     catch(...)
     {
