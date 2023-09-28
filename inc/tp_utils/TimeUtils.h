@@ -23,6 +23,13 @@ int64_t TP_UTILS_EXPORT currentTime();
 int64_t TP_UTILS_EXPORT currentTimeMS();
 
 //##################################################################################################
+//! Returns the current time as us since SinceEpoch
+/*!
+\return the current time as us since since the epoch
+*/
+int64_t TP_UTILS_EXPORT currentTimeMicroseconds();
+    
+//##################################################################################################
 class TP_UTILS_EXPORT ElapsedTimer
 {
   TP_NONCOPYABLE(ElapsedTimer);
