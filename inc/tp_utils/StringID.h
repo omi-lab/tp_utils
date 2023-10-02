@@ -6,7 +6,7 @@
 namespace tp_utils
 {
 
-typedef void* WeakStringID;
+//typedef void* WeakStringID;
 
 //##################################################################################################
 //! A class that implements efficent string based identifiers
@@ -77,16 +77,6 @@ public:
   ~StringID();
 
   //################################################################################################
-  //! An instance of the StringID must remain valid for the life of the WeakStringID.
-  /*!
-  Using TP_DEFINE_ID will ensure that the StringID remains valid.
-  */
-  WeakStringID weak() const;
-
-  //################################################################################################
-  static StringID fromWeak(WeakStringID weak);
-
-  //################################################################################################
   //! Returns the string that this StringID represents
   /*!
   \return The string or an empty string id this is an invalid StringID.
@@ -104,28 +94,13 @@ public:
   static std::vector<StringID> fromStringList(const std::vector<std::string>& stringIDs);
 
 private:
-  //################################################################################################
-  void fromString(const std::string& string);
-
-  //################################################################################################
-  void attach();
-
-  //################################################################################################
-  void detach();
-
-  struct SharedData;
-  SharedData* sd;
-  friend struct SharedData;
-
-  struct StaticData;
-  static StaticData& staticData(size_t hash);
-  friend struct StaticData;
+  std::string m_string;
 };
 
 //##################################################################################################
 inline bool operator==(const StringID& a, const StringID& b)
 {
-  return (a.sd == b.sd);
+  return (a.m_string == b.m_string);
 }
 
 //##################################################################################################
@@ -171,7 +146,7 @@ struct hash<tp_utils::StringID>
 {
   std::size_t operator()(const tp_utils::StringID& stringID) const
   {
-    return hash<void*>()(stringID.sd);
+    return hash<std::string>()(stringID.m_string);
   }
 };
 }

@@ -8,96 +8,45 @@
 
 namespace tp_utils
 {
-
-namespace
-{
 //##################################################################################################
-struct StringHash_lt
-{
-  std::string string;
-  size_t hash;
-};
-
-//##################################################################################################
-auto hashStringHash_lt = [](const StringHash_lt& k)
-{
-  return k.hash;
-};
-
-//##################################################################################################
-auto eqStringHash_lt = [](const StringHash_lt& a, const StringHash_lt& b)
-{
-  return a.hash==b.hash && a.string==b.string;
-};
-}
-
-//##################################################################################################
-struct StringID::StaticData
-{
-  TPMutex mutex{TPM};
-  std::unordered_map<StringHash_lt, SharedData*, decltype(hashStringHash_lt), decltype(eqStringHash_lt)> allKeys{128, hashStringHash_lt, eqStringHash_lt};
-};
-
-//##################################################################################################
-struct StringID::SharedData
-{
-  TPMutex mutex{TPM};
-
-  StringHash_lt hash;
-
-  int referenceCount{0};
-
-  //################################################################################################
-  SharedData(const StringHash_lt& hash_):
-    hash(hash_)
-  {
-  }
-};
-
-//##################################################################################################
-StringID::StringID():
-  sd(nullptr)
+StringID::StringID()
 {
 
 }
 
 //##################################################################################################
 StringID::StringID(const StringID& other):
-  sd(other.sd)
+  m_string(other.m_string)
 {
-  attach();
 }
 
 //##################################################################################################
 StringID::StringID(StringID&& other) noexcept:
-  sd(other.sd)
+  m_string(other.m_string)
 {
-  other.sd = nullptr;
+  other.m_string = "";
 }
 
 //##################################################################################################
-StringID::StringID(const std::string& string):
-  sd(nullptr)
+StringID::StringID(const std::string& string)
 {
-  fromString(string);
+  m_string = string;
 }
 
 //##################################################################################################
-StringID::StringID(const char* string):
-  sd(nullptr)
+StringID::StringID(const char* string)
 {
-  fromString(string);
+  if(string)
+    m_string = string;
 }
 
 //##################################################################################################
 StringID& StringID::operator=(const StringID& other)
 {
-  if(&other == this || other.sd == sd)
+  if(&other == this || other.m_string == m_string)
     return *this;
 
-  detach();
-  sd = other.sd;
-  attach();
+  m_string = other.m_string;
 
   return *this;
 }
@@ -105,12 +54,11 @@ StringID& StringID::operator=(const StringID& other)
 //##################################################################################################
 StringID& StringID::operator=(StringID&& other) noexcept
 {
-  if(&other == this || other.sd == sd)
+  if(&other == this || other.m_string == m_string)
     return *this;
 
-  detach();
-  sd = other.sd;
-  other.sd = nullptr;
+  m_string = other.m_string;
+  other.m_string = std::string();
 
   return *this;
 }
@@ -118,11 +66,10 @@ StringID& StringID::operator=(StringID&& other) noexcept
 //##################################################################################################
 StringID& StringID::operator=(const char* string)
 {
-  detach();
   if(string)
-    fromString(string);
+    m_string = string;
   else
-    fromString("");
+    m_string = "";
 
   return *this;
 }
@@ -130,8 +77,7 @@ StringID& StringID::operator=(const char* string)
 //##################################################################################################
 StringID& StringID::operator=(const std::string& string)
 {
-  detach();
-  fromString(string);
+  m_string = string;
 
   return *this;
 }
@@ -139,38 +85,18 @@ StringID& StringID::operator=(const std::string& string)
 //##################################################################################################
 StringID::~StringID()
 {
-  detach();
-}
-
-//##################################################################################################
-WeakStringID StringID::weak() const
-{
-  return sd;
-}
-
-//##################################################################################################
-StringID StringID::fromWeak(WeakStringID weak)
-{
-  StringID stringID;
-  stringID.sd = static_cast<SharedData*>(weak);
-  stringID.attach();
-  return stringID;
 }
 
 //##################################################################################################
 const std::string& StringID::toString() const
 {
-  static const std::string emptyString;
-  if(!sd)
-    return emptyString;
-
-  return sd->hash.string;
+  return m_string;
 }
 
 //##################################################################################################
 bool StringID::isValid() const
 {
-  return sd!=nullptr;
+  return !m_string.empty();
 }
 
 //##################################################################################################
@@ -197,83 +123,6 @@ std::vector<StringID> StringID::fromStringList(const std::vector<std::string>& s
     result.emplace_back(*s);
 
   return result;
-}
-
-//##################################################################################################
-void StringID::fromString(const std::string& string)
-{
-  TP_FUNCTION_TIME("StringID::fromString");
-
-  if(string.empty())
-    return;
-
-  StringHash_lt hash;
-  hash.string = string;
-  hash.hash = std::hash<std::string>()(hash.string);
-
-  StaticData& staticData(StringID::staticData(hash.hash));
-  TP_MUTEX_LOCKER(staticData.mutex);
-
-  sd = tpGetMapValue(staticData.allKeys, hash);
-
-  if(!sd)
-  {
-    sd = new SharedData(hash);
-    sd->referenceCount++;
-    staticData.allKeys[hash] = sd;
-  }
-  else
-  {
-    sd->mutex.lock(TPM);
-    sd->referenceCount++;
-    sd->mutex.unlock(TPM);
-  }
-}
-
-//##################################################################################################
-void StringID::attach()
-{
-  if(sd)
-  {
-    TP_MUTEX_LOCKER(sd->mutex);
-    sd->referenceCount++;
-  }
-}
-
-//##################################################################################################
-void StringID::detach()
-{
-  if(sd)
-  {
-    TP_FUNCTION_TIME("StringID::detach");
-
-    StaticData& staticData(StringID::staticData(sd->hash.hash));
-    TP_MUTEX_LOCKER(staticData.mutex);
-
-    sd->mutex.lock(TPM);
-    sd->referenceCount--;
-
-    //Delete unused shared data
-    if(!sd->referenceCount)
-    {
-      sd->mutex.unlock(TPM);
-      staticData.allKeys.erase(sd->hash);
-      delete sd;
-    }
-    else
-      sd->mutex.unlock(TPM);
-
-    sd = nullptr;
-  }
-}
-
-//##################################################################################################
-StringID::StaticData& StringID::staticData(size_t hash)
-{
-  constexpr size_t n{256};
-  constexpr size_t m{n-1};
-  static StaticData staticData[n];
-  return staticData[hash&m];
 }
 
 //##################################################################################################
