@@ -26,7 +26,12 @@
 
 //##################################################################################################
 //TP_NONCOPYABLE
-#define TP_NONCOPYABLE(T) T(const T&)=delete; T& operator=(const T&)=delete; T(T&&)=delete; T& operator=(T&&)=delete
+#define TP_NONCOPYABLE(T) \
+  T(const T&)=delete; \
+  T(const T &&)=delete; \
+  T& operator=(const T&)=delete; \
+  T(T&&)=delete; \
+  T& operator=(T&&)=delete
 
 //##################################################################################################
 //TP_NODISCARD
