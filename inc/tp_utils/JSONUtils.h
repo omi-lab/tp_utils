@@ -85,6 +85,54 @@ template<typename T>
 //##################################################################################################
 [[nodiscard]] nlohmann::json stringIDsToJSON(const std::vector<StringID>& stringIDs);
 
+//##################################################################################################
+template<typename T>
+void saveVectorOfObjectsToJSON(nlohmann::json& j, const T& vector)
+{
+  j = nlohmann::json::array();
+  j.get_ptr<nlohmann::json::array_t*>()->reserve(vector.size());
+  for(const auto& i : vector)
+  {
+    j.emplace_back();
+    i.saveState(j.back());
+  }
+};
+
+//##################################################################################################
+template<typename T>
+void loadVectorOfObjectsFromJSON(const nlohmann::json& j, T& vector)
+{
+  vector.clear();
+  if(j.is_array())
+  {
+    vector.reserve(j.size());
+    for(const auto& v : j)
+      vector.emplace_back().loadState(v);
+  }
+}
+
+//##################################################################################################
+template<typename T, typename K>
+void loadVectorOfObjectsFromJSON(const nlohmann::json& j, K key, T& vector)
+{
+  vector.clear();
+  if(auto i=j.find(key); i!=j.end() and i->is_array())
+  {
+    vector.reserve(i->size());
+    for(const auto& v : *i)
+      vector.emplace_back().loadState(v);
+  }
+}
+
+//##################################################################################################
+template<typename T, typename K>
+void loadObjectFromJSON(const nlohmann::json& j, K key, T& object)
+{
+  if(auto i=j.find(key); i!=j.end() and i->is_object())
+    object.loadState(*i);
+  else
+    object = T();
+}
 
 //##################################################################################################
 template <typename T, typename = void>
