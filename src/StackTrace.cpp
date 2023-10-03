@@ -421,7 +421,7 @@ std::string TP_UTILS_EXPORT formatStackTrace()
 
   std::string results = std::string("Stack frames: ") + std::to_string(size - startOffset) + '\n';
   for(int i = startOffset; i < size; ++i)
-    results.append(std::string("Frame ") + std::to_string(i) +": " + strings.get()[i]) + '\n';
+    results.append(std::string("Frame ") + std::to_string(i) +": " + strings.get()[i] + '\n');
 
   return results;
 }
