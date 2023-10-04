@@ -2,6 +2,7 @@
 #define tp_utils_StringID_h
 
 #include "tp_utils/Globals.h"
+#include "tp_utils/TimeUtils.h"
 
 namespace tp_utils
 {
@@ -100,6 +101,7 @@ private:
 //##################################################################################################
 inline bool operator==(const StringID& a, const StringID& b)
 {
+  TP_FUNCTION_TIME("StringID::operator==");
   return (a.m_string == b.m_string);
 }
 

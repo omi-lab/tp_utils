@@ -43,6 +43,7 @@ StringID::StringID(const char* string)
 //##################################################################################################
 StringID& StringID::operator=(const StringID& other)
 {
+  TP_FUNCTION_TIME("StringID::operator=(1)");
   if(&other == this || other.m_string == m_string)
     return *this;
 
@@ -54,6 +55,7 @@ StringID& StringID::operator=(const StringID& other)
 //##################################################################################################
 StringID& StringID::operator=(StringID&& other) noexcept
 {
+  TP_FUNCTION_TIME("StringID::operator=(2)");
   if(&other == this || other.m_string == m_string)
     return *this;
 
