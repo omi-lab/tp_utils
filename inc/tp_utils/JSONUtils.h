@@ -359,7 +359,7 @@ template<typename K, typename T> struct type_is_map_container<std::map<K, T>, T>
 template<typename K, typename T> struct type_is_map_container<std::unordered_map<K, T>, T>     { static const bool value = true;  };
 
 //! for key in map we support only data types convertable from/to std::string
-//! all other key types need could be treated as list of pair values (not yet implemented)
+//! all other key types could be treated as list of pair values (not yet implemented)
 //! we have to add explicit convertion to/from string for supported types
 template<typename T> inline std::string to_json_key(T const& from) {return std::to_string(from); }
 inline std::string to_json_key(std::string const& from) {return from; }
@@ -392,9 +392,7 @@ struct saveValueToJSON<T, typename std::enable_if<type_is_map_container<T, typen
     {
       for(auto const& i: d)
       {
-        nlohmann::json object;
-        saveValueToJSON<typename T::mapped_type>(i.second).saveState(object);
-        j[to_json_key(i.first)] = object;
+        saveValueToJSON<typename T::mapped_type>(i.second).saveState(j[to_json_key(i.first)]);
       }
     }
     catch(...)
@@ -436,9 +434,7 @@ void saveStateToJSON(nlohmann::json& j, const std::string& key, V const& result)
 {
   try
   {
-    nlohmann::json object;
-    saveValueToJSON<V>(result).saveState(object);
-    j[key] = object;
+    saveValueToJSON<V>(result).saveState(j[key]);
   }
   catch(...)
   {
