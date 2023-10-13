@@ -174,6 +174,17 @@ struct hash<tp_utils::StringID>
     return hash<void*>()(stringID.sd);
   }
 };
+template <>
+struct hash<std::vector<tp_utils::StringID>>
+{
+  std::size_t operator()(const std::vector<tp_utils::StringID>& stringIDs) const
+  {
+    auto h = hash<void*>()(nullptr);
+    for(const auto& stringID : stringIDs)
+      h ^= std::hash<tp_utils::StringID>()(stringID) + 0x9e3779b9 + (h<<6) + (h>>2);
+    return h;
+  }
+};
 }
 
 //##################################################################################################

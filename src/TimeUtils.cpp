@@ -2,6 +2,12 @@
 #include "tp_utils/DebugUtils.h"
 #include "tp_utils/MutexUtils.h"
 
+#ifdef TP_ENABLE_TIME_SCOPE
+#include "tp_utils/FileUtils.h"
+#endif
+
+#include "json.hpp"
+
 #include <chrono>
 #include <thread>
 
@@ -105,18 +111,21 @@ struct FunctionTimeStats::Private
 };
 
 //##################################################################################################
-void FunctionTimeStats::add(int64_t timeMicroseconds, const char* file, int line, const std::string& name)
+void FunctionTimeStats::add(const std::vector<FunctionTimeReading>& readings)
 {
   auto i = instance();
   TP_MUTEX_LOCKER(i->mutex);
-  auto key = fixedWidthKeepRight(std::string(file) + ':' + std::to_string(line) + ' ' + name, 50, ' ');
-  auto& s = i->stats[key];
-  s.count++;
-  s.max = tpMax(s.max, timeMicroseconds);
-  s.total += timeMicroseconds;
 
-  if(mainThreadId == std::this_thread::get_id())
-    s.mainThreadTotal += timeMicroseconds;
+  for(const auto& reading : readings)
+  {
+    auto& s = i->stats[reading.key];
+    s.count++;
+    s.max = tpMax(s.max, reading.timeTaken);
+    s.total += reading.timeTaken;
+
+    if(mainThreadId == std::this_thread::get_id())
+      s.mainThreadTotal += reading.timeTaken;
+  }
 }
 
 //##################################################################################################
@@ -186,6 +195,12 @@ void FunctionTimeStats::reset()
 }
 
 //##################################################################################################
+bool FunctionTimeStats::isMainThread()
+{
+  return mainThreadId == std::this_thread::get_id();
+}
+
+//##################################################################################################
 std::map<std::string, size_t> FunctionTimeStats::keyValueResults()
 {
   std::map<std::string, size_t> result;
@@ -210,20 +225,146 @@ FunctionTimeStats::Private* FunctionTimeStats::instance()
   return &instance;
 }
 
-//##################################################################################################
-FunctionTimer::FunctionTimer(const char* file, int line, const std::string& name):
-  m_start(currentTimeMicroseconds()),
-  m_file(file),
-  m_line(line),
-  m_name(name)
+namespace
 {
+struct Step_lt
+{
+  size_t level{0};
+  std::string name;
+  int64_t finishTime{0};
+  int64_t timeTaken{0};
+};
 
+thread_local std::vector<FunctionTimeReading> readings;
+
+#ifdef TP_ENABLE_TIME_SCOPE
+thread_local std::vector<Step_lt> steps;
+thread_local size_t level{0};
+thread_local size_t fileIndex{0};
+#endif
+}
+
+
+//##################################################################################################
+FunctionTimer::FunctionTimer(const char* file, int line, const char* name):
+  m_index(readings.size())
+{
+  auto& reading = readings.emplace_back();
+  reading.start = currentTimeMicroseconds();
+  reading.key = fixedWidthKeepRight(std::string(file) + ':' + std::to_string(line) + ' ' + name, 50, ' ');
+
+#ifdef TP_ENABLE_TIME_SCOPE
+
+  {
+    m_stepIndex = steps.size();
+    auto& step = steps.emplace_back();
+
+    step.level = level;
+    level++;
+
+    step.name = reading.key;
+    step.finishTime = reading.start;
+  }
+#endif
 }
 
 //##################################################################################################
 FunctionTimer::~FunctionTimer()
 {
-  FunctionTimeStats::add(currentTimeMicroseconds() - m_start, m_file, m_line, m_name);
+  auto time = currentTimeMicroseconds();
+
+  level--;
+
+  {
+    auto& reading = readings.at(m_index);
+    reading.timeTaken = time - reading.start;
+  }
+
+#ifdef TP_ENABLE_TIME_SCOPE
+  {
+    auto& step = steps[m_stepIndex];
+    step.timeTaken = time - step.finishTime;
+    step.finishTime = time;
+  }
+#endif
+
+
+  if(m_index == 0)
+  {
+    TP_CLEANUP([&]{readings.clear(); level=0;});
+    FunctionTimeStats::add(readings);
+
+#ifdef TP_ENABLE_TIME_SCOPE
+    TP_CLEANUP([&]{steps.clear();});
+
+
+    if(FunctionTimeStats::isMainThread())
+    {
+      if(auto timeTakenMilliseconds = readings.at(0).timeTaken/1000; timeTakenMilliseconds>=2)
+      {
+#if 0
+        {
+          for(const auto& step : steps)
+            tpWarning() << std::string(step.level*2, ' ') << step.name << ": " << step.timeTaken;
+        }
+#else
+        {
+          nlohmann::json root = nlohmann::json::array();
+
+          std::vector<nlohmann::json*> levels;
+          levels.push_back(&root);
+
+          for(const auto& step : steps)
+          {
+            levels.resize(step.level+1);
+
+            {
+              levels.back()->emplace_back();
+              nlohmann::json& j = levels.back()->back();
+              j["name"] = step.name;
+              j["timeTaken"] = step.timeTaken;
+              j["children"] = nlohmann::json::array();
+              levels.emplace_back(&j["children"]);
+            }
+          }
+          tp_utils::writeJSONFile("C:/Users/PC/Desktop/function_time/" + fixedWidthKeepRight(std::to_string(fileIndex), 8, '0') + ".json", root, 2);
+          fileIndex++;
+        }
+#endif
+      }
+    }
+#endif
+  }
+}
+
+//##################################################################################################
+void FunctionTimer::finishStep(const char* name)
+{
+#ifdef TP_ENABLE_TIME_SCOPE
+  auto& step = steps[m_stepIndex];
+  auto finishTime = currentTimeMicroseconds();
+  auto startTime = step.finishTime;
+  if(steps.size()>0)
+  {
+    for(size_t i=steps.size()-1; i>=m_stepIndex; i--)
+    {
+      const auto& previousStep = steps.at(i);
+      if(step.level == previousStep.level)
+      {
+        startTime = previousStep.finishTime;
+        break;
+      }
+    }
+  }
+
+  {
+    auto& newStep = steps.emplace_back();
+    newStep.level = step.level+1;
+    newStep.name = name;
+    newStep.finishTime = finishTime;
+    newStep.timeTaken = finishTime - startTime;
+  }
+#endif
 }
 
 #endif

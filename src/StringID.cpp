@@ -247,6 +247,16 @@ void StringID::detach()
   {
     TP_FUNCTION_TIME("StringID::detach");
 
+    {
+      TP_MUTEX_LOCKER(sd->mutex);
+      if(sd->referenceCount>1)
+      {
+        sd->referenceCount--;
+        sd = nullptr;
+        return;
+      }
+    }
+
     StaticData& staticData(StringID::staticData(sd->hash.hash));
     TP_MUTEX_LOCKER(staticData.mutex);
 

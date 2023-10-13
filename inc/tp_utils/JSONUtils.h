@@ -63,6 +63,10 @@ template<typename T>
 }
 
 
+//##################################################################################################
+void TP_UTILS_EXPORT getJSONStringID(const nlohmann::json& j,
+                                     const std::string& key,
+                                     StringID& result);
 
 //##################################################################################################
 [[nodiscard]] std::string TP_UTILS_EXPORT getJSONString(const nlohmann::json& j,

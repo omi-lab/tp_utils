@@ -129,7 +129,7 @@ namespace
 struct LockSiteDetails_lt
 {
   //locationID -> total elapsed time
-  std::unordered_map<int, int> blockedBy;
+  std::unordered_map<size_t, size_t> blockedBy;
 
   std::string name;
   size_t id{0};
@@ -297,7 +297,7 @@ size_t LockStats::waiting(int id, const char* file, int line)
 }
 
 //##################################################################################################
-void LockStats::locked(int id, const char* file, int line, int elapsedWaiting, int blockingID)
+void LockStats::locked(int id, const char* file, int line, int elapsedWaiting, size_t blockingID)
 {
   auto* d = instance();
   std::lock_guard<std::mutex> lk(d->mutex);
@@ -341,7 +341,7 @@ void LockStats::locked(int id, const char* file, int line, int elapsedWaiting, i
 }
 
 //##################################################################################################
-void LockStats::tryLock(int id, const char* file, int line, int elapsedWaiting, int blockingID, bool got)
+void LockStats::tryLock(int id, const char* file, int line, int elapsedWaiting, size_t blockingID, bool got)
 {
   auto* d = instance();
   std::lock_guard<std::mutex> lk(d->mutex);

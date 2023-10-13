@@ -67,17 +67,28 @@ private:
 #ifdef TP_ENABLE_FUNCTION_TIME
 
 //##################################################################################################
+struct FunctionTimeReading
+{
+  int64_t start{0};
+  int64_t timeTaken{0};
+  std::string key;
+};
+
+//##################################################################################################
 class TP_UTILS_EXPORT FunctionTimeStats
 {
 public:
   //################################################################################################
-  static void add(int64_t timeMicroseconds, const char* file, int line, const std::string& name);
+  static void add(const std::vector<FunctionTimeReading>& readings);
 
   //################################################################################################
   static std::string takeResults();
 
   //################################################################################################
   static void reset();
+
+  //################################################################################################
+  static bool isMainThread();
 
   //################################################################################################
   static std::map<std::string, size_t> keyValueResults();
@@ -87,20 +98,60 @@ private:
   static Private* instance();
 };
 
+//################################################################################################
 class FunctionTimer
 {
 public:
-  FunctionTimer(const char* file, int line, const std::string& name);
+  //################################################################################################
+  FunctionTimer(const char* file, int line, const char* name);
+
+  //################################################################################################
   ~FunctionTimer();
+
+  //################################################################################################
+  void finishStep(const char* name);
+
 private:
-  int64_t m_start;
-  const char* m_file;
-  int m_line;
-  std::string m_name;
+  size_t m_index{0};
+#ifdef TP_ENABLE_TIME_SCOPE
+  size_t m_stepIndex{0};
+#endif
 };
 
 #define TP_FUNCTION_TIME(A) tp_utils::FunctionTimer TP_CONCAT(tpFunctionTimer, __LINE__)(__FILE__, __LINE__, A); TP_UNUSED(TP_CONCAT(tpFunctionTimer, __LINE__))
 #else
+
+//################################################################################################
+class FunctionTimer
+{
+public:
+  //################################################################################################
+  FunctionTimer(const char* file, int line, const char* name)
+  {
+    TP_UNUSED(file);
+    TP_UNUSED(line);
+    TP_UNUSED(name);
+  }
+
+  //################################################################################################
+  ~FunctionTimer()
+  {
+
+  }
+
+  //################################################################################################
+  int64_t ellapsed() const
+  {
+    return 0;
+  }
+
+  //################################################################################################
+  void finishStep(const char* name)
+  {
+    TP_UNUSED(name);
+  }
+};
+
 #define TP_FUNCTION_TIME(A) do{}while(false)
 #endif
 

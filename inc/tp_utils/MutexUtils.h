@@ -88,10 +88,10 @@ public:
   static size_t waiting(int id, const char* file, int line);
 
   //################################################################################################
-  static void locked(int id, const char* file, int line, int elapsedWaiting, int blockingID);
+  static void locked(int id, const char* file, int line, int elapsedWaiting, size_t blockingID);
 
   //################################################################################################
-  static void tryLock(int id, const char* file, int line, int elapsedWaiting, int blockingID, bool got);
+  static void tryLock(int id, const char* file, int line, int elapsedWaiting, size_t blockingID, bool got);
 
   //################################################################################################
   static void unlock(int id, const char* file, int line);
@@ -159,7 +159,7 @@ public:
   {
     tp_utils::ElapsedTimer timer;
     timer.start();
-    int blockingID=tp_utils::LockStats::waiting(m_id, file, line);
+    size_t blockingID=tp_utils::LockStats::waiting(m_id, file, line);
     std::timed_mutex::lock();
     tp_utils::LockStats::locked(m_id, file, line, int(timer.elapsed()), blockingID);
   }
@@ -169,7 +169,7 @@ public:
   {
     tp_utils::ElapsedTimer timer;
     timer.start();
-    int blockingID=tp_utils::LockStats::waiting(m_id, file, line);
+    size_t blockingID=tp_utils::LockStats::waiting(m_id, file, line);
     bool got=std::timed_mutex::try_lock_for(std::chrono::milliseconds(timeout));
     tp_utils::LockStats::tryLock(m_id, file, line, int(timer.elapsed()), blockingID, got);
     return got;

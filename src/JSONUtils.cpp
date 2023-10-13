@@ -29,20 +29,23 @@ nlohmann::json getJSON(const nlohmann::json& j,
 }
 
 //##################################################################################################
+void TP_UTILS_EXPORT getJSONStringID(const nlohmann::json& j,
+                                     const std::string& key,
+                                     StringID& result)
+{
+  if(auto i=j.find(key); i!=j.end() && i->is_string())
+    result = i->get<std::string>();
+  else
+    result = StringID();
+}
+
+//##################################################################################################
 std::string getJSONString(const nlohmann::json& j,
                           const std::string& key,
                           const std::string& defaultValue)
 {
-  if(const auto i = j.find(key); i != j.end() && i->is_string())
-  {
-    try
-    {
-      return i->get<std::string>();
-    }
-    catch(...)
-    {
-    }
-  }
+  if(auto i = j.find(key); i!=j.end() && i->is_string())
+    return i->get<std::string>();
 
   return defaultValue;
 }
@@ -53,15 +56,7 @@ bool getJSONBool(const nlohmann::json& j,
                  const bool& defaultValue)
 {
   if(const auto i = j.find(key); i != j.end() && i->is_boolean())
-  {
-    try
-    {
-      return i->get<bool>();
-    }
-    catch(...)
-    {
-    }
-  }
+    return i->get<bool>();
 
   return defaultValue;
 }
@@ -72,16 +67,12 @@ std::vector<std::string> getJSONStringList(const nlohmann::json& j,
 {
   std::vector<std::string> result;
 
-  try
+  if(auto i=j.find(key); i!=j.end() && i->is_array())
   {
-    for(const nlohmann::json& i : j.value<nlohmann::json>(key, nlohmann::json()))
-    {
-      if(i.is_string())
-        result.push_back(i);
-    }
-  }
-  catch(...)
-  {
+    result.reserve(i->size());
+    for(const nlohmann::json& s : *i)
+      if(s.is_string())
+        result.push_back(s);
   }
 
   return result;
