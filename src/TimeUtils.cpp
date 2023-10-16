@@ -4,9 +4,9 @@
 
 #ifdef TP_ENABLE_TIME_SCOPE
 #include "tp_utils/FileUtils.h"
-#endif
 
 #include "json.hpp"
+#endif
 
 #include <chrono>
 #include <thread>
@@ -273,7 +273,9 @@ FunctionTimer::~FunctionTimer()
 {
   auto time = currentTimeMicroseconds();
 
+#ifdef TP_ENABLE_TIME_SCOPE
   level--;
+#endif
 
   {
     auto& reading = readings.at(m_index);
@@ -291,7 +293,12 @@ FunctionTimer::~FunctionTimer()
 
   if(m_index == 0)
   {
-    TP_CLEANUP([&]{readings.clear(); level=0;});
+    TP_CLEANUP([&]{readings.clear();});
+
+#ifdef TP_ENABLE_TIME_SCOPE
+    TP_CLEANUP([&]{level=0;});
+#endif
+
     FunctionTimeStats::add(readings);
 
 #ifdef TP_ENABLE_TIME_SCOPE
@@ -340,7 +347,9 @@ FunctionTimer::~FunctionTimer()
 //##################################################################################################
 void FunctionTimer::finishStep(const char* name)
 {
-#ifdef TP_ENABLE_TIME_SCOPE
+#ifndef TP_ENABLE_TIME_SCOPE
+  TP_UNUSED(name);
+#else
   auto& step = steps[m_stepIndex];
   auto finishTime = currentTimeMicroseconds();
   auto startTime = step.finishTime;
