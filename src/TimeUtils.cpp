@@ -386,6 +386,9 @@ void FunctionTimer::finishStep(const char* name)
 //##################################################################################################
 void FunctionTimer::printStack(const char* name)
 {
+#ifndef TP_ENABLE_TIME_SCOPE
+  TP_UNUSED(name);
+#else
  size_t l = level;
  tpWarning() << "---- FunctionTimer::printStack ----";
  tpWarning() << name;
@@ -399,6 +402,7 @@ void FunctionTimer::printStack(const char* name)
  }
 
  tpWarning() << "-----------------------------------";
+#endif
 }
 
 #endif
