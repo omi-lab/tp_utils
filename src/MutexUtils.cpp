@@ -25,7 +25,7 @@ namespace std
 template <>
 struct hash<std::pair<const char*, int>>
 {
-  std::size_t operator()(const std::pair<const char*, int>& k) const
+  size_t operator()(const std::pair<const char*, int>& k) const
   {
     return hash<const void*>()(static_cast<const void*>(k.first)) ^ hash<int>()(k.second);
   }

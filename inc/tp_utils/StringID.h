@@ -98,6 +98,9 @@ public:
   bool isValid() const;
 
   //################################################################################################
+  void reset();
+
+  //################################################################################################
   static std::vector<std::string> toStringList(const std::vector<StringID>& stringIDs);
 
   //################################################################################################
@@ -169,7 +172,7 @@ namespace std
 template <>
 struct hash<tp_utils::StringID>
 {
-  std::size_t operator()(const tp_utils::StringID& stringID) const
+  size_t operator()(const tp_utils::StringID& stringID) const
   {
     return hash<void*>()(stringID.sd);
   }
@@ -177,7 +180,7 @@ struct hash<tp_utils::StringID>
 template <>
 struct hash<std::vector<tp_utils::StringID>>
 {
-  std::size_t operator()(const std::vector<tp_utils::StringID>& stringIDs) const
+  size_t operator()(const std::vector<tp_utils::StringID>& stringIDs) const
   {
     auto h = hash<void*>()(nullptr);
     for(const auto& stringID : stringIDs)

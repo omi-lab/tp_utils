@@ -385,7 +385,7 @@ size_t tpIndexOf(const std::vector<V>& vec, const V& value)
 }
 
 //##################################################################################################
-template<typename V, std::size_t N>
+template<typename V, size_t N>
 size_t tpIndexOf(const std::array<V,N>& arr, const V& value)
 {
   // std::array doesn't have find() method, so we need to use std::find instead
@@ -490,7 +490,7 @@ bool tpNumber(const std::string& s, T& n, T d=T())
 namespace detail
 {
 //##################################################################################################
-template <typename T, std::size_t...Is>
+template <typename T, size_t...Is>
 std::array<T, sizeof...(Is)> tpMakeArray(const T& value, std::index_sequence<Is...>)
 {
   return {{(static_cast<void>(Is), value)...}};
@@ -498,7 +498,7 @@ std::array<T, sizeof...(Is)> tpMakeArray(const T& value, std::index_sequence<Is.
 }
 
 //##################################################################################################
-template <typename T, std::size_t N>
+template <typename T, size_t N>
 std::array<T, N> tpMakeArray(const T& value)
 {
   return detail::tpMakeArray(value, std::make_index_sequence<N>());

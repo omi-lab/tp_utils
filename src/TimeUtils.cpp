@@ -307,15 +307,22 @@ FunctionTimer::~FunctionTimer()
 
     if(FunctionTimeStats::isMainThread())
     {
-      if(auto timeTakenMilliseconds = readings.at(0).timeTaken/1000; timeTakenMilliseconds>=2)
+      if(auto timeTakenMilliseconds = readings.at(0).timeTaken/1000; timeTakenMilliseconds>=20)
       {
+        auto printStep = [](const auto& s)
+        {
+          tpWarning() << fileIndex << " " << std::string(s.level*2, ' ') << s.name << ": " << s.timeTaken;
+        };
 #if 0
         {
           for(const auto& step : steps)
-            tpWarning() << std::string(step.level*2, ' ') << step.name << ": " << step.timeTaken;
+            printStep(step);
         }
 #else
         {
+          if(!steps.empty())
+            printStep(steps.front());
+
           nlohmann::json root = nlohmann::json::array();
 
           std::vector<nlohmann::json*> levels;
@@ -374,6 +381,24 @@ void FunctionTimer::finishStep(const char* name)
     newStep.timeTaken = finishTime - startTime;
   }
 #endif
+}
+
+//##################################################################################################
+void FunctionTimer::printStack(const char* name)
+{
+ size_t l = level;
+ tpWarning() << "---- FunctionTimer::printStack ----";
+ tpWarning() << name;
+ for(size_t i=steps.size()-1; i<steps.size(); i--)
+ {
+   if(const auto& s = steps.at(i); s.level==l)
+   {
+     l--;
+     tpWarning() << "  - " << s.name << ": " << s.timeTaken;
+   }
+ }
+
+ tpWarning() << "-----------------------------------";
 }
 
 #endif

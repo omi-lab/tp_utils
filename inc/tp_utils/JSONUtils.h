@@ -87,6 +87,11 @@ void TP_UTILS_EXPORT getJSONStringID(const nlohmann::json& j,
                                                                      const std::string& key);
 
 //##################################################################################################
+void TP_UTILS_EXPORT getJSONStringIDs(const nlohmann::json& j,
+                                      const std::string& key,
+                                      std::vector<StringID>& ids);
+
+//##################################################################################################
 [[nodiscard]] nlohmann::json stringIDsToJSON(const std::vector<StringID>& stringIDs);
 
 //##################################################################################################
@@ -468,7 +473,7 @@ void loadStateFromJSON(const nlohmann::json& j, const std::string& key, V& resul
     if(const auto& i = j.find(key); i != j.end() && !i->empty())
       loadValueFromJSON<V>(result).loadState(i.value());
     else
-      result = defaultValue;    
+      result = defaultValue;
   }
   catch(...)
   {

@@ -174,6 +174,13 @@ bool StringID::isValid() const
 }
 
 //##################################################################################################
+void StringID::reset()
+{
+  TP_FUNCTION_TIME("StringID::reset");
+  detach();
+}
+
+//##################################################################################################
 std::vector<std::string> StringID::toStringList(const std::vector<StringID>& stringIDs)
 {
   std::vector<std::string> stringList;

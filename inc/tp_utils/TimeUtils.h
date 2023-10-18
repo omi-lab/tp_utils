@@ -58,12 +58,6 @@ private:
   Private* d;
 };
 
-#ifdef TP_ENABLE_TIME_SCOPE
-#define TP_TIME_SCOPE(name) tp_utils::ElapsedTimer TP_CONCAT(tpET, __LINE__)(20); TP_CONCAT(tpET, __LINE__).start(); TP_CLEANUP([&]{TP_CONCAT(tpET, __LINE__).printTime(name);})
-#else
-#define TP_TIME_SCOPE(name)[]{}()
-#endif
-
 #ifdef TP_ENABLE_FUNCTION_TIME
 
 //##################################################################################################
@@ -111,6 +105,9 @@ public:
   //################################################################################################
   void finishStep(const char* name);
 
+  //################################################################################################
+  static void printStack(const char* name);
+
 private:
   size_t m_index{0};
 #ifdef TP_ENABLE_TIME_SCOPE
@@ -119,6 +116,7 @@ private:
 };
 
 #define TP_FUNCTION_TIME(A) tp_utils::FunctionTimer TP_CONCAT(tpFunctionTimer, __LINE__)(__FILE__, __LINE__, A); TP_UNUSED(TP_CONCAT(tpFunctionTimer, __LINE__))
+#define TP_FUNCTION_TIME_PRINT_STACK(A) tp_utils::FunctionTimer::printStack(A)
 #else
 
 //################################################################################################
@@ -153,6 +151,7 @@ public:
 };
 
 #define TP_FUNCTION_TIME(A) do{}while(false)
+#define TP_FUNCTION_TIME_PRINT_STACK(A) do{}while(false)
 #endif
 
 }
