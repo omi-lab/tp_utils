@@ -13,6 +13,7 @@
 #include <random>
 #include <algorithm>
 #include <stdexcept>
+#include <type_traits>
 
 #if defined(TP_UTILS_LIBRARY)
 #  define TP_UTILS_EXPORT TP_EXPORT
@@ -571,5 +572,62 @@ bool TP_UTILS_EXPORT parseColor(const std::string& color, uint8_t& r, uint8_t& g
 bool TP_UTILS_EXPORT parseColorF(const std::string& color, float& r, float& g, float& b, float& a);
 
 }
+
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wnon-template-friend"
+#endif
+
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wnon-template-friend"
+#endif
+
+namespace detail
+{
+namespace SelfType
+{
+template <typename T>
+struct Reader
+{
+  friend auto adl_GetSelfType(Reader<T>);
+};
+
+template <typename T, typename U>
+struct Writer
+{
+  friend auto adl_GetSelfType(Reader<T>){return U{};}
+};
+
+inline void adl_GetSelfType() {}
+
+template <typename T>
+using Read = std::remove_pointer_t<decltype(adl_GetSelfType(Reader<T>{}))>;
+}
+}
+
+#define TP_D \
+  private: \
+  struct Private; \
+  friend struct Private; \
+  Private* d
+
+#define TP_Q \
+  private: \
+  struct _self_type_tag {}; \
+  constexpr auto _self_type_helper() -> decltype(::detail::SelfType::Writer<_self_type_tag, decltype(this)>{}, void()) {} \
+  using Q = ::detail::SelfType::Read<_self_type_tag>
+
+#define TP_DQ \
+  TP_D;\
+  TP_Q
+
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
+
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
 
 #endif
