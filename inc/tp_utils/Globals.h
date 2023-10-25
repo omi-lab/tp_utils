@@ -575,10 +575,10 @@ bool TP_UTILS_EXPORT parseColorF(const std::string& color, float& r, float& g, f
 
 #ifdef __clang__
 #pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wnon-template-friend"
+#if !defined(__has_warning) || __has_warning("-Wnon-template-friend")
+#pragma GCC diagnostic ignored "-Wnon-template-friend"
 #endif
-
-#ifdef __GNUC__
+#elif defined(__GNUC__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wnon-template-friend"
 #endif
