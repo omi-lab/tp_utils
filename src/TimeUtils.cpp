@@ -341,7 +341,8 @@ FunctionTimer::~FunctionTimer()
               levels.emplace_back(&j["children"]);
             }
           }
-          tp_utils::writeJSONFile("C:/Users/PC/Desktop/function_time/" + fixedWidthKeepRight(std::to_string(fileIndex), 8, '0') + ".json", root, 2);
+          //tp_utils::writeJSONFile("C:/Users/PC/Desktop/function_time/" + fixedWidthKeepRight(std::to_string(fileIndex), 8, '0') + ".json", root, 2);
+          //tp_utils::writeJSONFile("/home/tom/Desktop/function_time/" + fixedWidthKeepRight(std::to_string(fileIndex), 8, '0') + ".json", root, 2);
           fileIndex++;
         }
 #endif
