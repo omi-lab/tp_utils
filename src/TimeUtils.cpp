@@ -4,7 +4,6 @@
 
 #ifdef TP_ENABLE_TIME_SCOPE
 #include "tp_utils/FileUtils.h"
-
 #include "json.hpp"
 #endif
 
@@ -341,8 +340,8 @@ FunctionTimer::~FunctionTimer()
               levels.emplace_back(&j["children"]);
             }
           }
-          //tp_utils::writeJSONFile("C:/Users/PC/Desktop/function_time/" + fixedWidthKeepRight(std::to_string(fileIndex), 8, '0') + ".json", root, 2);
-          //tp_utils::writeJSONFile("/home/tom/Desktop/function_time/" + fixedWidthKeepRight(std::to_string(fileIndex), 8, '0') + ".json", root, 2);
+
+          tp_utils::writeJSONFile(TP_ENABLE_TIME_SCOPE + fixedWidthKeepRight(std::to_string(fileIndex), 8, '0') + ".json", root, 2);
           fileIndex++;
         }
 #endif
