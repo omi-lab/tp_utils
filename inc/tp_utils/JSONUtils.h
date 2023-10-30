@@ -79,6 +79,11 @@ void TP_UTILS_EXPORT getJSONStringID(const nlohmann::json& j,
                                                const bool& defaultValue=bool());
 
 //##################################################################################################
+void TP_UTILS_EXPORT getJSONStringList(const nlohmann::json& j,
+                                       const std::string& key,
+                                       std::vector<std::string>& result);
+
+//##################################################################################################
 [[nodiscard]] std::vector<std::string> TP_UTILS_EXPORT getJSONStringList(const nlohmann::json& j,
                                                                          const std::string& key);
 
@@ -93,6 +98,16 @@ void TP_UTILS_EXPORT getJSONStringIDs(const nlohmann::json& j,
 
 //##################################################################################################
 [[nodiscard]] nlohmann::json stringIDsToJSON(const std::vector<StringID>& stringIDs);
+
+//##################################################################################################
+template<typename T, typename K>
+void loadObjectFromJSON(const nlohmann::json& j, K key, T& object)
+{
+  if(auto i=j.find(key); i!=j.end() and i->is_object())
+    object.loadState(*i);
+  else
+    object = T();
+}
 
 //##################################################################################################
 template<typename T>
@@ -133,354 +148,41 @@ void loadVectorOfObjectsFromJSON(const nlohmann::json& j, K key, T& vector)
   }
 }
 
+
+//##################################################################################################
+template<typename T>
+void saveMapOfObjectsToJSON(nlohmann::json& j, const T& map)
+{
+  j = nlohmann::json::object();
+  for(const auto& i : map)
+    j[i.first.toString()] = i.second.saveState();
+}
+
+//##################################################################################################
+template<typename T>
+void loadMapOfObjectsFromJSON(const nlohmann::json& j, T& map)
+{
+  map.clear();
+  if(j.is_object())
+  {
+    map.reserve(j.size());
+    for(auto p=j.begin(); p!=j.end(); ++p)
+      map[p.key()].loadState(p.value());
+  }
+}
+
 //##################################################################################################
 template<typename T, typename K>
-void loadObjectFromJSON(const nlohmann::json& j, K key, T& object)
+void loadMapOfObjectsFromJSON(const nlohmann::json& j, K key, T& map)
 {
+  map.clear();
   if(auto i=j.find(key); i!=j.end() and i->is_object())
-    object.loadState(*i);
-  else
-    object = T();
-}
-
-//##################################################################################################
-template <typename T, typename = void>
-struct saveValueToJSON
-{
-  T const& d;
-  saveValueToJSON(T const& d_):d(d_){}
-
-  T const& saveState(nlohmann::json& j)
   {
-    j = d.saveState();
-    return d;
-  }
-};
-
-
-//##################################################################################################
-template <typename T, typename = void>
-struct loadValueFromJSON
-{
-  T& d;
-  loadValueFromJSON(T& d_):d(d_){}
-
-  T& loadState(nlohmann::json const& j)
-  {
-    d.loadState(j);
-    return d;
-  }
-};
-
-
-//##################################################################################################
-template<typename T> struct type_is_atomic { static const bool value = false; };
-template<> struct type_is_atomic<bool>     { static const bool value = true;  };
-template<> struct type_is_atomic<char>     { static const bool value = true;  };
-template<> struct type_is_atomic<unsigned char>     { static const bool value = true;  };
-template<> struct type_is_atomic<unsigned short>  { static const bool value = true;  };
-template<> struct type_is_atomic<unsigned int>  { static const bool value = true;  };
-template<> struct type_is_atomic<unsigned long int>  { static const bool value = true;  };
-template<> struct type_is_atomic<unsigned long long>  { static const bool value = true;  };
-template<> struct type_is_atomic<signed char>     { static const bool value = true;  };
-template<> struct type_is_atomic<signed short>  { static const bool value = true;  };
-template<> struct type_is_atomic<signed int>  { static const bool value = true;  };
-template<> struct type_is_atomic<signed long int>  { static const bool value = true;  };
-template<> struct type_is_atomic<signed long long>  { static const bool value = true;  };
-template<> struct type_is_atomic<float>    { static const bool value = true;  };
-template<> struct type_is_atomic<double>   { static const bool value = true;  };
-template<> struct type_is_atomic<long double>   { static const bool value = true;  };
-template<> struct type_is_atomic<std::string>   { static const bool value = true;  };
-
-
-template <typename T>
-struct saveValueToJSON<T, typename std::enable_if<type_is_atomic<T>::value>::type>
-{
-  T const& d;
-  saveValueToJSON(T const & d_):d(d_){}
-
-  T const& saveState(nlohmann::json& j)
-  {
-    j = d;
-    return d;
-  }
-};
-
-template <typename T>
-struct loadValueFromJSON<T, typename std::enable_if<type_is_atomic<T>::value>::type>
-{
-  T& d;
-  loadValueFromJSON(T& d_):d(d_){}
-
-  T& loadState(nlohmann::json const& j)
-  {
-    d = {j.get<T>()};
-    return d;
-  }
-};
-
-//##################################################################################################
-template <>
-struct saveValueToJSON<tp_utils::StringID>
-{
-  tp_utils::StringID const& d;
-  saveValueToJSON(tp_utils::StringID const& d_):d(d_){}
-
-  tp_utils::StringID const& saveState(nlohmann::json& j)
-  {
-    j = d.toString();
-    return d;
-  }
-};
-
-template <>
-struct loadValueFromJSON<tp_utils::StringID>
-{
-  tp_utils::StringID& d;
-  loadValueFromJSON(tp_utils::StringID& d_):d(d_){}
-
-  tp_utils::StringID& loadState(nlohmann::json const& j)
-  {
-    d = {j.get<std::string>()};
-    return d;
-  }
-};
-
-
-//###############################################################################################################
-template<typename T> struct type_is_set_container { static const bool value = false; };
-template<typename T> struct type_is_set_container<std::set<T>>     { static const bool value = true;  };
-template<typename T> struct type_is_set_container<std::unordered_set<T>>     { static const bool value = true;  };
-
-template<typename T>
-struct saveValueToJSON<T, typename std::enable_if<type_is_set_container<T>::value>::type>
-{
-  T const& d;
-  saveValueToJSON(T const& d_):d(d_){}
-
-  T const& saveState(nlohmann::json& j)
-  {
-    try
-    {
-      j = nlohmann::json::array();
-      j.get_ptr<nlohmann::json::array_t*>()->reserve(d.size());
-      size_t counter = 0;
-      for(const auto& item : d)
-      {
-        saveValueToJSON<typename T::value_type>(item).saveState(j[counter++]);
-      }
-    }
-    catch(...)
-    {
-    }
-    return d;
-  }
-};
-
-
-template<typename T>
-struct loadValueFromJSON<T, typename std::enable_if<type_is_set_container<T>::value>::type>
-{
-  T& d;
-  loadValueFromJSON(T& d_):d(d_){}
-
-  T& loadState(const nlohmann::json& j)
-  {
-    try
-    {
-      d.clear();
-      for(auto i = j.begin(); i != j.end(); ++i)
-      {
-        typename T::value_type item;
-        loadValueFromJSON<typename T::value_type>(item).loadState(i.value());
-        d.emplace(item);
-      }
-    }
-    catch(...)
-    {
-    }
-    return d;
-  }
-};
-
-
-//#########################################################################################################
-template<typename T> struct type_is_list_container { static const bool value = false; };
-template<typename T> struct type_is_list_container<std::list<T>>     { static const bool value = true;  };
-template<typename T> struct type_is_list_container<std::vector<T>>     { static const bool value = true;  };
-
-template<typename T>
-struct saveValueToJSON<T, typename std::enable_if<type_is_list_container<T>::value>::type>
-{
-  T const& d;
-  saveValueToJSON(T const& d_):d(d_){}
-
-  T const& saveState(nlohmann::json& j)
-  {
-    try
-    {
-      j = nlohmann::json::array();
-      j.get_ptr<nlohmann::json::array_t*>()->reserve(d.size());
-      size_t counter = 0;
-      for(const auto& item : d)
-      {
-        saveValueToJSON<typename T::value_type>(item).saveState(j[counter++]);
-      }
-    }
-    catch(...)
-    {
-    }
-    return d;
-  }
-};
-
-
-template<typename T>
-struct loadValueFromJSON<T, typename std::enable_if<type_is_list_container<T>::value>::type>
-{
-  T& d;
-  loadValueFromJSON(T& d_):d(d_){}
-
-  T& loadState(const nlohmann::json& j)
-  {
-    try
-    {
-      d.clear();
-      for(auto i = j.begin(); i != j.end(); ++i)
-      {
-        typename T::value_type item;
-        loadValueFromJSON<typename T::value_type>(item).loadState(i.value());
-        d.emplace_back(item);
-      }
-    }
-    catch(...)
-    {
-    }
-    return d;
-  }
-};
-
-
-
-//#################################################################################################################################
-template<typename K, typename T> struct type_is_map_container { static const bool value = false; };
-template<typename K, typename T> struct type_is_map_container<std::map<K, T>, T>     { static const bool value = true;  };
-template<typename K, typename T> struct type_is_map_container<std::unordered_map<K, T>, T>     { static const bool value = true;  };
-
-//! for key in map we support only data types convertable from/to std::string
-//! all other key types could be treated as list of pair values (not yet implemented)
-//! we have to add explicit convertion to/from string for supported types
-template<typename T> inline std::string to_json_key(T const& from) {return std::to_string(from); }
-inline std::string to_json_key(std::string const& from) {return from; }
-inline std::string to_json_key(tp_utils::StringID const& from) {return from.toString(); }
-
-template<typename T> inline T from_json_key(std::string from)
-{
-  T item;
-  std::stringstream(from) >> item;
-  return item;
-}
-
-template<> inline tp_utils::StringID from_json_key<tp_utils::StringID>(std::string from)
-{
-  std::string item;
-  std::stringstream(from) >> item;
-  return item;
-}
-
-
-template<typename T>
-struct saveValueToJSON<T, typename std::enable_if<type_is_map_container<T, typename T::mapped_type>::value>::type>
-{
-  T const& d;
-  saveValueToJSON(T const& d_):d(d_){}
-
-  T const& saveState(nlohmann::json& j)
-  {
-    try
-    {
-      for(auto const& i: d)
-      {
-        saveValueToJSON<typename T::mapped_type>(i.second).saveState(j[to_json_key(i.first)]);
-      }
-    }
-    catch(...)
-    {
-    }
-    return d;
-  }
-};
-
-
-
-template<typename T>
-struct loadValueFromJSON<T, typename std::enable_if<type_is_map_container<T, typename T::mapped_type>::value>::type>
-{
-  T& d;
-  loadValueFromJSON(T& d_):d(d_){}
-
-  T& loadState(const nlohmann::json& j)
-  {
-    try
-    {
-      d.clear();
-      for(auto i = j.begin(); i != j.end(); ++i){
-        typename T::mapped_type item;
-        loadValueFromJSON<typename T::mapped_type>(item).loadState(i.value());
-        d.emplace(from_json_key<typename T::key_type>(i.key()), item);
-      }
-    }
-    catch(...)
-    {
-    }
-    return d;
-  }
-};
-
-//#######################################################################################################
-template<typename V>
-void saveStateToJSON(nlohmann::json& j, const std::string& key, V const& result)
-{
-  try
-  {
-    saveValueToJSON<V>(result).saveState(j[key]);
-  }
-  catch(...)
-  {
+    map.reserve(i->size());
+    for(auto p=i->begin(); p!=i->end(); ++p)
+      map[p.key()].loadState(p.value());
   }
 }
-
-//#######################################################################################################
-template<typename V>
-void loadStateFromJSON(const nlohmann::json& j, const std::string& key, V& result)
-{
-  try
-  {
-    if(const auto& i = j.find(key); i != j.end() && !i->empty())
-      loadValueFromJSON<V>(result).loadState(i.value());
-  }
-  catch(...)
-  {
-  }
-}
-
-//########################################################################################################
-template<typename V>
-void loadStateFromJSON(const nlohmann::json& j, const std::string& key, V& result, V const & defaultValue)
-{
-  try
-  {
-    if(const auto& i = j.find(key); i != j.end() && !i->empty())
-      loadValueFromJSON<V>(result).loadState(i.value());
-    else
-      result = defaultValue;
-  }
-  catch(...)
-  {
-  }
-}
-
-void unitTestJSONSerialization();
 
 }
 
