@@ -103,7 +103,7 @@ void TP_UTILS_EXPORT getJSONStringIDs(const nlohmann::json& j,
 template<typename T, typename K>
 void loadObjectFromJSON(const nlohmann::json& j, K key, T& object)
 {
-  if(auto i=j.find(key); i!=j.end() and i->is_object())
+  if(auto i=j.find(key); i!=j.end())
     object.loadState(*i);
   else
     object = T();
