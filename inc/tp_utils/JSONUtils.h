@@ -49,15 +49,7 @@ template<typename T>
                               const T& defaultValue=T())
 {
   if(const auto i = j.find(key); i != j.end() && i->is_number())
-  {
-    try
-    {
-      return i->get<T>();
-    }
-    catch(...)
-    {
-    }
-  }
+    return i->get<T>();
 
   return defaultValue;
 }
