@@ -126,9 +126,9 @@ void* tpVoidLiteral(size_t value)
 //##################################################################################################
 namespace
 {
-void addPart(std::vector<std::string>& result, const std::string& input, size_t pos, size_t n, tp_utils::SplitBehavior behavior)
+void addPart(std::vector<std::string>& result, const std::string& input, size_t pos, size_t n, TPSplitBehavior behavior)
 {
-  if(behavior==tp_utils::SplitBehavior::SkipEmptyParts && n==0)
+  if(behavior==TPSplitBehavior::SkipEmptyParts && n==0)
     return;
 
   result.push_back(input.substr(pos, n));
@@ -139,7 +139,7 @@ void addPart(std::vector<std::string>& result, const std::string& input, size_t 
 void tpSplit(std::vector<std::string>& result,
              const std::string& input,
              const std::string& del,
-             tp_utils::SplitBehavior behavior)
+             TPSplitBehavior behavior)
 {
   std::string::size_type start = 0;
   auto end = input.find(del);
@@ -157,7 +157,7 @@ void tpSplit(std::vector<std::string>& result,
 void tpSplit(std::vector<std::string>& result,
              const std::string& input,
              char del,
-             tp_utils::SplitBehavior behavior)
+             TPSplitBehavior behavior)
 {
   std::string::size_type start = 0;
   auto end = input.find(del);

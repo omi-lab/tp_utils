@@ -114,6 +114,20 @@ union TPPixel
     return {float(r)/255.0f, float(g)/255.0f, float(b)/255.0f, float(a)/255.0f};
   }
 
+  template<typename T>
+  static TPPixel fromFloat3(const T& v)
+  {
+    auto conv = [](float f){return uint8_t(std::clamp(int((f*255.0f)+0.5f), 0, 255));};
+    return {conv(v[0]), conv(v[1]), conv(v[2])};
+  }
+
+  template<typename T>
+  static TPPixel fromFloat4(const T& v)
+  {
+    auto conv = [](float f){return uint8_t(std::clamp(int((f*255.0f)+0.5f), 0, 255));};
+    return {conv(v[0]), conv(v[1]), conv(v[2]), conv(v[3])};
+  }
+
   uint32_t i;
   uint8_t v[4];
 #ifndef TP_WIN32

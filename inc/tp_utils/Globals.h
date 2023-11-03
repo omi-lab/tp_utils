@@ -194,37 +194,40 @@ void tpRandomShuffle(B begin, E end)
 //##################################################################################################
 void TP_UTILS_EXPORT* tpVoidLiteral(size_t value);
 
-namespace tp_utils
-{
-
 //##################################################################################################
-enum class SplitBehavior
+enum class TPSplitBehavior
 {
   KeepEmptyParts,
   SkipEmptyParts
 };
 
 //##################################################################################################
-enum class CreateFullPath
+enum class TPCreateFullPath
 {
   Yes,
   No
 };
-}
+
+//##################################################################################################
+enum class TPRecursive
+{
+  Yes,
+  No
+};
 
 //##################################################################################################
 //! Split a string on a delimiter
 void TP_UTILS_EXPORT tpSplit(std::vector<std::string>& result,
                              const std::string& input,
                              const std::string& del,
-                             tp_utils::SplitBehavior behavior=tp_utils::SplitBehavior::KeepEmptyParts);
+                             TPSplitBehavior behavior=TPSplitBehavior::KeepEmptyParts);
 
 //##################################################################################################
 //! Split a string on a delimiter
 void TP_UTILS_EXPORT tpSplit(std::vector<std::string>& result,
                              const std::string& input,
                              char del,
-                             tp_utils::SplitBehavior behavior=tp_utils::SplitBehavior::KeepEmptyParts);
+                             TPSplitBehavior behavior=TPSplitBehavior::KeepEmptyParts);
 
 //##################################################################################################
 //! Remove all instances of a character from a string.
