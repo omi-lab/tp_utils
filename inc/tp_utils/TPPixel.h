@@ -5,14 +5,8 @@
 
 union TPPixel
 {
-  TPPixel():
-    r(0),
-    g(0),
-    b(0),
-    a(255)
-  {
-
-  }
+  //avoid initialization by default (will speed up to create pixel arrays for output)
+  TPPixel() = default;
 
   TPPixel(uint8_t r_, uint8_t g_, uint8_t b_, uint8_t a_=255):
     r(r_),
