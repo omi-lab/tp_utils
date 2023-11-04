@@ -360,15 +360,15 @@ std::vector<std::string> TP_UTILS_EXPORT addr2Line()
     demangle(symbol, demangled, offset);
 
     std::vector<std::string> partsA;
-    tpSplit(partsA, symbol, '(', SplitBehavior::SkipEmptyParts);
+    tpSplit(partsA, symbol, '(', TPSplitBehavior::SkipEmptyParts);
     if(partsA.size()==2)
     {
       std::vector<std::string> partsB;
-      tpSplit(partsB, partsA.back(), '[', SplitBehavior::SkipEmptyParts);
+      tpSplit(partsB, partsA.back(), '[', TPSplitBehavior::SkipEmptyParts);
       if(!partsB.empty())
       {
         std::vector<std::string> partsC;
-        tpSplit(partsC, partsB.back(), ']', SplitBehavior::SkipEmptyParts);
+        tpSplit(partsC, partsB.back(), ']', TPSplitBehavior::SkipEmptyParts);
 
         if(!partsC.empty())
         {

@@ -68,16 +68,16 @@ bool TP_UTILS_EXPORT writePrettyJSONFile(const std::string& filename, const nloh
 bool TP_UTILS_EXPORT copyFile(const std::string& pathFrom, const std::string& pathTo);
 
 //##################################################################################################
-bool TP_UTILS_EXPORT cp(const std::string& pathFrom, const std::string& pathTo, bool recursive);
+bool TP_UTILS_EXPORT cp(const std::string& pathFrom, const std::string& pathTo, TPRecursive recursive);
 
 //##################################################################################################
 bool TP_UTILS_EXPORT mv(const std::string& pathFrom, const std::string& pathTo);
 
 //##################################################################################################
-bool TP_UTILS_EXPORT mkdir(const std::string& path, CreateFullPath createFullPath);
+bool TP_UTILS_EXPORT mkdir(const std::string& path, TPCreateFullPath createFullPath);
 
 //##################################################################################################
-bool TP_UTILS_EXPORT rm(const std::string& path, bool recursive);
+bool TP_UTILS_EXPORT rm(const std::string& path, TPRecursive recursive);
 
 //##################################################################################################
 [[nodiscard]]bool TP_UTILS_EXPORT exists(const std::string& path);
@@ -130,10 +130,10 @@ extern std::vector<std::string> TP_UTILS_EXPORT (*listFilesCallback)(const std::
 extern std::vector<std::string> TP_UTILS_EXPORT (*listDirectoriesCallback)(const std::string& path);
 extern int64_t TP_UTILS_EXPORT (*fileTimeMSCallback)(const std::string& path);
 extern bool TP_UTILS_EXPORT (*copyFileCallback)(const std::string& pathFrom, const std::string& pathTo);
-extern bool TP_UTILS_EXPORT (*cpCallback)(const std::string& pathFrom, const std::string& pathTo, bool recursive);
+extern bool TP_UTILS_EXPORT (*cpCallback)(const std::string& pathFrom, const std::string& pathTo, TPRecursive recursive);
 extern bool TP_UTILS_EXPORT (*mvCallback)(const std::string& pathFrom, const std::string& pathTo);
-extern bool TP_UTILS_EXPORT (*mkdirCallback)(const std::string& path, CreateFullPath createFullPath);
-extern bool TP_UTILS_EXPORT (*rmCallback)(const std::string& path, bool recursive);
+extern bool TP_UTILS_EXPORT (*mkdirCallback)(const std::string& path, TPCreateFullPath createFullPath);
+extern bool TP_UTILS_EXPORT (*rmCallback)(const std::string& path, TPRecursive recursive);
 extern bool TP_UTILS_EXPORT (*existsCallback)(const std::string& path);
 extern size_t TP_UTILS_EXPORT (*fileSizeCallback)(const std::string& path);
 extern bool TP_UTILS_EXPORT (*setCWDCallback)(const std::string& path);

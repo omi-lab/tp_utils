@@ -135,10 +135,10 @@ std::vector<std::string> (*listFilesCallback)(const std::string& path, const std
 std::vector<std::string> (*listDirectoriesCallback)(const std::string& path)=nullptr;
 int64_t (*fileTimeMSCallback)(const std::string& path)=nullptr;
 bool (*copyFileCallback)(const std::string& pathFrom, const std::string& pathTo)=nullptr;
-bool (*cpCallback)(const std::string& pathFrom, const std::string& pathTo, bool recursive)=nullptr;
+bool (*cpCallback)(const std::string& pathFrom, const std::string& pathTo, TPRecursive recursive)=nullptr;
 bool (*mvCallback)(const std::string& pathFrom, const std::string& pathTo)=nullptr;
-bool (*mkdirCallback)(const std::string& path, CreateFullPath createFullPath)=nullptr;
-bool (*rmCallback)(const std::string& path, bool recursive)=nullptr;
+bool (*mkdirCallback)(const std::string& path, TPCreateFullPath createFullPath)=nullptr;
+bool (*rmCallback)(const std::string& path, TPRecursive recursive)=nullptr;
 bool (*existsCallback)(const std::string& path)=nullptr;
 size_t (*fileSizeCallback)(const std::string& path)=nullptr;
 bool (*setCWDCallback)(const std::string& path)=nullptr;
@@ -170,7 +170,7 @@ bool copyFile(const std::string& pathFrom, const std::string& pathTo)
 }
 
 //##################################################################################################
-bool cp(const std::string& pathFrom, const std::string& pathTo, bool recursive)
+bool cp(const std::string& pathFrom, const std::string& pathTo, TPRecursive recursive)
 {
   return cpCallback?cpCallback(pathFrom, pathTo, recursive):false;
 }
@@ -182,13 +182,13 @@ bool mv(const std::string& pathFrom, const std::string& pathTo)
 }
 
 //##################################################################################################
-bool mkdir(const std::string& path, CreateFullPath createFullPath)
+bool mkdir(const std::string& path, TPCreateFullPath createFullPath)
 {
   return mkdirCallback?mkdirCallback(path, createFullPath):false;
 }
 
 //##################################################################################################
-bool rm(const std::string& path, bool recursive)
+bool rm(const std::string& path, TPRecursive recursive)
 {
   return rmCallback?rmCallback(path, recursive):false;
 }
@@ -240,7 +240,7 @@ std::string filename(const std::string& path)
   std::string s = path;
   std::replace(s.begin(), s.end(), '\\', '/');
 
-  tpSplit(results, s, '/', SplitBehavior::SkipEmptyParts);
+  tpSplit(results, s, '/', TPSplitBehavior::SkipEmptyParts);
   return results.empty()?"":results.back();
 }
 
