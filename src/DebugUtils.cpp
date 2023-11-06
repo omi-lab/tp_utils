@@ -91,7 +91,7 @@ TeeMessageHandler::TeeMessageHandler(const std::string& path)
 {
   auto closure = [=](tp_utils::MessageType type, const std::string& message)
   {
-    writeTextFile(path, getCurrentTimestamp() + message, true);
+    writeTextFile(path, getCurrentTimestamp() + message, TPAppend::Yes);
     if(m_previous)
       m_previous(type, message);
   };

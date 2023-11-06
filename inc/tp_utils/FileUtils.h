@@ -24,7 +24,7 @@ namespace tp_utils
 \param textOutput - The text to write out
 \return True if the file was written, else false.
  */
-bool TP_UTILS_EXPORT writeTextFile(const std::string& filename, const std::string& textOutput, bool append=false);
+bool TP_UTILS_EXPORT writeTextFile(const std::string& filename, const std::string& textOutput, TPAppend append=TPAppend::No);
 
 //##################################################################################################
 //! Writes a string to a file

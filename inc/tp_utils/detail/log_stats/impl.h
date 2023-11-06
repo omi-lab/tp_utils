@@ -16,7 +16,7 @@ template<class T = void>
 struct TP_UTILS_EXPORT _LogStatsTimer
 {
   //################################################################################################
-  _LogStatsTimer(const std::string& path, int64_t intervalMS, const std::function<std::string()>& take, bool append=false)
+  _LogStatsTimer(const std::string& path, int64_t intervalMS, const std::function<std::string()>& take, TPAppend append=TPAppend::No)
   {
     m_thread = std::thread([=]
     {
@@ -87,7 +87,7 @@ public:
 
   //################################################################################################
   _KeyValueLogStatsTimer(const std::string& path, int64_t intervalMS):
-    m_logStatsTimer(path, intervalMS, [&]{return take();}, true)
+    m_logStatsTimer(path, intervalMS, [&]{return take();}, TPAppend::Yes)
   {
 
   }

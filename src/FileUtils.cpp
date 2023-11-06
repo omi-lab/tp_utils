@@ -53,13 +53,13 @@ std::string TP_UTILS_EXPORT readBinaryFile(const std::string& filename)
 }
 
 //##################################################################################################
-bool TP_UTILS_EXPORT writeTextFile(const std::string& filename, const std::string& textOutput, bool append)
+bool TP_UTILS_EXPORT writeTextFile(const std::string& filename, const std::string& textOutput, TPAppend append)
 {
   try
   {
     std::ofstream out;
 
-    if(append)
+    if(append == TPAppend::Yes)
       out.open(std::filesystem::u8path(filename), std::ios_base::out | std::ios_base::app);
     else
       out.open(std::filesystem::u8path(filename), std::ios_base::out | std::ios_base::trunc);

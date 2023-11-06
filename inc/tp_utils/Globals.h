@@ -216,6 +216,13 @@ enum class TPRecursive
 };
 
 //##################################################################################################
+enum class TPAppend
+{
+  Yes,
+  No
+};
+
+//##################################################################################################
 //! Split a string on a delimiter
 void TP_UTILS_EXPORT tpSplit(std::vector<std::string>& result,
                              const std::string& input,
