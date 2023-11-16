@@ -234,7 +234,7 @@ struct Step_lt
   int64_t timeTaken{0};
 };
 
-thread_local std::vector<FunctionTimeReading> readings;
+thread_local std::unique_ptr<std::vector<FunctionTimeReading>> readings = std::make_unique<std::vector<FunctionTimeReading>>();
 
 #ifdef TP_ENABLE_TIME_SCOPE
 thread_local std::vector<Step_lt> steps;
@@ -245,31 +245,38 @@ thread_local size_t fileIndex{0};
 
 
 //##################################################################################################
-FunctionTimer::FunctionTimer(const char* file, int line, const char* name):
-  m_index(readings.size())
+FunctionTimer::FunctionTimer(const char* file, int line, const char* name)
+
 {
-  auto& reading = readings.emplace_back();
-  reading.start = currentTimeMicroseconds();
-  reading.key = fixedWidthKeepRight(std::string(file) + ':' + std::to_string(line) + ' ' + name, 50, ' ');
+  if(readings)
+  {
+    m_index = readings->size();
+    auto& reading = readings->emplace_back();
+    reading.start = currentTimeMicroseconds();
+    reading.key = fixedWidthKeepRight(std::string(file) + ':' + std::to_string(line) + ' ' + name, 50, ' ');
 
 #ifdef TP_ENABLE_TIME_SCOPE
 
-  {
-    m_stepIndex = steps.size();
-    auto& step = steps.emplace_back();
+    {
+      m_stepIndex = steps.size();
+      auto& step = steps.emplace_back();
 
-    step.level = level;
-    level++;
+      step.level = level;
+      level++;
 
-    step.name = reading.key;
-    step.finishTime = reading.start;
-  }
+      step.name = reading.key;
+      step.finishTime = reading.start;
+    }
 #endif
+  }
 }
 
 //##################################################################################################
 FunctionTimer::~FunctionTimer()
 {
+  if(!readings)
+    return;
+
   auto time = currentTimeMicroseconds();
 
 #ifdef TP_ENABLE_TIME_SCOPE
@@ -277,7 +284,7 @@ FunctionTimer::~FunctionTimer()
 #endif
 
   {
-    auto& reading = readings.at(m_index);
+    auto& reading = readings->at(m_index);
     reading.timeTaken = time - reading.start;
   }
 
@@ -292,13 +299,13 @@ FunctionTimer::~FunctionTimer()
 
   if(m_index == 0)
   {
-    TP_CLEANUP([&]{readings.clear();});
+    TP_CLEANUP([&]{readings->clear();});
 
 #ifdef TP_ENABLE_TIME_SCOPE
     TP_CLEANUP([&]{level=0;});
 #endif
 
-    FunctionTimeStats::add(readings);
+    FunctionTimeStats::add(*readings);
 
 #ifdef TP_ENABLE_TIME_SCOPE
     TP_CLEANUP([&]{steps.clear();});
@@ -306,7 +313,7 @@ FunctionTimer::~FunctionTimer()
 
     if(FunctionTimeStats::isMainThread())
     {
-      if(auto timeTakenMilliseconds = readings.at(0).timeTaken/1000; timeTakenMilliseconds>=20)
+      if(auto timeTakenMilliseconds = readings->at(0).timeTaken/1000; timeTakenMilliseconds>=20)
       {
         auto printStep = [](const auto& s)
         {
@@ -389,19 +396,19 @@ void FunctionTimer::printStack(const char* name)
 #ifndef TP_ENABLE_TIME_SCOPE
   TP_UNUSED(name);
 #else
- size_t l = level;
- tpWarning() << "---- FunctionTimer::printStack ----";
- tpWarning() << name;
- for(size_t i=steps.size()-1; i<steps.size(); i--)
- {
-   if(const auto& s = steps.at(i); s.level==l)
-   {
-     l--;
-     tpWarning() << "  - " << s.name << ": " << s.timeTaken;
-   }
- }
+  size_t l = level;
+  tpWarning() << "---- FunctionTimer::printStack ----";
+  tpWarning() << name;
+  for(size_t i=steps.size()-1; i<steps.size(); i--)
+  {
+    if(const auto& s = steps.at(i); s.level==l)
+    {
+      l--;
+      tpWarning() << "  - " << s.name << ": " << s.timeTaken;
+    }
+  }
 
- tpWarning() << "-----------------------------------";
+  tpWarning() << "-----------------------------------";
 #endif
 }
 
