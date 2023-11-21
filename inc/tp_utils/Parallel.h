@@ -29,7 +29,7 @@ void parallel(T worker)
   std::vector<std::thread> workers;
   workers.reserve(threads);
   for(size_t i=0; i<threads; i++)
-    workers.emplace_back([&]{worker(locker);});
+    workers.emplace_back([=]{worker(locker);});
 
   for(auto& thread : workers)
     thread.join();

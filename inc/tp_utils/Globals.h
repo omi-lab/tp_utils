@@ -558,7 +558,6 @@ This module provides a set of general purpose classes that form the core of tp T
 */
 namespace tp_utils
 {
-
 //##################################################################################################
 void TP_UTILS_EXPORT leftJustified(std::string& text, size_t maxLength, char padding=' ');
 
