@@ -147,7 +147,7 @@ void saveMapOfObjectsToJSON(nlohmann::json& j, const T& map)
 {
   j = nlohmann::json::object();
   for(const auto& i : map)
-    j[i.first.toString()] = i.second.saveState();
+    i.second.saveState(j[i.first.toString()]);
 }
 
 //##################################################################################################
