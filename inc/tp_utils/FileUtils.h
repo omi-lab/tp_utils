@@ -45,6 +45,9 @@ bool TP_UTILS_EXPORT writeJSONFile(const std::string& filename, const nlohmann::
 bool TP_UTILS_EXPORT writePrettyJSONFile(const std::string& filename, const nlohmann::json& j);
 
 //##################################################################################################
+std::string TP_UTILS_EXPORT readFileFromURL(std::string const& url, std::string const& name, std::string const& rootPath);
+    
+//##################################################################################################
 //!
 /*!
 \param path The directory to list files in.

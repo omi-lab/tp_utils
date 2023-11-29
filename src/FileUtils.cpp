@@ -3,6 +3,7 @@
 #include <fstream>
 #include <streambuf>
 #include <filesystem> 
+#include <cstdlib>
 
 namespace tp_utils
 {
@@ -128,6 +129,24 @@ bool writePrettyJSONFile(const std::string& filename, const nlohmann::json& j)
   {
     return false;
   }
+}
+
+//##################################################################################################
+std::string readFileFromURL(std::string const& url, std::string const& name, std::string const& rootPath)
+{
+#ifdef WIN32
+  TP_UNUSED(url);
+  TP_UNUSED(name);
+  TP_UNUSED(rootPath);
+  return std::string();
+#else
+  std::string filePath = rootPath + "/" + std::filesystem::path(name).filename().string();
+  int res = system((std::string("wget -O \"") + filePath + "\" \"" + url + "\"").c_str());
+  if(0 != res)
+    return std::string();
+
+  return filePath;
+#endif
 }
 
 //##################################################################################################
