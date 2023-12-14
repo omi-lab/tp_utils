@@ -74,6 +74,8 @@ public:
 //##################################################################################################
 class RAMProgressStore : public AbstractProgressStore
 {
+  TP_NONCOPYABLE(RAMProgressStore);
+  TP_DQ;
 public:
   //################################################################################################
   RAMProgressStore();
@@ -95,11 +97,6 @@ public:
 
   //################################################################################################
   static std::vector<ProgressEvent> loadState(const nlohmann::json& j);
-
-private:
-  struct Private;
-  friend struct Private;
-  Private* d;
 };
 
 //##################################################################################################
@@ -112,6 +109,8 @@ extern AbstractProgressStore* globalProgressStore_;
 */
 class TP_UTILS_EXPORT Progress
 {
+  TP_NONCOPYABLE(Progress);
+  TP_DQ;
 public:
   //################################################################################################
   //! Thread safe constructor.
@@ -218,6 +217,9 @@ public:
   void viewProgressEvent(const std::function<void(const ProgressEvent&)>& closure) const;
 
   //################################################################################################
+  void copyChildSteps(Progress* progress, const std::string& message, float completeFraction);
+
+  //################################################################################################
   CallbackCollection<void()> changed;
 
 protected:
@@ -229,12 +231,48 @@ protected:
 
   //################################################################################################
   bool getErrors(size_t indentation, std::vector<ProgressMessage>& messages) const;
-
-private:
-  struct Private;
-  Private* d;
-  friend struct Private;
 };
+
+//##################################################################################################
+/*!
+~~~~~~~~~~~~~{.cpp}
+ParrallelProgress parrallelProgress(progress);
+
+std::thread t1([&]
+{
+  auto pp = parrallelProgress->addChildStep("Task 1");
+  ...
+});
+
+std::thread t2([&]
+{
+  auto pp = parrallelProgress->addChildStep("Task 2");
+  ...
+});
+
+t1.join();
+t2.join();
+
+// ~ParrallelProgress will write child steps to progress sequentially.
+~~~~~~~~~~~~~
+*/
+class TP_UTILS_EXPORT ParrallelProgress
+{
+  TP_NONCOPYABLE(ParrallelProgress);
+  TP_DQ;
+public:
+
+  //################################################################################################
+  ParrallelProgress(Progress* progress);
+
+  //################################################################################################
+  ~ParrallelProgress();
+
+  //################################################################################################
+  //! Get a thread safe progress object.
+  TP_NODISCARD Progress* addChildStep(const std::string& message);
+};
+
 
 }
 

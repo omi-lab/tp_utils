@@ -447,6 +447,37 @@ void Progress::viewProgressEvent(const std::function<void(const ProgressEvent&)>
 }
 
 //##################################################################################################
+void Progress::copyChildSteps(Progress* progress, const std::string& message, float completeFraction)
+{  
+  auto dstChildStep = addChildStep(message, completeFraction);
+
+  TP_MUTEX_LOCKER(d->mutex);
+  TP_MUTEX_LOCKER(progress->d->mutex);
+
+  for(const auto& childStep : progress->d->childSteps)
+  {
+    dstChildStep->d->updateThis([&](ChildStep_lt& childStep)
+    {
+      for(size_t m=0; m<childStep.messages.size(); m++)
+      {
+        if(m==(childStep.messages.size()-1) && childStep.childProgress)
+          break;
+
+        const auto& message = childStep.messages.at(m);
+
+        if(message.error)
+          dstChildStep->addError(message.message);
+        else
+          dstChildStep->addMessage(message.message);
+      }
+    });
+
+    if(childStep.childProgress && !childStep.messages.empty())
+      dstChildStep->copyChildSteps(childStep.childProgress, childStep.messages.back().message, 1.0f);
+  }
+}
+
+//##################################################################################################
 Progress* Progress::addChildStep(const std::string& message, float completeFraction)
 {
   Progress* childProgress{nullptr};
@@ -478,7 +509,7 @@ Progress* Progress::addChildStep(const std::string& message, float completeFract
     d->updateProgressEventEnd(childStep, true);
   });
 
-  callChanged();  
+  callChanged();
   childProgress->d->checkPrint(message);
 
   return childProgress;
@@ -499,7 +530,6 @@ void Progress::addMessage(const std::string& message)
 //##################################################################################################
 void Progress::addError(const std::string& error)
 {
-
   d->updateThis([&](ChildStep_lt& childStep)
   {
     childStep.messages.emplace_back(error, true, 0);
@@ -602,6 +632,59 @@ bool Progress::getErrors(size_t indentation, std::vector<ProgressMessage>& messa
   }
 
   return error;
+}
+
+//##################################################################################################
+struct ParrallelProgress::Private
+{
+  struct Child_lt
+  {
+    tp_utils::RAMProgressStore* store{nullptr};
+    Progress* progress;
+    std::string message;
+  };
+
+  Progress* progress;
+  TPMutex mutex{TPM};
+  std::vector<Child_lt> childSteps;
+
+  //################################################################################################
+  Private(Progress* progress_):
+    progress(progress_)
+  {
+
+  }
+};
+
+//##################################################################################################
+ParrallelProgress::ParrallelProgress(Progress* progress):
+  d(new Private(progress))
+{
+
+}
+
+//##################################################################################################
+ParrallelProgress::~ParrallelProgress()
+{
+  for(size_t s=0; s<d->childSteps.size(); s++)
+  {
+    const auto& childStep = d->childSteps.at(s);
+    d->progress->copyChildSteps(childStep.progress, childStep.message, float(s+1)/float(d->childSteps.size()));
+    delete childStep.progress;
+    delete childStep.store;
+  }
+  delete d;
+}
+
+//##################################################################################################
+Progress* ParrallelProgress::addChildStep(const std::string& message)
+{
+  TP_MUTEX_LOCKER(d->mutex);
+  auto& childStep = d->childSteps.emplace_back();
+  childStep.store = new tp_utils::RAMProgressStore();
+  childStep.progress = new Progress([&]{return d->progress->shouldStop();}, message);
+  childStep.message = message;
+  return childStep.progress;
 }
 
 }
