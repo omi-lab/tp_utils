@@ -103,6 +103,16 @@ void loadObjectFromJSON(const nlohmann::json& j, K key, T& object)
 
 //##################################################################################################
 template<typename T>
+void saveVectorOfValuesToJSON(nlohmann::json& j, const T& vector)
+{
+  j = nlohmann::json::array();
+  j.get_ptr<nlohmann::json::array_t*>()->reserve(vector.size());
+  for(const auto& i : vector)
+    j.push_back(i);
+};
+
+//##################################################################################################
+template<typename T>
 void saveVectorOfObjectsToJSON(nlohmann::json& j, const T& vector)
 {
   j = nlohmann::json::array();

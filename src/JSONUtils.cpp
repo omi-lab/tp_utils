@@ -64,6 +64,7 @@ void TP_UTILS_EXPORT getJSONStringList(const nlohmann::json& j,
                                        const std::string& key,
                                        std::vector<std::string>& result)
 {
+  result.clear();
   if(auto i=j.find(key); i!=j.end() && i->is_array())
   {
     result.reserve(i->size());
