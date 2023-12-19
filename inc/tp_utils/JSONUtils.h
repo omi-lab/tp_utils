@@ -92,6 +92,9 @@ void TP_UTILS_EXPORT getJSONStringIDs(const nlohmann::json& j,
 [[nodiscard]] nlohmann::json stringIDsToJSON(const std::vector<StringID>& stringIDs);
 
 //##################################################################################################
+void saveVectorOfStringIDsToJSON(nlohmann::json& j, const std::vector<StringID>& stringIDs);
+
+//##################################################################################################
 template<typename T, typename K>
 void loadObjectFromJSON(const nlohmann::json& j, K key, T& object)
 {

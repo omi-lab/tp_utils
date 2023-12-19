@@ -124,11 +124,18 @@ void getJSONStringIDs(const nlohmann::json& j,
 //##################################################################################################
 nlohmann::json stringIDsToJSON(const std::vector<StringID>& stringIDs)
 {
-  nlohmann::json j=nlohmann::json::array();
+  nlohmann::json j;
+  saveVectorOfStringIDsToJSON(j, stringIDs);
+  return j;
+}
+
+//##################################################################################################
+void saveVectorOfStringIDsToJSON(nlohmann::json& j, const std::vector<StringID>& stringIDs)
+{
+  j=nlohmann::json::array();
   j.get_ptr<nlohmann::json::array_t*>()->reserve(stringIDs.size());
   for(const auto& stringID : stringIDs)
     j.emplace_back(stringID.toString());
-  return j;
 }
 
 }
