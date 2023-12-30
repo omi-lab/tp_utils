@@ -43,7 +43,7 @@ std::string TP_UTILS_EXPORT readBinaryFile(const std::string& filename)
       }
 
       if(size_t(read)!=results.size())
-          results.resize(size_t(read));
+        results.resize(size_t(read));
     }
     return results;
   }
@@ -52,6 +52,7 @@ std::string TP_UTILS_EXPORT readBinaryFile(const std::string& filename)
     return std::string();
   }
 }
+
 
 //##################################################################################################
 bool TP_UTILS_EXPORT writeTextFile(const std::string& filename, const std::string& textOutput, TPAppend append)
@@ -239,7 +240,7 @@ std::string cwd()
 namespace
 {
 #ifdef TP_WIN32
-  char del = '\\';
+char del = '\\';
 #else
 char del = '/';
 #endif
