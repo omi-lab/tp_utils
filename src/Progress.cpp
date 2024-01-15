@@ -682,7 +682,7 @@ Progress* ParrallelProgress::addChildStep(const std::string& message)
   TP_MUTEX_LOCKER(d->mutex);
   auto& childStep = d->childSteps.emplace_back();
   childStep.store = new tp_utils::RAMProgressStore();
-  childStep.progress = new Progress([&]{return d->progress->shouldStop();}, message);
+  childStep.progress = new Progress([&]{return !d->progress->shouldStop();}, message);
   childStep.message = message;
   return childStep.progress;
 }
