@@ -5,6 +5,9 @@
 #include "tp_utils/AbstractCrossThreadCallback.h"
 #include "tp_utils/TimeUtils.h"
 #include "tp_utils/JSONUtils.h"
+#include "tp_utils/detail/log_stats/virtual_memory.h"
+
+#include "lib_platform/Format.h"
 
 #include <optional>
 
@@ -268,7 +271,14 @@ struct Progress::Private
     while(p->d->parent)
       p=p->d->parent;
 
-    tpWarning() << "(" << int(p->progress()*100.1f) << "%) " << std::string(indentation, ' ') << text;
+    tp_utils::detail::VirtualMemory vm;
+
+    //tpWarning() << "(" << int(p->progress()*100.1f) << "%) "
+    //            << std::string(indentation, ' ') << text;
+    tpWarning() << std::format("({}MB, {}%) {}{}",
+                               int(vm.VmHWM/1024),
+                               int(p->progress()*100.1f),
+                               std::string(indentation, ' '), text);
   }
 
   //################################################################################################

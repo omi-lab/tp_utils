@@ -1,11 +1,14 @@
 #include "tp_utils/TimeUtils.h"
 #include "tp_utils/DebugUtils.h"
 #include "tp_utils/MutexUtils.h"
+#include "tp_utils/detail/log_stats/virtual_memory.h"
 
 #ifdef TP_ENABLE_TIME_SCOPE
 #include "tp_utils/FileUtils.h"
 #include "json.hpp"
 #endif
+
+#include "lib_platform/Format.h"
 
 #include <chrono>
 #include <thread>
@@ -83,8 +86,11 @@ int64_t ElapsedTimer::elapsed() const
 void ElapsedTimer::printTime(const char* msg)
 {
   auto e = restart();
-  if(e>d->smallTime)
-    tpWarning() << msg << " (" << e << ")";
+  if(e>d->smallTime){
+    //tpWarning() << msg << " (" << e << ")";
+    tp_utils::detail::VirtualMemory vm;
+    tpWarning() << std::format("({}) {} ({})", vm.VmHWM, msg, e);
+  }
 }
 
 #ifdef TP_ENABLE_FUNCTION_TIME

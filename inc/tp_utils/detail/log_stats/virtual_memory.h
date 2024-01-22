@@ -1,6 +1,11 @@
 #include "tp_utils/detail/log_stats/impl.h"
 #include "tp_utils/TimeUtils.h"
 
+#ifdef WIN32
+#include <windows.h>
+#include <Psapi.h>
+#endif
+
 namespace tp_utils
 {
 
@@ -17,7 +22,7 @@ struct VirtualMemory
   //################################################################################################
   VirtualMemory()
   {
-#ifdef TP_LINUX
+#if defined(TP_LINUX)
   //https://stackoverflow.com/questions/63166/how-to-determine-cpu-and-memory-consumption-from-inside-a-process
   auto parseLine = [](char* line)
   {
@@ -50,6 +55,17 @@ struct VirtualMemory
   VmSize = size_t(getValue("VmSize:"));
   VmHWM = size_t(getValue("VmHWM:"));
   VmRSS = size_t(getValue("VmRSS:"));
+#elif defined WIN32
+
+  PROCESS_MEMORY_COUNTERS_EX ppsmemCounters;
+  if(GetProcessMemoryInfo( GetCurrentProcess(),
+                        (PROCESS_MEMORY_COUNTERS*)&ppsmemCounters,
+                        sizeof(ppsmemCounters))){
+    // all sizes in KBytes
+    VmSize = ppsmemCounters.PrivateUsage/1024; // Virtual memory
+    VmHWM = ppsmemCounters.PeakWorkingSetSize/1024; // Peak of RAM memory usage
+    VmRSS = ppsmemCounters.WorkingSetSize/1024; // RAM memory used
+  }
 #endif
   }
 };
