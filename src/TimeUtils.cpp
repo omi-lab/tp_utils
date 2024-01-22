@@ -89,7 +89,7 @@ void ElapsedTimer::printTime(const char* msg)
   if(e>d->smallTime){
     //tpWarning() << msg << " (" << e << ")";
     tp_utils::detail::VirtualMemory vm;
-    tpWarning() << std::format("({}) {} ({})", vm.VmHWM, msg, e);
+    tpWarning() << std::format("({}MB) {} ({})", vm.VmHWM/1024, msg, e);
   }
 }
 
