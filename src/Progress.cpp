@@ -451,13 +451,16 @@ void Progress::copyChildSteps(Progress* progress, const std::string& message, fl
 {  
   auto dstChildStep = addChildStep(message, completeFraction);
 
-  TP_MUTEX_LOCKER(d->mutex);
-  TP_MUTEX_LOCKER(progress->d->mutex);
+  //TP_MUTEX_LOCKER(d->mutex);
+  //TP_MUTEX_LOCKER(progress->d->mutex);
 
   for(const auto& childStep : progress->d->childSteps)
   {
-    dstChildStep->d->updateThis([&](ChildStep_lt& childStep)
-    {
+
+
+
+//    dstChildStep->d->updateThis([&](ChildStep_lt& childStep)
+//    {
       for(size_t m=0; m<childStep.messages.size(); m++)
       {
         if(m==(childStep.messages.size()-1) && childStep.childProgress)
@@ -470,7 +473,9 @@ void Progress::copyChildSteps(Progress* progress, const std::string& message, fl
         else
           dstChildStep->addMessage(message.message);
       }
-    });
+//    });
+
+      dstChildStep->setProgress(childStep.fraction);
 
     if(childStep.childProgress && !childStep.messages.empty())
       dstChildStep->copyChildSteps(childStep.childProgress, childStep.messages.back().message, 1.0f);
