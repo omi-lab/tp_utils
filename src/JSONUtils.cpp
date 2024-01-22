@@ -107,17 +107,30 @@ std::vector<StringID> getJSONStringIDs(const nlohmann::json& j,
 //##################################################################################################
 void getJSONStringIDs(const nlohmann::json& j,
                       const std::string& key,
-                      std::vector<StringID>& ids)
+                      std::vector<StringID>& stringIDs)
 {
-  ids.clear();
+  stringIDs.clear();
   if(const auto& i = j.find(key); i != j.end() && !i->empty())
   {
     if(i->is_array())
     {
-      ids.reserve(i->size());
+      stringIDs.reserve(i->size());
       for(auto const& jj : *i)
-        ids.emplace_back(jj.get<std::string>());
+        stringIDs.emplace_back(jj.get<std::string>());
     }
+  }
+}
+
+//##################################################################################################
+void getJSONStringIDs(const nlohmann::json& j,
+                      std::vector<StringID>& stringIDs)
+{
+  stringIDs.clear();
+  if(j.is_array())
+  {
+    stringIDs.reserve(j.size());
+    for(auto const& jj : j)
+      stringIDs.emplace_back(jj.get<std::string>());
   }
 }
 
@@ -136,6 +149,48 @@ void saveVectorOfStringIDsToJSON(nlohmann::json& j, const std::vector<StringID>&
   j.get_ptr<nlohmann::json::array_t*>()->reserve(stringIDs.size());
   for(const auto& stringID : stringIDs)
     j.emplace_back(stringID.toString());
+}
+
+//##################################################################################################
+void saveMapOfStringIDAndStringToJSON(nlohmann::json& j, const std::unordered_map<StringID, std::string>& map)
+{
+  j = nlohmann::json::object();
+  for(const auto& i : map)
+    j[i.first.toString()] = i.second;
+}
+
+//##################################################################################################
+void saveMapOfStringIDAndStringIDToJSON(nlohmann::json& j, const std::unordered_map<StringID, StringID>& map)
+{
+  j = nlohmann::json::object();
+  for(const auto& i : map)
+    j[i.first.toString()] = i.second.toString();
+}
+
+//##################################################################################################
+void loadMapOfStringIDAndStringFromJSON(const nlohmann::json& j, std::unordered_map<StringID, std::string>& map)
+{
+  map.clear();
+  if(j.is_object())
+  {
+    map.reserve(j.size());
+    for(auto p=j.begin(); p!=j.end(); ++p)
+      if(p->is_string())
+        map[p.key()] = p->get<std::string>();
+  }
+}
+
+//##################################################################################################
+void loadMapOfStringIDAndStringIDFromJSON(const nlohmann::json& j, std::unordered_map<StringID, StringID>& map)
+{
+  map.clear();
+  if(j.is_object())
+  {
+    map.reserve(j.size());
+    for(auto p=j.begin(); p!=j.end(); ++p)
+      if(p->is_string())
+        map[p.key()] = p->get<std::string>();
+  }
 }
 
 }
