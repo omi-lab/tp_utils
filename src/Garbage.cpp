@@ -69,9 +69,14 @@ struct Garbage
 };
 }
 
+namespace {
+  static std::unique_ptr<Garbage> garbage_aux;
+}
+
 //##################################################################################################
 void initGarbage()
 {
+  garbage_aux.reset(new Garbage);
   tp_utils::garbage([]{});
 }
 
@@ -81,9 +86,21 @@ void garbage(const std::function<void()>& closure)
 #ifdef TP_NO_THREADS
   closure();
 #else
-  static Garbage garbage;
-  garbage.garbage(closure);
+  if(garbage_aux)
+    garbage_aux->garbage(closure);
+  else
+    closure();
 #endif
+}
+
+GarbageLocker::GarbageLocker()
+{
+  initGarbage();
+}
+
+GarbageLocker::~GarbageLocker()
+{
+  garbage_aux.reset();
 }
 
 }

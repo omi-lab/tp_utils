@@ -14,6 +14,15 @@ void initGarbage();
 //##################################################################################################
 void garbage(const std::function<void()>& closure);
 
+class GarbageLocker{
+public:
+  GarbageLocker();
+  ~GarbageLocker();
+};
+
 }
+
+
+
 
 #endif
