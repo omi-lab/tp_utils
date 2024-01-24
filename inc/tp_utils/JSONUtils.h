@@ -111,6 +111,17 @@ void loadMapOfStringIDAndStringFromJSON(const nlohmann::json& j, std::unordered_
 void loadMapOfStringIDAndStringIDFromJSON(const nlohmann::json& j, std::unordered_map<StringID, StringID>& map);
 
 //##################################################################################################
+void loadMapOfStringIDAndStringFromJSON(const nlohmann::json& j,
+                                        const std::string& key,
+                                        std::unordered_map<StringID, std::string>& map);
+
+//##################################################################################################
+void loadMapOfStringIDAndStringIDFromJSON(const nlohmann::json& j,
+                                          const std::string& key,
+                                          std::unordered_map<StringID, StringID>& map);
+
+
+//##################################################################################################
 template<typename T, typename K>
 void loadObjectFromJSON(const nlohmann::json& j, K key, T& object)
 {
