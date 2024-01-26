@@ -12,7 +12,7 @@ class TP_UTILS_EXPORT TimerThread
   TP_NONCOPYABLE(TimerThread);
 public:
   //################################################################################################
-  TimerThread(const std::function<void()>& callback, int64_t timeoutMS);
+  TimerThread(const std::function<void()>& callback, int64_t timeoutMS, const std::string& threadName);
 
   //################################################################################################
   virtual ~TimerThread();

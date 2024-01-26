@@ -97,7 +97,7 @@ void blockingCrossThreadCall(AbstractCrossThreadCallbackFactory* factory, const 
   {
     TP_MUTEX_LOCKER(mutex);
     if(!called)
-      waitCondition.wait(mutex);
+      waitCondition.wait(TPMc mutex);
   }
 }
 
