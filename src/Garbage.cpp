@@ -8,76 +8,71 @@
 
 namespace tp_utils
 {
+static Garbage* instance{nullptr};
 
-namespace
-{
 //##################################################################################################
-struct Garbage
+struct Garbage::Private
 {
-  //################################################################################################
-  Garbage()
-  {
-    for(size_t i=0; i<4; i++)
-    {
-      threads.push_back(new std::thread([&]
-      {
-        lib_platform::setThreadName("Garbage");
-        TP_MUTEX_LOCKER(mutex);
-        while(!finish || !queue.empty())
-        {
-          if(queue.empty())
-            waitCondition.wait(TPMc mutex);
-          else
-          {
-            auto closure = queue.front();
-            queue.pop();
-            {
-              TP_MUTEX_UNLOCKER(mutex);
-              closure();
-            }
-          }
-        }
-      }));
-    }
-  }
-
-  //################################################################################################
-  ~Garbage()
-  {
-    mutex.locked(TPMc [&]{finish = true;});
-    waitCondition.wakeAll();
-    while(!threads.empty())
-    {
-      auto thread = tpTakeLast(threads);
-      thread->join();
-      delete thread;
-    }
-  }
-
-  //################################################################################################
-  void garbage(const std::function<void()>& closure)
-  {
-    mutex.locked(TPMc [&]{queue.push(closure);});
-    waitCondition.wakeOne();
-  }
-
   TPMutex mutex{TPM};
   TPWaitCondition waitCondition;
   bool finish{false};
   std::vector<std::thread*> threads;
   std::queue<std::function<void()>> queue;
 };
-}
 
-namespace {
-  static std::unique_ptr<Garbage> garbage_aux;
+//##################################################################################################
+Garbage::Garbage():
+  d(new Private)
+{
+  if(!instance)
+    instance = this;
+
+  for(size_t i=0; i<4; i++)
+  {
+    d->threads.push_back(new std::thread([&]
+    {
+      lib_platform::setThreadName("Garbage");
+      TP_MUTEX_LOCKER(d->mutex);
+      while(!d->finish || !d->queue.empty())
+      {
+        if(d->queue.empty())
+          d->waitCondition.wait(TPMc d->mutex);
+        else
+        {
+          auto closure = d->queue.front();
+          d->queue.pop();
+          {
+            TP_MUTEX_UNLOCKER(d->mutex);
+            closure();
+          }
+        }
+      }
+    }));
+  }
 }
 
 //##################################################################################################
-void initGarbage()
+Garbage::~Garbage()
 {
-  garbage_aux.reset(new Garbage);
-  tp_utils::garbage([]{});
+  instance = nullptr;
+
+  d->mutex.locked(TPMc [&]{d->finish = true;});
+  d->waitCondition.wakeAll();
+  while(!d->threads.empty())
+  {
+    auto thread = tpTakeLast(d->threads);
+    thread->join();
+    delete thread;
+  }
+
+  delete d;
+}
+
+//##################################################################################################
+void Garbage::garbage(const std::function<void()>& closure)
+{
+  d->mutex.locked(TPMc [&]{d->queue.push(closure);});
+  d->waitCondition.wakeOne();
 }
 
 //##################################################################################################
@@ -86,21 +81,11 @@ void garbage(const std::function<void()>& closure)
 #ifdef TP_NO_THREADS
   closure();
 #else
-  if(garbage_aux)
-    garbage_aux->garbage(closure);
+  if(instance)
+    instance->garbage(closure);
   else
     closure();
 #endif
-}
-
-GarbageLocker::GarbageLocker()
-{
-  initGarbage();
-}
-
-GarbageLocker::~GarbageLocker()
-{
-  garbage_aux.reset();
 }
 
 }
