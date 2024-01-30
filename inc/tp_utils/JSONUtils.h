@@ -95,8 +95,8 @@ void TP_UTILS_EXPORT getJSONStringIDs(const nlohmann::json& j,
 void saveVectorOfStringIDsToJSON(nlohmann::json& j, const std::vector<StringID>& stringIDs);
 
 //##################################################################################################
-template<typename T, typename K>
-void loadObjectFromJSON(const nlohmann::json& j, K key, T& object)
+template<typename T, typename K = void>
+void loadObjectFromJSON(const nlohmann::json& j, const char* key, T& object)
 {
   if(auto i=j.find(key); i!=j.end())
     object.loadState(*i);
