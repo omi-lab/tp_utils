@@ -1,6 +1,8 @@
 #include "tp_utils/TimerThread.h"
 #include "tp_utils/MutexUtils.h"
 
+#include "lib_platform/SetThreadName.h"
+
 #include <thread>
 
 namespace tp_utils
@@ -11,6 +13,7 @@ struct TimerThread::Private
 {
   std::function<void()> callback;
   int64_t timeoutMS;
+  const std::string threadName;
 
   TPMutex mutex{TPM};
   TPWaitCondition waitCondition;
@@ -19,9 +22,10 @@ struct TimerThread::Private
   std::thread thread;
 
   //################################################################################################
-  Private(const std::function<void()>& callback_, int64_t timeoutMS_):
+  Private(const std::function<void()>& callback_, int64_t timeoutMS_, const std::string& threadName_):
     callback(callback_),
     timeoutMS(timeoutMS_),
+    threadName(threadName_),
     thread([&]{run();})
   {
 
@@ -42,6 +46,7 @@ struct TimerThread::Private
   //################################################################################################
   void run()
   {
+    lib_platform::setThreadName(threadName);
     TP_MUTEX_LOCKER(mutex);
     while(!finish)
     {
@@ -57,8 +62,8 @@ struct TimerThread::Private
 };
 
 //##################################################################################################
-TimerThread::TimerThread(const std::function<void()>& callback, int64_t timeoutMS):
-  d(new Private(callback, timeoutMS))
+TimerThread::TimerThread(const std::function<void()>& callback, int64_t timeoutMS, const std::string& threadName):
+  d(new Private(callback, timeoutMS, threadName))
 {
 
 }

@@ -81,6 +81,9 @@ private:
   mutable CallbackCollection<void()> m_pollAll;
 };
 
+//##################################################################################################
+void blockingCrossThreadCall(AbstractCrossThreadCallbackFactory* factory, const std::function<void()>& callback);
+
 }
 
 #endif

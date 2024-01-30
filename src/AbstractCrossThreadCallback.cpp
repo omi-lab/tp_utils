@@ -77,4 +77,28 @@ AbstractCrossThreadCallback* PolledCrossThreadCallbackFactory::produce(const std
   return c;
 }
 
+//##################################################################################################
+void blockingCrossThreadCall(AbstractCrossThreadCallbackFactory* factory, const std::function<void()>& callback)
+{
+  TPMutex mutex{TPM};
+  TPWaitCondition waitCondition;
+  bool called{false};
+
+  std::unique_ptr<AbstractCrossThreadCallback> crossThreadCallback = std::unique_ptr<AbstractCrossThreadCallback>(factory->produce([&]
+  {
+    callback();
+    TP_MUTEX_LOCKER(mutex);
+    called = true;
+    waitCondition.wakeAll();
+  }));
+
+  (*crossThreadCallback)();
+
+  {
+    TP_MUTEX_LOCKER(mutex);
+    if(!called)
+      waitCondition.wait(TPMc mutex);
+  }
+}
+
 }

@@ -86,13 +86,40 @@ void TP_UTILS_EXPORT getJSONStringList(const nlohmann::json& j,
 //##################################################################################################
 void TP_UTILS_EXPORT getJSONStringIDs(const nlohmann::json& j,
                                       const std::string& key,
-                                      std::vector<StringID>& ids);
+                                      std::vector<StringID>& stringIDs);
+
+//##################################################################################################
+void getJSONStringIDs(const nlohmann::json& j,
+                      std::vector<StringID>& stringIDs);
 
 //##################################################################################################
 [[nodiscard]] nlohmann::json stringIDsToJSON(const std::vector<StringID>& stringIDs);
 
 //##################################################################################################
 void saveVectorOfStringIDsToJSON(nlohmann::json& j, const std::vector<StringID>& stringIDs);
+
+//##################################################################################################
+void saveMapOfStringIDAndStringToJSON(nlohmann::json& j, const std::unordered_map<StringID, std::string>& map);
+
+//##################################################################################################
+void saveMapOfStringIDAndStringIDToJSON(nlohmann::json& j, const std::unordered_map<StringID, StringID>& map);
+
+//##################################################################################################
+void loadMapOfStringIDAndStringFromJSON(const nlohmann::json& j, std::unordered_map<StringID, std::string>& map);
+
+//##################################################################################################
+void loadMapOfStringIDAndStringIDFromJSON(const nlohmann::json& j, std::unordered_map<StringID, StringID>& map);
+
+//##################################################################################################
+void loadMapOfStringIDAndStringFromJSON(const nlohmann::json& j,
+                                        const std::string& key,
+                                        std::unordered_map<StringID, std::string>& map);
+
+//##################################################################################################
+void loadMapOfStringIDAndStringIDFromJSON(const nlohmann::json& j,
+                                          const std::string& key,
+                                          std::unordered_map<StringID, StringID>& map);
+
 
 //##################################################################################################
 template<typename T, typename K = void>
@@ -152,7 +179,6 @@ void loadVectorOfObjectsFromJSON(const nlohmann::json& j, K key, T& vector)
       vector.emplace_back().loadState(v);
   }
 }
-
 
 //##################################################################################################
 template<typename T>

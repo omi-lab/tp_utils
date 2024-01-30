@@ -461,26 +461,22 @@ void Progress::copyChildSteps(Progress* progress, const std::string& message, fl
 {  
   auto dstChildStep = addChildStep(message, completeFraction);
 
-  TP_MUTEX_LOCKER(d->mutex);
-  TP_MUTEX_LOCKER(progress->d->mutex);
-
   for(const auto& childStep : progress->d->childSteps)
   {
-    dstChildStep->d->updateThis([&](ChildStep_lt& childStep)
+    for(size_t m=0; m<childStep.messages.size(); m++)
     {
-      for(size_t m=0; m<childStep.messages.size(); m++)
-      {
-        if(m==(childStep.messages.size()-1) && childStep.childProgress)
-          break;
+      if(m==(childStep.messages.size()-1) && childStep.childProgress)
+        break;
 
-        const auto& message = childStep.messages.at(m);
+      const auto& message = childStep.messages.at(m);
 
-        if(message.error)
-          dstChildStep->addError(message.message);
-        else
-          dstChildStep->addMessage(message.message);
-      }
-    });
+      if(message.error)
+        dstChildStep->addError(message.message);
+      else
+        dstChildStep->addMessage(message.message);
+    }
+
+    dstChildStep->setProgress(childStep.fraction);
 
     if(childStep.childProgress && !childStep.messages.empty())
       dstChildStep->copyChildSteps(childStep.childProgress, childStep.messages.back().message, 1.0f);
@@ -692,7 +688,7 @@ Progress* ParrallelProgress::addChildStep(const std::string& message)
   TP_MUTEX_LOCKER(d->mutex);
   auto& childStep = d->childSteps.emplace_back();
   childStep.store = new tp_utils::RAMProgressStore();
-  childStep.progress = new Progress([&]{return d->progress->shouldStop();}, message);
+  childStep.progress = new Progress([&]{return !d->progress->shouldStop();}, message);
   childStep.message = message;
   return childStep.progress;
 }
