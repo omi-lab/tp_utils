@@ -37,6 +37,13 @@ private:
   std::function<void()> m_callback;
   const std::function<void()> m_callFunctor;
 };
+}
+
+//##################################################################################################
+typedef std::unique_ptr<tp_utils::AbstractCrossThreadCallback> TPCrossThreadCallback;
+
+namespace tp_utils
+{
 
 //##################################################################################################
 class TP_UTILS_EXPORT AbstractCrossThreadCallbackFactory
@@ -52,6 +59,12 @@ public:
 
   //################################################################################################
   [[nodiscard]] virtual AbstractCrossThreadCallback* produce(const std::function<void()>& callback) const = 0;
+
+  //################################################################################################
+  [[nodiscard]] TPCrossThreadCallback produceP(const std::function<void()>& callback) const
+  {
+    return std::unique_ptr<tp_utils::AbstractCrossThreadCallback>(produce(callback));
+  }
 };
 
 //##################################################################################################
@@ -85,5 +98,6 @@ private:
 void blockingCrossThreadCall(AbstractCrossThreadCallbackFactory* factory, const std::function<void()>& callback);
 
 }
+
 
 #endif

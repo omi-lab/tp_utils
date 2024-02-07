@@ -1,5 +1,5 @@
-#ifndef BARRIERWITHCOUNTER_H
-#define BARRIERWITHCOUNTER_H
+#ifndef tp_Utils_BarrierWithCounter_h
+#define tp_Utils_BarrierWithCounter_h
 
 #include <mutex>
 #include <atomic>
@@ -7,37 +7,46 @@
 #include <functional>
 #include <queue>
 
-namespace tp_utils {
+namespace tp_utils
+{
 
+//##################################################################################################
 class BarrierWithCounter
 {
 public:
+  //################################################################################################
   BarrierWithCounter()
   {
   }
 
+  //################################################################################################
   void lock()
   {
     ++count;
   }
 
+  //################################################################################################
   void unlock()
   {
     --count;
     cv.notify_all();
   }
 
-  void run(std::function<void()> const& job)
+  //################################################################################################
+  void run(const std::function<void()>& job)
   {
     std::scoped_lock<std::mutex> lk(cv_m);
     jobs.push(job);
   }
 
+  //################################################################################################
   void wait()
   {
     std::unique_lock<std::mutex> lk(cv_m);
-    cv.wait(lk, [&]{
-      while(!jobs.empty()){
+    cv.wait(lk, [&]
+    {
+      while(!jobs.empty())
+      {
         auto job = jobs.back();
         jobs.pop();
         lk.unlock();
@@ -48,7 +57,8 @@ public:
     });
     // dependent threads finished
     // completing last posted jobs
-    while(!jobs.empty()){
+    while(!jobs.empty())
+    {
       jobs.back()();
       jobs.pop();
     }
@@ -63,4 +73,4 @@ private:
 
 }
 
-#endif // BARRIERWITHCOUNTER_H
+#endif

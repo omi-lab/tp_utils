@@ -133,7 +133,7 @@ bool writePrettyJSONFile(const std::string& filename, const nlohmann::json& j)
 }
 
 //##################################################################################################
-std::string readFileFromURL(std::string const& url, std::string const& name, std::string const& rootPath)
+std::string readFileFromURL(const std::string& url, const std::string& name, const std::string& rootPath)
 {
 #ifdef WIN32
   TP_UNUSED(url);

@@ -115,7 +115,7 @@ void getJSONStringIDs(const nlohmann::json& j,
     if(i->is_array())
     {
       stringIDs.reserve(i->size());
-      for(auto const& jj : *i)
+      for(const auto& jj : *i)
         stringIDs.emplace_back(jj.get<std::string>());
     }
   }
@@ -129,7 +129,7 @@ void getJSONStringIDs(const nlohmann::json& j,
   if(j.is_array())
   {
     stringIDs.reserve(j.size());
-    for(auto const& jj : j)
+    for(const auto& jj : j)
       stringIDs.emplace_back(jj.get<std::string>());
   }
 }
