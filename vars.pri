@@ -62,8 +62,6 @@ HEADERS += inc/tp_utils/Garbage.h
 
 HEADERS += inc/tp_utils/Parallel.h
 
-HEADERS += inc/tp_utils/BarrierWithCounter.h
-
 HEADERS += inc/tp_utils/CallbackCollection.h
 
 HEADERS += inc/tp_utils/Interface.h
