@@ -68,6 +68,8 @@ HEADERS += inc/tp_utils/Interface.h
 
 HEADERS += inc/tp_utils/TPPixel.h
 
+HEADERS += inc/tp_utils/TPCheckMainThread.h
+
 HEADERS += inc/tp_utils/PageSize.h
 
 HEADERS += inc/tp_utils/LogStatsTimer.h

@@ -246,6 +246,7 @@ public:
 class TP_UTILS_EXPORT TPWaitCondition
 {
   TP_NONCOPYABLE(TPWaitCondition);
+  TP_DQ;
 public:
   //################################################################################################
   TPWaitCondition();
@@ -261,11 +262,6 @@ public:
 
   //################################################################################################
   void wakeAll();
-
-private:
-  struct Private;
-  Private* d;
-  friend struct Private;
 };
 
 #endif
