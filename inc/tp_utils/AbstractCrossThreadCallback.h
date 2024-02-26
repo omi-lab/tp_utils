@@ -3,6 +3,7 @@
 
 #include "tp_utils/CallbackCollection.h"
 
+#include <thread>
 namespace tp_utils
 {
 
@@ -49,6 +50,7 @@ namespace tp_utils
 class TP_UTILS_EXPORT AbstractCrossThreadCallbackFactory
 {
   TP_NONCOPYABLE(AbstractCrossThreadCallbackFactory);
+  std::thread::id m_mainThreadID{std::this_thread::get_id()};
 public:
 
   //################################################################################################
@@ -64,6 +66,12 @@ public:
   [[nodiscard]] TPCrossThreadCallback produceP(const std::function<void()>& callback) const
   {
     return std::unique_ptr<tp_utils::AbstractCrossThreadCallback>(produce(callback));
+  }
+
+  //################################################################################################
+  bool sameThread()
+  {
+    return m_mainThreadID == std::this_thread::get_id();
   }
 };
 

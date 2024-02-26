@@ -80,6 +80,9 @@ AbstractCrossThreadCallback* PolledCrossThreadCallbackFactory::produce(const std
 //##################################################################################################
 void blockingCrossThreadCall(AbstractCrossThreadCallbackFactory* factory, const std::function<void()>& callback)
 {
+  if(factory->sameThread())
+    return callback();
+
   TPMutex mutex{TPM};
   TPWaitCondition waitCondition;
   bool called{false};
