@@ -34,14 +34,18 @@ public:
 };
 
 //##################################################################################################
+typedef std::unique_lock<std::mutex> TPMutexLocker;
+
+//##################################################################################################
+template<typename T>
 class TP_UTILS_EXPORT TPMutexUnlocker
 {
   TP_NONCOPYABLE(TPMutexUnlocker);
-  TPMutex* m_mutex;
+  T* m_mutex;
 public:
 
   //################################################################################################
-  TPMutexUnlocker(TPMutex* mutex):
+  TPMutexUnlocker(T* mutex):
     m_mutex(mutex)
   {
     m_mutex->unlock();
@@ -255,7 +259,7 @@ public:
   ~TPWaitCondition();
 
   //################################################################################################
-  bool wait(TPM_Ac TPMutex& lockedMutex, int64_t ms = INT64_MAX) noexcept;
+  bool wait(TPM_Ac TPMutexLocker& lockedMutex, int64_t ms = INT64_MAX) noexcept;
 
   //################################################################################################
   void wakeOne();

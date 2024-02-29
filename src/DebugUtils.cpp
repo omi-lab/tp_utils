@@ -4,6 +4,8 @@
 #include "tp_utils/FileUtils.h"
 #include "tp_utils/RefCount.h"
 
+#include "date/date.h"
+
 #include <csignal>
 #include <cstdlib>
 #include <iostream>
@@ -43,21 +45,14 @@ std::string getCurrentTimestamp()
 
   auto millis = transformed % 1000;
 
-  time_t tt = system_clock::to_time_t( currentTime );
-  auto timeinfo = localtime(&tt);
+  std::string str = date::format("[%F %H:%M:%S:", currentTime);
 
-  char bufferA[80];
+  char millisStr[6];
+  snprintf(millisStr, 6, "%03d", int(millis));
+  str += millisStr;
+  str += ']';
 
-#ifdef TP_WIN32_MINGW
-  strftime(bufferA, 80, "[%H:%M:%S", timeinfo);
-#else
-  strftime(bufferA, 80, "[%F %H:%M:%S", timeinfo);
-#endif
-
-  char bufferB[100];
-  snprintf(bufferB, sizeof(bufferB),  "%s:%03d] ", bufferA, int(millis));
-
-  return std::string(bufferB);
+  return str;
 }
 
 //##################################################################################################

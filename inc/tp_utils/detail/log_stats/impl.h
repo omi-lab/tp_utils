@@ -20,18 +20,16 @@ struct TP_UTILS_EXPORT _LogStatsTimer
   {
     m_thread = std::thread([=]
     {
-      m_mutex.lock(TPM);
+      TPMutexLocker lock(m_mutex);
       while(!m_finish)
       {
-        m_waitCondition.wait(TPMc m_mutex, intervalMS);
+        m_waitCondition.wait(TPMc lock, intervalMS);
         if(!m_finish)
         {
-          m_mutex.unlock(TPM);
+          TP_MUTEX_UNLOCKER(lock);
           writeTextFile(path, take(), append);
-          m_mutex.lock(TPM);
         }
       }
-      m_mutex.unlock(TPM);
     });
   }
 
@@ -40,18 +38,16 @@ struct TP_UTILS_EXPORT _LogStatsTimer
   {
     m_thread = std::thread([=]
     {
-      m_mutex.lock(TPM);
+      TPMutexLocker lock(m_mutex);
       while(!m_finish)
       {
-        m_waitCondition.wait(TPMc m_mutex, intervalMS);
+        m_waitCondition.wait(TPMc lock, intervalMS);
         if(!m_finish)
         {
-          m_mutex.unlock(TPM);
+          TP_MUTEX_UNLOCKER(lock);
           std::cout <<  take();
-          m_mutex.lock(TPM);
         }
       }
-      m_mutex.unlock(TPM);
     });
   }
 

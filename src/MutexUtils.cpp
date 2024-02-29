@@ -40,7 +40,11 @@ struct TPWaitCondition::Private
   TP_NONCOPYABLE(Private);
   Private() = default;
 
+#ifndef TP_ENABLE_MUTEX_TIME
+  std::condition_variable cv;
+#else
   std::condition_variable_any cv;
+#endif
 };
 
 //##################################################################################################
@@ -96,7 +100,7 @@ bool TPWaitCondition::wait(TPM_Ac TPMutex& lockedMutex, int64_t ms) noexcept
   return true;
 }
 #else
-bool TPWaitCondition::wait(TPMutex& lockedMutex, int64_t ms) noexcept
+bool TPWaitCondition::wait(TPMutexLocker& lockedMutex, int64_t ms) noexcept
 {
   if(ms<INT64_MAX)
     return d->cv.wait_for(lockedMutex, std::chrono::milliseconds(ms)) == std::cv_status::no_timeout;

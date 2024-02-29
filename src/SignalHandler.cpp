@@ -244,8 +244,8 @@ void SignalHandler::setExitOnInt(bool exitOnInt)
 //##################################################################################################
 void SignalHandler::waitCtrlC()
 {
-  TP_MUTEX_LOCKER(d->mutex);
-  d->waitCondition.wait(TPMc d->mutex);
+  TPMutexLocker lock(d->mutex);
+  d->waitCondition.wait(TPMc lock);
 }
 
 //##################################################################################################

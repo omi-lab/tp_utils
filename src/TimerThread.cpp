@@ -47,14 +47,14 @@ struct TimerThread::Private
   void run()
   {
     lib_platform::setThreadName(threadName);
-    TP_MUTEX_LOCKER(mutex);
+    std::unique_lock<std::mutex> lock(mutex);
     while(!finish)
     {
-      waitCondition.wait(TPMc mutex, timeoutMS);
+      waitCondition.wait(TPMc lock, timeoutMS);
 
       if(!finish)
       {
-        TP_MUTEX_UNLOCKER(mutex);
+        TP_MUTEX_UNLOCKER(lock);
         callback();
       }
     }

@@ -8,6 +8,7 @@
 
 namespace tp_utils
 {
+static TPMutex instanceMutex{TPM};
 static Garbage* instance{nullptr};
 
 //##################################################################################################
@@ -24,25 +25,28 @@ struct Garbage::Private
 Garbage::Garbage():
   d(new Private)
 {
-  if(!instance)
-    instance = this;
+  instanceMutex.locked([&]
+  {
+    if(!instance)
+      instance = this;
+  });
 
   for(size_t i=0; i<4; i++)
   {
     d->threads.push_back(new std::thread([&]
     {
       lib_platform::setThreadName("Garbage");
-      TP_MUTEX_LOCKER(d->mutex);
+      TPMutexLocker lock(d->mutex);
       while(!d->finish || !d->queue.empty())
       {
         if(d->queue.empty())
-          d->waitCondition.wait(TPMc d->mutex);
+          d->waitCondition.wait(TPMc lock);
         else
         {
           auto closure = d->queue.front();
           d->queue.pop();
           {
-            TP_MUTEX_UNLOCKER(d->mutex);
+            TP_MUTEX_UNLOCKER(lock);
             closure();
           }
         }
@@ -54,7 +58,7 @@ Garbage::Garbage():
 //##################################################################################################
 Garbage::~Garbage()
 {
-  instance = nullptr;
+  instanceMutex.locked([&]{instance = nullptr;});
 
   d->mutex.locked(TPMc [&]{d->finish = true;});
   d->waitCondition.wakeAll();
@@ -78,14 +82,18 @@ void Garbage::garbage(const std::function<void()>& closure)
 //##################################################################################################
 void garbage(const std::function<void()>& closure)
 {
-#ifdef TP_NO_THREADS
-  closure();
-#else
-  if(instance)
-    instance->garbage(closure);
-  else
-    closure();
+#ifndef TP_NO_THREADS
+  {
+    TP_MUTEX_LOCKER(instanceMutex);
+    if(instance)
+    {
+      instance->garbage(closure);
+      return;
+    }
+  }
 #endif
+
+  closure();
 }
 
 }
