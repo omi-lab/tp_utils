@@ -285,6 +285,7 @@ static bool demangle(const char* symbol, std::string& output, std::string& offse
 //##################################################################################################
 void TP_UTILS_EXPORT printStackTrace()
 {
+  tpWarning() << "Start print stack trace.";
 #ifdef TP_ADDR2LINE
   execAddr2Line();
 #endif
