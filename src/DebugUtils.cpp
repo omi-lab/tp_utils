@@ -3,8 +3,11 @@
 #include "tp_utils/StackTrace.h"
 #include "tp_utils/FileUtils.h"
 #include "tp_utils/RefCount.h"
+#include "tp_utils/detail/log_stats/virtual_memory.h"
 
 #include "date/date.h"
+
+#include "lib_platform/Format.h"
 
 #include <csignal>
 #include <cstdlib>
@@ -75,6 +78,9 @@ void installDateTimeMessageHandler()
 {
   installMessageHandler([](tp_utils::MessageType, const std::string& message)
   {
+    tp_utils::detail::VirtualMemory vm;
+    std::cout << std::format("({}MB", int(vm.VmHWM/1024));
+
     std::cout << getCurrentTimestamp() << message;
     std::cout.flush();
   });
