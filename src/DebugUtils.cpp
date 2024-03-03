@@ -7,8 +7,6 @@
 
 #include "date/date.h"
 
-#include "lib_platform/Format.h"
-
 #include <csignal>
 #include <cstdlib>
 #include <iostream>
@@ -78,10 +76,18 @@ void installDateTimeMessageHandler()
 {
   installMessageHandler([](tp_utils::MessageType, const std::string& message)
   {
-    tp_utils::detail::VirtualMemory vm;
-    std::cout << std::format("({}MB", int(vm.VmHWM/1024));
-
     std::cout << getCurrentTimestamp() << message;
+    std::cout.flush();
+  });
+}
+
+//##################################################################################################
+void TP_UTILS_EXPORT installDateTimeMemoryMessageHandler()
+{
+  installMessageHandler([](tp_utils::MessageType, const std::string& message)
+  {
+    tp_utils::detail::VirtualMemory vm;
+    std::cout << getCurrentTimestamp() << "(" << int(vm.VmHWM/1024) << "MB)" << message;
     std::cout.flush();
   });
 }
@@ -346,8 +352,8 @@ void messageHandler(tp_utils::MessageType messageType, const std::string& messag
   const char* tag="tpDebug";
   switch(messageType)
   {
-  case tp_utils::MessageType::Debug:   tag="tpDebug";   break;
-  case tp_utils::MessageType::Warning: tag="tpWarning"; break;
+    case tp_utils::MessageType::Debug:   tag="tpDebug";   break;
+    case tp_utils::MessageType::Warning: tag="tpWarning"; break;
   }
   __android_log_print(ANDROID_LOG_DEBUG, tag, "%s", message.c_str());
 }

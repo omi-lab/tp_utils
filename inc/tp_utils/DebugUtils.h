@@ -60,6 +60,9 @@ std::function<void(MessageType, const std::string&)> TP_UTILS_EXPORT installMess
 void TP_UTILS_EXPORT installDateTimeMessageHandler();
 
 //##################################################################################################
+void TP_UTILS_EXPORT installDateTimeMemoryMessageHandler();
+
+//##################################################################################################
 class TeeMessageHandler
 {
 public:
