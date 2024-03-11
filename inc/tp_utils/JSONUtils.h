@@ -139,7 +139,7 @@ void saveVectorOfValuesToJSON(nlohmann::json& j, const T& vector)
   j.get_ptr<nlohmann::json::array_t*>()->reserve(vector.size());
   for(const auto& i : vector)
     j.push_back(i);
-};
+}
 
 //##################################################################################################
 template<typename T>
@@ -152,7 +152,7 @@ void saveVectorOfObjectsToJSON(nlohmann::json& j, const T& vector)
     j.emplace_back();
     i.saveState(j.back());
   }
-};
+}
 
 //##################################################################################################
 template<typename T>
