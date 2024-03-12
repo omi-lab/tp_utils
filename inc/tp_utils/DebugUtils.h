@@ -47,8 +47,12 @@ enum class DebugType
   Console,
   Table
 };
+
 //##################################################################################################
 std::string TP_UTILS_EXPORT getCurrentTimestamp();
+
+//##################################################################################################
+std::string TP_UTILS_EXPORT getCurrentTimestamp_notThreadSafe();
 
 //##################################################################################################
 void TP_UTILS_EXPORT installSignalHandler();
@@ -58,6 +62,9 @@ std::function<void(MessageType, const std::string&)> TP_UTILS_EXPORT installMess
 
 //##################################################################################################
 void TP_UTILS_EXPORT installDateTimeMessageHandler();
+
+//##################################################################################################
+void TP_UTILS_EXPORT installDateTimeMessageHandler_notThreadSafe();
 
 //##################################################################################################
 void TP_UTILS_EXPORT installDateTimeMemoryMessageHandler();

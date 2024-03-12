@@ -41,19 +41,34 @@ std::string getCurrentTimestamp()
 {
   using std::chrono::system_clock;
   auto currentTime = std::chrono::system_clock::now();
+  return date::format("[%F %H:%M:%S]", currentTime);
+}
+
+//##################################################################################################
+std::string getCurrentTimestamp_notThreadSafe()
+{
+  using std::chrono::system_clock;
+  auto currentTime = std::chrono::system_clock::now();
 
   auto transformed = currentTime.time_since_epoch().count() / 1000000;
 
   auto millis = transformed % 1000;
 
-  std::string str = date::format("[%F %H:%M:%S:", currentTime);
+  time_t tt = system_clock::to_time_t( currentTime );
+  auto timeinfo = localtime(&tt);
 
-  char millisStr[6];
-  snprintf(millisStr, 6, "%03d", int(millis));
-  str += millisStr;
-  str += ']';
+  char bufferA[80];
 
-  return str;
+#ifdef TP_WIN32_MINGW
+  strftime(bufferA, 80, "[%H:%M:%S", timeinfo);
+#else
+  strftime(bufferA, 80, "[%F %H:%M:%S", timeinfo);
+#endif
+
+  char bufferB[100];
+  snprintf(bufferB, sizeof(bufferB),  "%s:%03d] ", bufferA, int(millis));
+
+  return std::string(bufferB);
 }
 
 //##################################################################################################
@@ -77,6 +92,16 @@ void installDateTimeMessageHandler()
   installMessageHandler([](tp_utils::MessageType, const std::string& message)
   {
     std::cout << getCurrentTimestamp() << message;
+    std::cout.flush();
+  });
+}
+
+//##################################################################################################
+void installDateTimeMessageHandler_notThreadSafe()
+{
+  installMessageHandler([](tp_utils::MessageType, const std::string& message)
+  {
+    std::cout << getCurrentTimestamp_notThreadSafe() << message;
     std::cout.flush();
   });
 }
