@@ -273,8 +273,6 @@ struct Progress::Private
 
     tp_utils::detail::VirtualMemory vm;
 
-    //tpWarning() << "(" << int(p->progress()*100.1f) << "%) "
-    //            << std::string(indentation, ' ') << text;
     tpWarning() << std::format("({}MB, {}%) {}{}",
                                int(vm.VmHWM/1024),
                                int(p->progress()*100.1f),
