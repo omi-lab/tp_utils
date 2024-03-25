@@ -83,4 +83,6 @@ HEADERS += inc/tp_utils/ExtendArgs.h
 
 HEADERS += inc/tp_utils/Test.h
 
+HEADERS += inc/tp_utils/TPProperty.h
+
 
