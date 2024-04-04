@@ -41,9 +41,22 @@ public:
   {
     poll.setCallback([this]()
     {
-      size_t c = m_mutex.locked(TPMc[&]{return std::exchange(m_count, 0);});
-      for(; c; c--)
-        callback();
+      if(m_inCallback)
+        return;
+
+      m_inCallback=true;
+      TP_CLEANUP([&]{m_inCallback=false;});
+
+      for(;;)
+      {
+        size_t c = m_mutex.locked(TPMc[&]{return std::exchange(m_count, 0);});
+
+        if(c==0)
+          return;
+
+        for(; c; c--)
+          callback();
+      }
     });
   }
 
@@ -59,6 +72,7 @@ public:
 private:
   TPMutex m_mutex{TPM};
   size_t m_count{0};
+  bool m_inCallback{false};
 };
 
 }
