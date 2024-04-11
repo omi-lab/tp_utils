@@ -26,7 +26,8 @@ public:
       if(!fn())
       {
         m_result = 1;
-        std::cerr << failed << name << std::endl;
+        m_failedTests.push_back(name);
+        std::cout << failed << name << std::endl;
       }
       else
       {
@@ -36,8 +37,27 @@ public:
     catch(...)
     {
       m_result = 1;
-      std::cerr << except << name << std::endl;
+      m_failedTests.push_back(name);
+      std::cout << except << name << std::endl;
     }
+  }  
+
+  //################################################################################################
+  void printMessage(const std::string& message)
+  {
+    std::cout << "\033[21;32m" << message << "\033[0m" << std::endl;
+  }
+
+  //################################################################################################
+  void printWarning(const std::string& message)
+  {
+    std::cout << "\033[21;33m" << message << "\033[0m" << std::endl;
+  }
+
+  //################################################################################################
+  void printError(const std::string& message)
+  {
+    std::cout << "\033[21;31m" << message << "\033[0m" << std::endl;
   }
 
   //################################################################################################
@@ -46,8 +66,41 @@ public:
     return m_result;
   }
 
+  //################################################################################################
+  const std::vector<std::string>& failedTests()
+  {
+    return m_failedTests;
+  }
+
 private:
   int m_result{0};
+  std::vector<std::string> m_failedTests;
+};
+
+//##################################################################################################
+class TestSection
+{
+  TP_NONCOPYABLE(TestSection);
+  Test& m_test;
+  size_t m_failCount;
+public:
+  //################################################################################################
+  TestSection(Test& test, const std::string& name):
+    m_test(test),
+    m_failCount(test.failedTests().size())
+  {
+    m_test.printMessage("===================================================================");
+    m_test.printMessage("Testing " + name + "...");
+  }
+
+  //################################################################################################
+  ~TestSection()
+  {
+    if(m_failCount != m_test.failedTests().size())
+      m_test.printError("Failed!");
+
+    m_test.printMessage("===================================================================");
+  }
 };
 
 }

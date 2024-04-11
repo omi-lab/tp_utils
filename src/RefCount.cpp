@@ -96,6 +96,8 @@ public:
 //##################################################################################################
 StaticDetails_lt& staticDetails()
 {
+  // Force order of static init. As StaticDetails_lt relies on the static data of StringID.
+  static StringID refCount("Ref count");
   static StaticDetails_lt staticDetails;
   return staticDetails;
 }
