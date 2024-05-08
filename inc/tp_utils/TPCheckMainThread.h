@@ -18,6 +18,7 @@ public:
     {
       tpWarning() << caller << " called from wrong thread!";
       tp_utils::printStackTrace();
+      //XXXX:
       assert(false);
       abort();
     }
