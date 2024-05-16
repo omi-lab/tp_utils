@@ -24,6 +24,7 @@ using SummaryGenerator = std::function<void(const Profiler&, std::vector<std::pa
 class Profiler
 { 
   TP_NONCOPYABLE(Profiler);
+  TP_DQ;
 
   //################################################################################################
   Profiler(ProfilerController* controller, const StringID& id_);
@@ -73,9 +74,6 @@ public:
 
 private:
   friend class ProfilerController;
-  struct Private;
-  friend struct Private;
-  Private* d;
 };
 
 //##################################################################################################
