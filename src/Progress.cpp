@@ -29,10 +29,8 @@ struct ChildStep_lt
 }
 
 //##################################################################################################
-nlohmann::json ProgressEvent::saveState() const
+void ProgressEvent::saveState(nlohmann::json& j) const
 {
-  nlohmann::json j;
-
   j["id"] = id;
   j["parentId"] = parentId;
   j["name"] = name;
@@ -42,8 +40,6 @@ nlohmann::json ProgressEvent::saveState() const
   j["fraction"] = fraction;
   j["color"] = color.toString();
   j["active"] = false;
-
-  return j;
 }
 
 //##################################################################################################
@@ -117,18 +113,19 @@ void RAMProgressStore::viewProgressEvents(const std::function<void(const std::ve
 }
 
 //##################################################################################################
-nlohmann::json RAMProgressStore::saveState() const
+void RAMProgressStore::saveState(nlohmann::json& j) const
 {
-  nlohmann::json j = nlohmann::json::array();
+  j = nlohmann::json::array();
 
   {
     TP_MUTEX_LOCKER(d->mutex);
     j.get_ptr<nlohmann::json::array_t*>()->reserve(d->progressEvents.size());
     for(const auto& progressEvent : d->progressEvents)
-      j.push_back(progressEvent.saveState());
+    {
+      j.emplace_back();
+      progressEvent.saveState(j.back());
+    }
   }
-
-  return j;
 }
 
 //##################################################################################################

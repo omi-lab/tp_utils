@@ -136,9 +136,9 @@ void Profiler::stopRecording()
 }
 
 //##################################################################################################
-nlohmann::json Profiler::saveState() const
+void Profiler::saveState(nlohmann::json& j) const
 {
-  return d->progressStore->saveState();
+  d->progressStore->saveState(j);
 }
 
 //##################################################################################################

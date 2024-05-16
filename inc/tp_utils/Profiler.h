@@ -69,7 +69,7 @@ public:
   bool isRecording() const;
 
   //################################################################################################
-  nlohmann::json saveState() const;
+  void saveState(nlohmann::json& j) const;
 
 private:
   friend class ProfilerController;
