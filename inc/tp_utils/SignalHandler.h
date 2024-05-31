@@ -11,6 +11,7 @@ namespace tp_utils
 class SignalHandler
 {
   TP_NONCOPYABLE(SignalHandler);
+  TP_DQ;
 public:
   //################################################################################################
   SignalHandler(bool exitOnInt=false, void (*handler)(int)=nullptr);
@@ -26,11 +27,6 @@ public:
 
   //################################################################################################
   bool shouldExit() const;
-
-private:
-  struct Private;
-  friend struct Private;
-  Private* d;
 };
 
 }

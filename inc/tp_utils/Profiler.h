@@ -24,6 +24,7 @@ using SummaryGenerator = std::function<void(const Profiler&, std::vector<std::pa
 class Profiler
 { 
   TP_NONCOPYABLE(Profiler);
+  TP_DQ;
 
   //################################################################################################
   Profiler(ProfilerController* controller, const StringID& id_);
@@ -69,13 +70,10 @@ public:
   bool isRecording() const;
 
   //################################################################################################
-  nlohmann::json saveState() const;
+  void saveState(nlohmann::json& j) const;
 
 private:
   friend class ProfilerController;
-  struct Private;
-  friend struct Private;
-  Private* d;
 };
 
 //##################################################################################################

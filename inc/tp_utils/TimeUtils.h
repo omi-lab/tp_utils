@@ -33,6 +33,7 @@ int64_t TP_UTILS_EXPORT currentTimeMicroseconds();
 class TP_UTILS_EXPORT ElapsedTimer
 {
   TP_NONCOPYABLE(ElapsedTimer);
+  TP_DQ;
 public:
   //################################################################################################
   ElapsedTimer(int64_t smallTime=-1);
@@ -52,10 +53,6 @@ public:
   //################################################################################################
   //! Print the current time and restart.
   void printTime(const char* msg);
-
-private:
-  struct Private;
-  Private* d;
 };
 
 #ifdef TP_ENABLE_FUNCTION_TIME

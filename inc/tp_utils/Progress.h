@@ -47,7 +47,7 @@ struct ProgressEvent
   bool active{true};
 
   //################################################################################################
-  nlohmann::json saveState() const;
+  void saveState(nlohmann::json& j) const;
 
   //################################################################################################
   void loadState(const nlohmann::json& j);
@@ -93,7 +93,7 @@ public:
   void viewProgressEvents(const std::function<void(const std::vector<ProgressEvent>&)>& closure);
 
   //################################################################################################  
-  nlohmann::json saveState() const;
+  void saveState(nlohmann::json& j) const;
 
   //################################################################################################
   static std::vector<ProgressEvent> loadState(const nlohmann::json& j);

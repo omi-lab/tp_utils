@@ -23,6 +23,7 @@ ProfilerController* globalProfilerController();
 class ProfilerController
 {
   TP_NONCOPYABLE(ProfilerController);
+  TP_DQ;
 public:
   //################################################################################################
   ProfilerController();
@@ -45,10 +46,7 @@ protected:
   void profilerDeleted(Profiler* profiler);
 
 private:
-  struct Private;
-  friend struct Private;
   friend class Profiler;
-  Private* d;
 };
 
 }
