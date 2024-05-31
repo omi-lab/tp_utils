@@ -4,6 +4,7 @@
 #include "lib_platform/SetThreadName.h"
 
 #include <thread>
+#include <memory>
 
 namespace tp_utils
 {
