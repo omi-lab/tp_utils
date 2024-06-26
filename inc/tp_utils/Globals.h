@@ -631,6 +631,27 @@ using Read = std::remove_pointer_t<decltype(adl_GetSelfType(Reader<T>{}))>;
   TP_D;\
   TP_Q
 
+#ifdef TP_ENABLE_PRINT_FUNCTION_NAME
+namespace detail
+{
+extern bool tpPrintFunctionNames;
+}
+
+//##################################################################################################
+#define tpEnablePrintFunctionNames(enable) detail::tpPrintFunctionNames = enable;
+
+//##################################################################################################
+void PRINT_FUNCTION_NAME(const std::string& name);
+#else
+
+//##################################################################################################
+#define tpEnablePrintFunctionNames(enable)
+
+//##################################################################################################
+#define PRINT_FUNCTION_NAME(A)
+
+#endif
+
 #ifdef __clang__
 #pragma clang diagnostic pop
 #endif

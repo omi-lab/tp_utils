@@ -72,9 +72,25 @@ class CallbackCollection<R(Args...)>
   //################################################################################################
   R operator()(Args... args) const
   {
-    for(size_t i=0; i<m_callbacks.size(); i++)
-      if(const auto& c=*m_callbacks.at(i); c)
+    size_t remaining = m_callbacks.size();
+
+    auto decrement = [&](size_t& r)
+    {
+      r--;
+      if(m_callbacks.empty())
+        r=0;
+
+      if(r>=m_callbacks.size())
+        r = m_callbacks.size()-1;
+    };
+
+    for(size_t r=remaining; r>0; decrement(r))
+      if(const auto& c=*m_callbacks.at(m_callbacks.size()-r); c)
         c(args...);
+
+    // for(size_t i=0; i<m_callbacks.size(); i++)
+    //   if(const auto& c=*m_callbacks.at(i); c)
+    //     c(args...);
 
     return; //Force void
   }

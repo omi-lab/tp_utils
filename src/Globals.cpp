@@ -1,5 +1,9 @@
 #include "tp_utils/Globals.h"
 
+#ifdef TP_ENABLE_PRINT_FUNCTION_NAME
+#include "tp_utils/DebugUtils.h"
+#endif
+
 #include <codecvt>
 #include <locale>
 #include <algorithm>
@@ -346,3 +350,17 @@ bool parseColorF(const std::string& color, float& r, float& g, float& b, float& 
 }
 
 }
+
+#ifdef TP_ENABLE_PRINT_FUNCTION_NAME
+namespace detail
+{
+bool tpPrintFunctionNames{false};
+}
+
+//##################################################################################################
+void PRINT_FUNCTION_NAME(const std::string& name)
+{
+  if(detail::tpPrintFunctionNames)
+    tpWarning() << name;
+}
+#endif
