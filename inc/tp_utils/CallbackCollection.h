@@ -78,7 +78,10 @@ class CallbackCollection<R(Args...)>
     {
       r--;
       if(m_callbacks.empty())
+      {
         r=0;
+        return;
+      }
 
       if(r>=m_callbacks.size())
         r = m_callbacks.size()-1;
@@ -87,10 +90,6 @@ class CallbackCollection<R(Args...)>
     for(size_t r=remaining; r>0; decrement(r))
       if(const auto& c=*m_callbacks.at(m_callbacks.size()-r); c)
         c(args...);
-
-    // for(size_t i=0; i<m_callbacks.size(); i++)
-    //   if(const auto& c=*m_callbacks.at(i); c)
-    //     c(args...);
 
     return; //Force void
   }
