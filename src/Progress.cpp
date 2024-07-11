@@ -674,6 +674,8 @@ ParrallelProgress::~ParrallelProgress()
     delete childStep.progress;
     delete childStep.store;
   }
+  d->progress->setProgress(1.0f);
+  d->progress->addMessage("Done.");
   delete d;
 }
 
