@@ -45,6 +45,14 @@ std::string getCurrentTimestamp()
 }
 
 //##################################################################################################
+std::string getCurrentTimestampPath()
+{
+  using std::chrono::system_clock;
+  auto currentTime = std::chrono::system_clock::now();
+  return date::format("%F %H_%M_%S", currentTime);
+}
+
+//##################################################################################################
 std::string getCurrentTimestamp_notThreadSafe()
 {
   using std::chrono::system_clock;

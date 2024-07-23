@@ -52,6 +52,10 @@ enum class DebugType
 std::string TP_UTILS_EXPORT getCurrentTimestamp();
 
 //##################################################################################################
+//! Date time in a format suitable for use in paths
+std::string getCurrentTimestampPath();
+
+//##################################################################################################
 std::string TP_UTILS_EXPORT getCurrentTimestamp_notThreadSafe();
 
 //##################################################################################################

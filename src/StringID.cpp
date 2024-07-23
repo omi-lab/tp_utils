@@ -332,3 +332,21 @@ std::string TP_UTILS_EXPORT join(const std::vector<std::string>& parts, const st
 }
 
 }
+//##################################################################################################
+void tpSplitSIDs(std::vector<tp_utils::StringID>& result, const std::string& input)
+{
+  std::string text = input;
+  tp_utils::replace(text, "\n", " ");
+  tp_utils::replace(text, "\r", " ");
+  tp_utils::replace(text, ",", " ");
+  tp_utils::replace(text, ";", " ");
+  tp_utils::replace(text, "\"", " ");
+
+  std::vector<std::string> parts;
+  tpSplit(parts, text, ' ', TPSplitBehavior::SkipEmptyParts);
+
+  result.reserve(parts.size());
+  for(const auto& part : parts)
+    if(tp_utils::StringID id = tpTrim(part); id.isValid())
+      result.emplace_back(std::move(id));
+}

@@ -225,7 +225,10 @@ the first letter of each word, followed by SID at the end.
   }                                             \
   void ANONYMOUS_FUNCTION()
 
+//##################################################################################################
+//! Split a list of StringID's.
+void TP_UTILS_EXPORT tpSplitSIDs(std::vector<tp_utils::StringID>& result, const std::string& input);
+
 #include "tp_utils/Globals.h"
-//#include "tp_utils/RefCount.h"
 
 #endif
