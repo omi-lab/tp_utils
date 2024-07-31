@@ -11,8 +11,10 @@ class TP_UTILS_EXPORT TPCheckMainThread
 {
   std::thread::id m_mainThreadID{std::this_thread::get_id()};
 public:
+
+  //################################################################################################
   template<typename T>
-  void operator()(T caller)
+  void operator()(T caller) const
   {
     if(m_mainThreadID != std::this_thread::get_id())
     {
@@ -21,6 +23,12 @@ public:
       assert(false);
       abort();
     }
+  }
+
+  //################################################################################################
+  bool isMainThread() const
+  {
+    return m_mainThreadID == std::this_thread::get_id();
   }
 };
 
