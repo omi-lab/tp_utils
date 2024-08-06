@@ -8,6 +8,8 @@
 #include <locale>
 #include <algorithm>
 #include <iostream>
+#include <sstream>
+#include <iomanip>
 
 #if defined(TP_WIN32) && (defined(_MSC_VER) && (_MSC_VER >= 1900))
 #define WIN32_LEAN_AND_MEAN
@@ -293,6 +295,67 @@ void replace(std::string& result, const std::string& key, const std::string& val
     result.replace(pos, key.size(), value);
     pos = result.find(key, pos + value.size());
   }
+}
+
+
+//##################################################################################################
+std::string formatSizeBytes(int64_t sizeInBytes, bool alignRight)
+{
+  static const std::vector<const char*> suffixes{"  B", " kB", " MB", " GB", " TB", " PB", " EB", " ZB", " YB"};
+
+  size_t i=0;
+  double s=double(sizeInBytes);
+  while(std::abs(s)>4000 && i<suffixes.size()-1)
+  {
+    i++;
+    s = s / 1000.0;
+  }
+
+  std::string result;
+  if(i == 0)
+    result = std::to_string(sizeInBytes)+suffixes.at(i);
+
+  else
+  {
+    std::stringstream stream;
+    stream << std::fixed << std::setprecision(2) << s;
+    return stream.str() + suffixes.at(i);
+  }
+
+  if(alignRight)
+    rightJustified(result, 8, ' ');
+
+  return result;
+}
+
+//##################################################################################################
+std::string formatSizeBinaryBytes(int64_t sizeInBytes, bool alignRight)
+{
+  static const std::vector<const char*> suffixes{"   B", " KiB", " MiB", " GiB", " TiB", " PiB", " EiB", " ZiB", " YiB"};
+
+  size_t i=0;
+  double s=double(sizeInBytes);
+  while(std::fabs(s)>4096 && i<suffixes.size()-1)
+  {
+    i++;
+    s = s / 1024.0;
+  }
+
+  std::string result;
+  if(i == 0)
+    result = std::to_string(sizeInBytes)+suffixes.at(i);
+
+  else
+  {
+    std::stringstream stream;
+    stream << std::fixed << std::setprecision(2) << s;
+    return stream.str() + suffixes.at(i);
+  }
+
+  if(alignRight)
+    rightJustified(result, 8, ' ');
+
+  return result;
 }
 
 //##################################################################################################

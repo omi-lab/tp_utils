@@ -575,6 +575,14 @@ std::string TP_UTILS_EXPORT fixedWidthKeepLeft(std::string data, size_t len, cha
 void replace(std::string& result, const std::string& key, const std::string& value);
 
 //##################################################################################################
+//! Format a number as B, kB, MB, ...
+std::string formatSizeBytes(int64_t sizeInBytes, bool alignRight=false);
+
+//##################################################################################################
+//! Format a number as B, KiB, MiB, ...
+std::string formatSizeBinaryBytes(int64_t sizeInBytes, bool alignRight=false);
+
+//##################################################################################################
 bool TP_UTILS_EXPORT parseColor(const std::string& color, uint8_t& r, uint8_t& g, uint8_t& b, uint8_t& a);
 
 //##################################################################################################
