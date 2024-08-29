@@ -72,6 +72,9 @@ class CallbackCollection<R(Args...)>
   //################################################################################################
   R operator()(Args... args) const
   {
+    if(m_callbacks.empty())
+      return;
+
     size_t remaining = m_callbacks.size();
 
     auto decrement = [&](size_t& r)
