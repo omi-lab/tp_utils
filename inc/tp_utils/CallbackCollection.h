@@ -161,6 +161,7 @@ class Callback<R(Args...)>
       tpRemoveOne(c->m_unrefCallbacks, &m_unrefCallback);
       c->removeCallback(&m_callback);
     }
+    m_collections.clear();
   }
 
   //################################################################################################
