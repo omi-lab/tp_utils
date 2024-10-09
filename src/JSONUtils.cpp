@@ -152,6 +152,12 @@ void saveVectorOfStringIDsToJSON(nlohmann::json& j, const std::vector<StringID>&
 }
 
 //##################################################################################################
+void saveVectorOfStringsToJSON(nlohmann::json& j, const std::vector<std::string>& strings)
+{
+  saveVectorOfValuesToJSON(j, strings);
+}
+
+//##################################################################################################
 void saveMapOfStringIDAndStringToJSON(nlohmann::json& j, const std::unordered_map<StringID, std::string>& map)
 {
   j = nlohmann::json::object();
@@ -226,6 +232,19 @@ void loadMapOfStringIDAndStringIDFromJSON(const nlohmann::json& j,
         if(p->is_string())
           map[p.key()] = p->get<std::string>();
     }
+  }
+}
+
+//##################################################################################################
+void loadVectorOfStringsFromJSON(const nlohmann::json& j, const std::string& key, std::vector<std::string>& vector)
+{
+  vector.clear();
+  if(auto i=j.find(key); i!=j.end() and i->is_array())
+  {
+    vector.reserve(i->size());
+    for(const auto& v : *i)
+      if(v.is_string())
+        vector.emplace_back(v.get<std::string>());
   }
 }
 

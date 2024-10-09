@@ -99,6 +99,9 @@ void getJSONStringIDs(const nlohmann::json& j,
 void saveVectorOfStringIDsToJSON(nlohmann::json& j, const std::vector<StringID>& stringIDs);
 
 //##################################################################################################
+void saveVectorOfStringsToJSON(nlohmann::json& j, const std::vector<std::string>& strings);
+
+//##################################################################################################
 void saveMapOfStringIDAndStringToJSON(nlohmann::json& j, const std::unordered_map<StringID, std::string>& map);
 
 //##################################################################################################
@@ -120,6 +123,8 @@ void loadMapOfStringIDAndStringIDFromJSON(const nlohmann::json& j,
                                           const std::string& key,
                                           std::unordered_map<StringID, StringID>& map);
 
+//##################################################################################################
+void loadVectorOfStringsFromJSON(const nlohmann::json& j, const std::string& key, std::vector<std::string>& vector);
 
 //##################################################################################################
 template<typename T, typename K = void>
