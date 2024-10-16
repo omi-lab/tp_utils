@@ -32,8 +32,8 @@ struct Profiler::Private
 
 //##################################################################################################
 Profiler::Profiler(ProfilerController* controller, const StringID& id_):
-  id(id_),
-  d(new Private(controller))
+  d(new Private(controller)),
+  id(id_)
 {
 }
 
