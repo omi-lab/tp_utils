@@ -349,11 +349,11 @@ std::string formatSizeBinaryBytes(int64_t sizeInBytes, bool alignRight)
   {
     std::stringstream stream;
     stream << std::fixed << std::setprecision(2) << s;
-    return stream.str() + suffixes.at(i);
+    result = stream.str() + suffixes.at(i);
   }
 
   if(alignRight)
-    rightJustified(result, 8, ' ');
+    rightJustified(result, 12, ' ');
 
   return result;
 }

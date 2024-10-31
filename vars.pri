@@ -70,6 +70,9 @@ HEADERS += inc/tp_utils/TPPixel.h
 
 HEADERS += inc/tp_utils/TPCheckMainThread.h
 
+SOURCES += src/TPSettings.cpp
+HEADERS += inc/tp_utils/TPSettings.h
+
 HEADERS += inc/tp_utils/PageSize.h
 
 HEADERS += inc/tp_utils/LogStatsTimer.h
