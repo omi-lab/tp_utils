@@ -286,9 +286,16 @@ static bool demangle(const char* symbol, std::string& output, std::string& offse
 void TP_UTILS_EXPORT printStackTrace()
 {
   tpWarning() << "Start print stack trace.";
+
+#ifdef TP_PRINT_ADDR2LINE
+  printAddr2Line();
+#endif
+
 #ifdef TP_ADDR2LINE
   execAddr2Line();
 #endif
+
+
 
   //Get the backtrace
   std::array<void*, MAX_LEVELS> array = tpMakeArray<void*, MAX_LEVELS>(nullptr);
