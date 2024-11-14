@@ -54,6 +54,52 @@ std::string Profiler::name() const
 void Profiler::setName(const std::string& name)
 {
   d->name = name;
+
+  d->controller->updateProfilers([&](std::vector<std::weak_ptr<Profiler>>& profilers)
+  {
+    auto containsName = [&](const std::string& n)
+    {
+      for(const auto& profiler : profilers)
+        if(auto p=profiler.lock(); p)
+          if(p->name()==n)
+            return true;
+
+      return false;
+    };
+
+    auto toString = [](size_t i)
+    {
+      return ' ' + tp_utils::fixedWidthKeepRight(std::to_string(i), 3, '0');
+    };
+
+    for(const auto& profiler : profilers)
+    {
+      if(auto p=profiler.lock(); p)
+      {
+        if(p.get()!=this && p->name() == name)
+        {
+          std::string n=p->name();
+          if(p->name().size()>3)
+          {
+            if(std::isdigit(n.at(n.size()-1)) and
+               std::isdigit(n.at(n.size()-2)) and
+               std::isdigit(n.at(n.size()-3)) and
+               n.at(n.size()-4) == ' ')
+              n.resize(p->name().size()-4);
+          }
+
+          if(containsName(n))
+          {
+            size_t i=1;
+            for(; containsName(n + toString(i)); i++);
+            n = n + toString(i);
+          }
+
+          p->d->name = n;
+        }
+      }
+    }
+  });
   d->controller->changed();
 }
 

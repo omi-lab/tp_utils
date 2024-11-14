@@ -129,4 +129,4 @@ private:
 #define PRF_SCOPED_RANGE(profiler, label, ...)
 #endif
 
-#endif //tp_utils_Profiler_h
+#endif

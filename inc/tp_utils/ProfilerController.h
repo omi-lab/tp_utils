@@ -30,9 +30,12 @@ public:
 
   //################################################################################################
   ~ProfilerController();
+
+  //################################################################################################
+  std::vector<const Profiler*> profilers() const;
   
   //################################################################################################
-  std::vector<std::shared_ptr<Profiler>> profilers() const;
+  void updateProfilers(const std::function<void(std::vector<std::weak_ptr<Profiler>>&)>& closure) const;
 
   //################################################################################################
   std::shared_ptr<Profiler> profiler(const StringID& id);

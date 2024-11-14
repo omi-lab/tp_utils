@@ -21,6 +21,22 @@ ProfilerController* globalProfilerController()
 struct ProfilerController::Private
 {
   std::vector<std::weak_ptr<Profiler>> profilers;
+
+  //################################################################################################
+  template<typename T>
+  void iterateProfilers(const T& closure)
+  {
+    for(auto i=profilers.begin(); i!=profilers.end(); )
+    {
+      if(auto p=i->lock(); p)
+      {
+        closure(p);
+        ++i;
+      }
+      else
+        i=profilers.erase(i);
+    }
+  }
 };
 
 //##################################################################################################
@@ -37,13 +53,18 @@ ProfilerController::~ProfilerController()
 }
 
 //##################################################################################################
-std::vector<std::shared_ptr<Profiler>> ProfilerController::profilers() const
+std::vector<const Profiler*> ProfilerController::profilers() const
 {
-  std::vector<std::shared_ptr<Profiler>> profilers;
+  std::vector<const Profiler*> profilers;
   profilers.reserve(d->profilers.size());
-  for(const auto& profiler : d->profilers)
-    profilers.push_back(profiler.lock());
+  d->iterateProfilers([&](auto p){profilers.push_back(p.get());});
   return profilers;
+}
+
+//##################################################################################################
+void ProfilerController::updateProfilers(const std::function<void(std::vector<std::weak_ptr<Profiler>>&)>& closure) const
+{
+  closure(d->profilers);
 }
 
 //##################################################################################################
@@ -51,14 +72,25 @@ std::shared_ptr<Profiler> ProfilerController::profiler(const StringID& id)
 {
   assert(id.isValid());
 
+  std::shared_ptr<Profiler> profiler;
+  d->iterateProfilers([&](auto p)
+  {
+    if(p->id == id)
+      profiler = p;
+  });
+
   for(const auto& profiler : d->profilers)
     if(auto p = profiler.lock(); p->id == id)
       return p;
 
-  std::shared_ptr<Profiler> p{new Profiler(this, id)};
-  d->profilers.emplace_back(p);
+  if(!profiler)
+  {
+    profiler.reset(new Profiler(this, id));
+    d->profilers.emplace_back(profiler);
+  }
+
   changed();
-  return p;
+  return profiler;
 }
 
 //##################################################################################################
