@@ -25,7 +25,7 @@ struct Garbage::Private
 Garbage::Garbage():
   d(new Private)
 {
-  instanceMutex.locked([&]
+  instanceMutex.locked(TPMc [&]
   {
     if(!instance)
       instance = this;
@@ -58,7 +58,7 @@ Garbage::Garbage():
 //##################################################################################################
 Garbage::~Garbage()
 {
-  instanceMutex.locked([&]{instance = nullptr;});
+  instanceMutex.locked(TPMc [&]{instance = nullptr;});
 
   d->mutex.locked(TPMc [&]{d->finish = true;});
   d->waitCondition.wakeAll();

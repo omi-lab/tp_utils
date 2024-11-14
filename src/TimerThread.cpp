@@ -47,7 +47,7 @@ struct TimerThread::Private
   void run()
   {
     lib_platform::setThreadName(threadName);
-    std::unique_lock<std::mutex> lock(mutex);
+    TPMutexLocker lock(mutex cTPM);
     while(!finish)
     {
       waitCondition.wait(TPMc lock, timeoutMS);

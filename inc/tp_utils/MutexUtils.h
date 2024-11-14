@@ -12,6 +12,7 @@
 #ifndef TP_ENABLE_MUTEX_TIME
 
 #define TPM
+#define cTPM
 #define TPM_A
 #define TPM_B
 #define TPMc
@@ -61,6 +62,7 @@ public:
 #else
 
 #define TPM __FILE__, __LINE__
+#define cTPM ,TPM
 #define TPM_A const char* file_tpm, int line_tpm
 #define TPM_B file_tpm, line_tpm
 #define TPMc TPM,
@@ -202,6 +204,7 @@ class TPMutexLocker
   TPMutex* m_mutex;
   const char* m_file;
   int m_line;
+  bool m_ownsLock{true};
 public:
 
   //################################################################################################
@@ -214,9 +217,44 @@ public:
   }
 
   //################################################################################################
+  TPMutexLocker(TPMutex& mutex, const char* file="", int line=0):
+    m_mutex(&mutex),
+    m_file(file),
+    m_line(line)
+  {
+    m_mutex->lock(m_file, m_line);
+  }
+
+  //################################################################################################
   ~TPMutexLocker()
   {
     m_mutex->unlock(m_file, m_line);
+  }
+
+  //################################################################################################
+  TPMutex* mutex() const
+  {
+    return m_mutex;
+  }
+
+  //################################################################################################
+  void lock(const char* file, int line)
+  {
+    m_ownsLock = true;
+    m_mutex->lock(file, line);
+  }
+
+  //################################################################################################
+  void unlock(const char* file, int line)
+  {
+    m_ownsLock = false;
+    m_mutex->unlock(file, line);
+  }
+
+  //################################################################################################
+  bool owns_lock() const
+  {
+    return m_ownsLock;
   }
 };
 
@@ -224,6 +262,7 @@ public:
 class TP_UTILS_EXPORT TPMutexUnlocker
 {
   TPMutex* m_mutex;
+  TPMutexLocker* m_locker{nullptr};
   const char* m_file;
   int m_line;
 public:
@@ -238,9 +277,22 @@ public:
   }
 
   //################################################################################################
+  TPMutexUnlocker(TPMutexLocker* locker, const char* file="", int line=0):
+    m_mutex(locker->mutex()),
+    m_locker(locker),
+    m_file(file),
+    m_line(line)
+  {
+    m_locker->unlock(m_file, m_line);
+  }
+
+  //################################################################################################
   ~TPMutexUnlocker()
   {
-    m_mutex->lock(m_file, m_line);
+    if(m_locker)
+      m_locker->lock(m_file, m_line);
+    else
+      m_mutex->lock(m_file, m_line);
   }
 };
 

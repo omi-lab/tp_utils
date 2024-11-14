@@ -62,7 +62,7 @@ TPWaitCondition::~TPWaitCondition()
 
 //##################################################################################################
 #ifdef TP_ENABLE_MUTEX_TIME
-bool TPWaitCondition::wait(TPM_Ac TPMutex& lockedMutex, int64_t ms) noexcept
+bool TPWaitCondition::wait(TPM_Ac TPMutexLocker& lockedMutex, int64_t ms) noexcept
 {
   struct MutexW
   {
@@ -87,10 +87,9 @@ bool TPWaitCondition::wait(TPM_Ac TPMutex& lockedMutex, int64_t ms) noexcept
     {
       m_lockedMutex.unlock(m_file_tpm, m_line_tpm);
     }
-
   };
 
-  MutexW mutexW(TPM_Bc lockedMutex);
+  MutexW mutexW(TPM_Bc *lockedMutex.mutex());
 
   if(ms<INT64_MAX)
     return d->cv.wait_for(mutexW, std::chrono::milliseconds(ms)) == std::cv_status::no_timeout;
