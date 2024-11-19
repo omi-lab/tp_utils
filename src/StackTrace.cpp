@@ -4,6 +4,7 @@
 
 #include <chrono>
 #include <thread>
+#include <iostream>
 
 //PLATFORM_ABSTRACTIONS
 #if defined(TP_ANDROID)

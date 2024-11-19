@@ -1,6 +1,7 @@
 #ifndef tp_utils_LogStatsTimer_impl_h
 #define tp_utils_LogStatsTimer_impl_h
 
+#include <iostream>
 #include "tp_utils/MutexUtils.h"
 #include "tp_utils/FileUtils.h"
 
