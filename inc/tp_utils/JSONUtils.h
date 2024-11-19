@@ -33,9 +33,8 @@ namespace tp_utils
 [[nodiscard]] nlohmann::json TP_UTILS_EXPORT jsonFromString(const std::string& json);
 
 //##################################################################################################
-[[nodiscard]] nlohmann::json TP_UTILS_EXPORT getJSON(const nlohmann::json& j,
-                                                     const std::string& key,
-                                                     const nlohmann::json& defaultValue=nlohmann::json());
+[[nodiscard]] const nlohmann::json& TP_UTILS_EXPORT getJSON(const nlohmann::json& j,
+                                                            const std::string& key);
 
 //##################################################################################################
 [[nodiscard]] float TP_UTILS_EXPORT getJSONFloat(const nlohmann::json& j,
@@ -127,13 +126,23 @@ void loadMapOfStringIDAndStringIDFromJSON(const nlohmann::json& j,
 void loadVectorOfStringsFromJSON(const nlohmann::json& j, const std::string& key, std::vector<std::string>& vector);
 
 //##################################################################################################
-template<typename T, typename K = void>
+template<typename T, typename = std::enable_if_t<!std::is_pointer<T>::value>>
 void loadObjectFromJSON(const nlohmann::json& j, const char* key, T& object)
 {
   if(auto i=j.find(key); i!=j.end())
     object.loadState(*i);
   else
     object = T();
+}
+
+//##################################################################################################
+template<typename T, typename = std::enable_if_t<std::is_pointer<T>::value>>
+void loadObjectFromJSON(const nlohmann::json& j, const char* key, T object)
+{
+  if(auto i=j.find(key); i!=j.end())
+    object->loadState(*i);
+  else
+    object->loadState({});
 }
 
 //##################################################################################################

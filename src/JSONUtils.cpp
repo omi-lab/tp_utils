@@ -17,12 +17,13 @@ nlohmann::json jsonFromString(const std::string& json)
 }
 
 //##################################################################################################
-nlohmann::json getJSON(const nlohmann::json& j,
-                       const std::string& key,
-                       const nlohmann::json& defaultValue)
-{
+const nlohmann::json& getJSON(const nlohmann::json& j,
+                              const std::string& key)
+{  
   if(auto i = j.find(key); i != j.end())
     return i.value();
+
+  static const nlohmann::json defaultValue;
   return defaultValue;
 }
 
