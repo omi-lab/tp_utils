@@ -240,7 +240,7 @@ void loadMapOfStringIDAndStringIDFromJSON(const nlohmann::json& j,
 void loadVectorOfStringsFromJSON(const nlohmann::json& j, const std::string& key, std::vector<std::string>& vector)
 {
   vector.clear();
-  if(auto i=j.find(key); i!=j.end() and i->is_array())
+  if(auto i=j.find(key); i!=j.end() && i->is_array())
   {
     vector.reserve(i->size());
     for(const auto& v : *i)

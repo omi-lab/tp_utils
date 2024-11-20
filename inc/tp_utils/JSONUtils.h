@@ -186,7 +186,7 @@ template<typename T, typename K>
 void loadVectorOfObjectsFromJSON(const nlohmann::json& j, K key, T& vector)
 {
   vector.clear();
-  if(auto i=j.find(key); i!=j.end() and i->is_array())
+  if(auto i=j.find(key); i!=j.end() && i->is_array())
   {
     vector.reserve(i->size());
     for(const auto& v : *i)
@@ -221,7 +221,7 @@ template<typename T, typename K>
 void loadMapOfObjectsFromJSON(const nlohmann::json& j, K key, T& map)
 {
   map.clear();
-  if(auto i=j.find(key); i!=j.end() and i->is_object())
+  if(auto i=j.find(key); i!=j.end() && i->is_object())
   {
     map.reserve(i->size());
     for(auto p=i->begin(); p!=i->end(); ++p)
