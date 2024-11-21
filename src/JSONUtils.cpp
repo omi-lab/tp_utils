@@ -175,6 +175,14 @@ void saveMapOfStringIDAndStringIDToJSON(nlohmann::json& j, const std::unordered_
 }
 
 //##################################################################################################
+void saveMapOfStringIDAndFloatToJSON(nlohmann::json& j, const std::unordered_map<StringID, float>& map)
+{
+  j = nlohmann::json::object();
+  for(const auto& i : map)
+    j[i.first.toString()] = i.second;
+}
+
+//##################################################################################################
 void loadMapOfStringIDAndStringFromJSON(const nlohmann::json& j, std::unordered_map<StringID, std::string>& map)
 {
   map.clear();
@@ -197,6 +205,19 @@ void loadMapOfStringIDAndStringIDFromJSON(const nlohmann::json& j, std::unordere
     for(auto p=j.begin(); p!=j.end(); ++p)
       if(p->is_string())
         map[p.key()] = p->get<std::string>();
+  }
+}
+
+//##################################################################################################
+void loadMapOfStringIDAndFloatFromJSON(const nlohmann::json& j, std::unordered_map<StringID, float>& map)
+{
+  map.clear();
+  if(j.is_object())
+  {
+    map.reserve(j.size());
+    for(auto p=j.begin(); p!=j.end(); ++p)
+      if(p->is_number())
+        map[p.key()] = p->get<float>();
   }
 }
 
@@ -232,6 +253,24 @@ void loadMapOfStringIDAndStringIDFromJSON(const nlohmann::json& j,
       for(auto p=i->begin(); p!=i->end(); ++p)
         if(p->is_string())
           map[p.key()] = p->get<std::string>();
+    }
+  }
+}
+
+//##################################################################################################
+void loadMapOfStringIDAndFloatFromJSON(const nlohmann::json& j,
+                                       const std::string& key,
+                                       std::unordered_map<StringID, float>& map)
+{
+  map.clear();
+  if(const auto& i = j.find(key); i != j.end() && !i->empty())
+  {
+    if(i->is_object())
+    {
+      map.reserve(i->size());
+      for(auto p=i->begin(); p!=i->end(); ++p)
+        if(p->is_number())
+          map[p.key()] = p->get<float>();
     }
   }
 }

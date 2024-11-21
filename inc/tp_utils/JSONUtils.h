@@ -107,10 +107,19 @@ void saveMapOfStringIDAndStringToJSON(nlohmann::json& j, const std::unordered_ma
 void saveMapOfStringIDAndStringIDToJSON(nlohmann::json& j, const std::unordered_map<StringID, StringID>& map);
 
 //##################################################################################################
+void saveMapOfStringIDAndStringIDToJSON(nlohmann::json& j, const std::unordered_map<StringID, StringID>& map);
+
+//##################################################################################################
+void saveMapOfStringIDAndFloatToJSON(nlohmann::json& j, const std::unordered_map<StringID, float>& map);
+
+//##################################################################################################
 void loadMapOfStringIDAndStringFromJSON(const nlohmann::json& j, std::unordered_map<StringID, std::string>& map);
 
 //##################################################################################################
 void loadMapOfStringIDAndStringIDFromJSON(const nlohmann::json& j, std::unordered_map<StringID, StringID>& map);
+
+//##################################################################################################
+void loadMapOfStringIDAndFloatFromJSON(const nlohmann::json& j, std::unordered_map<StringID, float>& map);
 
 //##################################################################################################
 void loadMapOfStringIDAndStringFromJSON(const nlohmann::json& j,
@@ -121,6 +130,11 @@ void loadMapOfStringIDAndStringFromJSON(const nlohmann::json& j,
 void loadMapOfStringIDAndStringIDFromJSON(const nlohmann::json& j,
                                           const std::string& key,
                                           std::unordered_map<StringID, StringID>& map);
+
+//##################################################################################################
+void loadMapOfStringIDAndFloatFromJSON(const nlohmann::json& j,
+                                       const std::string& key,
+                                       std::unordered_map<StringID, float>& map);
 
 //##################################################################################################
 void loadVectorOfStringsFromJSON(const nlohmann::json& j, const std::string& key, std::vector<std::string>& vector);
