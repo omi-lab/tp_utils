@@ -2,8 +2,9 @@
 #define tp_utils_stack_trace_Win32MSVCStackTrace_h
 
 #include "tp_utils/detail/stack_trace/Common.h" // IWYU pragma: keep
+#include "tp_utils/StackTrace.h"
 
-#if defined(TP_WIN32_MSVC)
+#ifdef TP_WIN32_MSVC
 
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
@@ -31,19 +32,6 @@
 
 namespace tp_utils
 {
-//##################################################################################################
-void TP_UTILS_EXPORT createMiniDump(EXCEPTION_POINTERS* pExceptionPtrs);
-
-//##################################################################################################
-[[noreturn]]void TP_UTILS_EXPORT saveCrashReportAndExit(EXCEPTION_POINTERS* pExceptionPtrs);
-
-//##################################################################################################
-void TP_UTILS_EXPORT printStackTrace(EXCEPTION_POINTERS* pExceptionPtrs);
-
-//##################################################################################################
-std::string TP_UTILS_EXPORT formatStackTrace(EXCEPTION_POINTERS* pExceptionPtrs);
-
-
 
 //##################################################################################################
 // This method creates minidump of the process
@@ -257,14 +245,6 @@ public:
 }
 
 //##################################################################################################
-std::vector<std::string> TP_UTILS_EXPORT stackTraceFrames()
-{
-  EXCEPTION_POINTERS* pExceptionPtrs = nullptr;
-  getExceptionPointers(0, &pExceptionPtrs);
-  return stackTraceFrames(pExceptionPtrs);
-}
-
-//##################################################################################################
 std::vector<std::string> TP_UTILS_EXPORT stackTraceFrames(EXCEPTION_POINTERS* pExceptionPtrs)
 {
   std::vector<std::string> result;
@@ -328,6 +308,14 @@ std::vector<std::string> TP_UTILS_EXPORT stackTraceFrames(EXCEPTION_POINTERS* pE
   }
 
   return result;
+}
+
+//##################################################################################################
+std::vector<std::string> TP_UTILS_EXPORT stackTraceFrames()
+{
+  EXCEPTION_POINTERS* pExceptionPtrs = nullptr;
+  getExceptionPointers(0, &pExceptionPtrs);
+  return stackTraceFrames(pExceptionPtrs);
 }
 
 //##################################################################################################

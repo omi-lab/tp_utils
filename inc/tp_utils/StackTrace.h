@@ -3,6 +3,11 @@
 
 #include "tp_utils/Globals.h"
 
+#ifdef TP_WIN32_MSVC
+#define WIN32_LEAN_AND_MEAN
+#include <Windows.h>
+#endif
+
 namespace tp_utils
 {
 
@@ -101,6 +106,21 @@ void saveCrashReport();
 
 //##################################################################################################
 [[noreturn]]void saveCrashReportAndExit();
+
+
+#ifdef TP_WIN32_MSVC
+//##################################################################################################
+void TP_UTILS_EXPORT createMiniDump(EXCEPTION_POINTERS* pExceptionPtrs);
+
+//##################################################################################################
+[[noreturn]]void TP_UTILS_EXPORT saveCrashReportAndExit(EXCEPTION_POINTERS* pExceptionPtrs);
+
+//##################################################################################################
+void TP_UTILS_EXPORT printStackTrace(EXCEPTION_POINTERS* pExceptionPtrs);
+
+//##################################################################################################
+std::string TP_UTILS_EXPORT formatStackTrace(EXCEPTION_POINTERS* pExceptionPtrs);
+#endif
 
 }
 
