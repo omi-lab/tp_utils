@@ -81,10 +81,16 @@ public:
   /*!
   Using TP_DEFINE_ID will ensure that the StringID remains valid.
   */
-  WeakStringID weak() const;
+  WeakStringID weak() const
+  {
+    return sd;
+  }
 
   //################################################################################################
   static StringID fromWeak(WeakStringID weak);
+
+  //################################################################################################
+  static std::vector<WeakStringID> toWeak(const std::vector<StringID>& ids);
 
   //################################################################################################
   //! Returns the string that this StringID represents
@@ -134,7 +140,7 @@ inline bool operator==(const StringID& a, const StringID& b)
 //##################################################################################################
 inline bool operator!=(const StringID& a, const StringID& b)
 {
-  return !(a == b);
+  return (a.sd != b.sd);
 }
 
 //##################################################################################################
@@ -185,6 +191,17 @@ struct hash<std::vector<tp_utils::StringID>>
     auto h = hash<void*>()(nullptr);
     for(const auto& stringID : stringIDs)
       h ^= std::hash<tp_utils::StringID>()(stringID) + 0x9e3779b9 + (h<<6) + (h>>2);
+    return h;
+  }
+};
+template <>
+struct hash<std::vector<tp_utils::WeakStringID>>
+{
+  size_t operator()(const std::vector<tp_utils::WeakStringID>& stringIDs) const
+  {
+    auto h = hash<void*>()(nullptr);
+    for(const auto& stringID : stringIDs)
+      h ^= std::hash<tp_utils::WeakStringID>()(stringID) + 0x9e3779b9 + (h<<6) + (h>>2);
     return h;
   }
 };

@@ -1,6 +1,7 @@
 #include "tp_utils/StringID.h"
 #include "tp_utils/MutexUtils.h"
 #include "tp_utils/TimeUtils.h"
+#include "tp_utils/CountStackTrace.h"
 
 #include <unordered_map>
 #include <mutex>
@@ -143,18 +144,24 @@ StringID::~StringID()
 }
 
 //##################################################################################################
-WeakStringID StringID::weak() const
-{
-  return sd;
-}
-
-//##################################################################################################
 StringID StringID::fromWeak(WeakStringID weak)
 {
   StringID stringID;
   stringID.sd = static_cast<SharedData*>(weak);
   stringID.attach();
   return stringID;
+}
+
+//##################################################################################################
+std::vector<WeakStringID> StringID::toWeak(const std::vector<StringID>& ids)
+{
+  std::vector<WeakStringID> weak;
+  weak.resize(ids.size());
+
+  for(size_t i=0; i<ids.size(); i++)
+    weak[i] = ids.at(i).weak();
+
+  return weak;
 }
 
 //##################################################################################################
@@ -253,6 +260,9 @@ void StringID::detach()
   if(sd)
   {
     TP_FUNCTION_TIME("StringID::detach");
+
+    //if(FunctionTimeStats::isMainThread())
+    //  TP_COUNT_STACK_TRACE;
 
     {
       TP_MUTEX_LOCKER(sd->mutex);

@@ -20,6 +20,20 @@ HEADERS += inc/tp_utils/RefCount.h
 
 SOURCES += src/StackTrace.cpp
 HEADERS += inc/tp_utils/StackTrace.h
+HEADERS += inc/tp_utils/detail/stack_trace/Common.h
+HEADERS += inc/tp_utils/detail/stack_trace/GCCStackTrace.h
+HEADERS += inc/tp_utils/detail/stack_trace/AndroidStackTrace.h
+HEADERS += inc/tp_utils/detail/stack_trace/EmscriptenStackTrace.h
+HEADERS += inc/tp_utils/detail/stack_trace/OSXStackTrace.h
+HEADERS += inc/tp_utils/detail/stack_trace/Win32MSVCStackTrace.h
+HEADERS += inc/tp_utils/detail/stack_trace/MIPSuClibcStackTrace.h
+HEADERS += inc/tp_utils/detail/stack_trace/UnsupportedStackTrace.h
+
+HEADERS += inc/tp_utils/detail/stack_trace/StackTrace_GCC.h
+HEADERS += inc/tp_utils/detail/stack_trace/StackTrace_BasicImpl.h
+
+SOURCES += src/CountStackTrace.cpp
+HEADERS += inc/tp_utils/CountStackTrace.h
 
 SOURCES += src/MutexUtils.cpp
 HEADERS += inc/tp_utils/MutexUtils.h
