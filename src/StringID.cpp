@@ -261,8 +261,8 @@ void StringID::detach()
   {
     TP_FUNCTION_TIME("StringID::detach");
 
-    //if(FunctionTimeStats::isMainThread())
-    //  TP_COUNT_STACK_TRACE;
+    // if(FunctionTimeStats::isMainThread())
+    //   TP_COUNT_STACK_TRACE;
 
     {
       TP_MUTEX_LOCKER(sd->mutex);
