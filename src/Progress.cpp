@@ -175,7 +175,7 @@ struct Progress::Private
   TP_NONCOPYABLE(Private);
   Private() = default;
 
-  Progress* q;
+  Q* q;
   bool printToConsole{false};
   size_t indentation{0};
 
@@ -192,7 +192,7 @@ struct Progress::Private
   std::optional<ProgressEvent> progressEvent;
 
   //################################################################################################
-  Private(Progress* q_,
+  Private(Q* q_,
           AbstractProgressStore* progressStore_,
           Progress* parent_,
           const std::string& message):
