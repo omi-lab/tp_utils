@@ -8,9 +8,10 @@
 #include <vector>
 #include <list>
 #include <map>
-#include <unordered_map>
 #include <set>
+#include <unordered_map>
 #include <unordered_set>
+#include <optional>
 
 
 #define TPJSON          tp_utils::getJSON
@@ -157,6 +158,28 @@ void loadObjectFromJSON(const nlohmann::json& j, const char* key, T object)
     object->loadState(*i);
   else
     object->loadState({});
+}
+
+
+//##################################################################################################
+template<typename T>
+void loadOptionalObjectFromJSON(const nlohmann::json& j, const char* key, std::optional<T>& object)
+{
+  if(auto i=j.find(key); i!=j.end())
+  {
+    object = std::make_optional<T>();
+    object->loadState(*i);
+  }
+  else
+    object = T();
+}
+
+//##################################################################################################
+template<typename T>
+void saveOptionalObjectToJSON(nlohmann::json& j, const char* key, const std::optional<T>& object)
+{
+  if(object)
+    object->saveState(j[key]);
 }
 
 //##################################################################################################
