@@ -5,6 +5,8 @@
 #include "tp_utils/TimeUtils.h"
 #include "tp_utils/ProfilerController.h"
 
+#include "tp_utils/DebugUtils.h"
+
 #include <memory>
 #include <sstream>
 #include <stack>
@@ -132,6 +134,9 @@ void Profiler::rangePop()
   auto& progressEvent = d->eventStack.top();
   progressEvent.end = tp_utils::currentTimeMS();
   progressEvent.active = false;
+
+  tpDebug() << "--- Profile :: " << progressEvent.name << " = " << (progressEvent.end - progressEvent.start) << " ms";
+
   d->progressStore->updateProgressEvent(progressEvent);
   d->eventStack.pop();
 }
