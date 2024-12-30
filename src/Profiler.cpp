@@ -81,9 +81,9 @@ void Profiler::setName(const std::string& name)
           std::string n=p->name();
           if(p->name().size()>3)
           {
-            if(std::isdigit(n.at(n.size()-1)) and
-               std::isdigit(n.at(n.size()-2)) and
-               std::isdigit(n.at(n.size()-3)) and
+            if(std::isdigit(n.at(n.size()-1)) &&
+               std::isdigit(n.at(n.size()-2)) &&
+               std::isdigit(n.at(n.size()-3)) &&
                n.at(n.size()-4) == ' ')
               n.resize(p->name().size()-4);
           }
