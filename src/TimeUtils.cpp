@@ -109,7 +109,7 @@ const std::thread::id mainThreadId = std::this_thread::get_id();
 }
 
 //##################################################################################################
-struct FunctionTimeStats::Private
+struct FunctionTimeStats::Instance
 {
   TPMutex mutex{TPM};
   std::unordered_map<std::string, FunctionTimeStatsDetails_lt> stats;
