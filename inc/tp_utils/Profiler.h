@@ -43,7 +43,7 @@ public:
  void setName(const std::string& name);
 
   //################################################################################################
-  void rangePush(const std::string& label, TPPixel colour);
+  void rangePush(const std::string& label, TPPixel color);
 
   //################################################################################################
   void rangePop();
@@ -82,11 +82,11 @@ class ScopedProfilerRange
   TP_NONCOPYABLE(ScopedProfilerRange);
 public:
 //##################################################################################################
-  ScopedProfilerRange(Profiler* profiler_, const std::string label_, TPPixel colour_):
+  ScopedProfilerRange(Profiler* profiler_, const std::string label_, TPPixel color_):
   profiler(profiler_)
   {
     if(profiler)
-      profiler->rangePush(label_, colour_);
+      profiler->rangePush(label_, color_);
   }
 
 //##################################################################################################

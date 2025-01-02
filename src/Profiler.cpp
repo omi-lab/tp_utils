@@ -104,7 +104,7 @@ void Profiler::setName(const std::string& name)
 }
 
 //##################################################################################################
-void Profiler::rangePush(const std::string& label, TPPixel colour)
+void Profiler::rangePush(const std::string& label, TPPixel color)
 {
   if(!d->recording)
     return;
@@ -119,7 +119,7 @@ void Profiler::rangePush(const std::string& label, TPPixel colour)
   progressEvent.start = tp_utils::currentTimeMS();
   progressEvent.end = tp_utils::currentTimeMS();
   progressEvent.active = true;
-  progressEvent.color = colour;
+  progressEvent.color = color;
   d->progressStore->initProgressEvent(progressEvent);
 }
 
