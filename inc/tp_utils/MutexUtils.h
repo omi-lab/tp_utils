@@ -135,8 +135,8 @@ public:
   static std::string takeResults();
 
 private:
-  struct Private;
-  static Private* instance();
+  struct Instance;
+  static Instance* instance();
 };
 
 }

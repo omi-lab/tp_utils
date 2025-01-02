@@ -85,8 +85,8 @@ public:
   static std::map<std::string, size_t> keyValueResults();
 
 private:
-  struct Private;
-  static Private* instance();
+  struct Instance;
+  static Instance* instance();
 };
 
 //################################################################################################

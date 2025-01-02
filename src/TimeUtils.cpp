@@ -224,9 +224,9 @@ std::map<std::string, size_t> FunctionTimeStats::keyValueResults()
 }
 
 //##################################################################################################
-FunctionTimeStats::Private* FunctionTimeStats::instance()
+FunctionTimeStats::Instance* FunctionTimeStats::instance()
 {
-  static FunctionTimeStats::Private instance;
+  static FunctionTimeStats::Instance instance;
   return &instance;
 }
 

@@ -198,7 +198,7 @@ struct MutexDefinitionDetails_lt
 
 #ifdef TP_ENABLE_MUTEX_TIME
 //##################################################################################################
-struct LockStats::Private
+struct LockStats::Instance
 {
   std::mutex mutex;
 
@@ -664,9 +664,9 @@ std::string LockStats::takeResults()
 }
 
 //##################################################################################################
-LockStats::Private* LockStats::instance()
+LockStats::Instance* LockStats::instance()
 {
-  static LockStats::Private instance;
+  static LockStats::Instance instance;
   return &instance;
 }
 
