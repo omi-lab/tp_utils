@@ -2,8 +2,10 @@
 #define tp_utils_AbstractCrossThreadCallback_h
 
 #include "tp_utils/CallbackCollection.h"
+#include "tp_utils/MutexUtils.h"
 
 #include <thread>
+
 namespace tp_utils
 {
 
@@ -104,6 +106,42 @@ private:
 
 //##################################################################################################
 void blockingCrossThreadCall(AbstractCrossThreadCallbackFactory* factory, const std::function<void()>& callback);
+
+//##################################################################################################
+template<typename T>
+class CrossThreadCallbackWithPayload
+{
+  TPMutex m_mutex{TPM};
+  std::vector<T> m_payloads;
+  std::function<void(T)> m_callback;
+  std::unique_ptr<AbstractCrossThreadCallback> m_crossThreadCallback;
+public:
+  //################################################################################################
+  CrossThreadCallbackWithPayload(AbstractCrossThreadCallbackFactory* factory, const std::function<void(T)>& callback):
+    m_callback(callback)
+  {
+    m_crossThreadCallback.reset(factory->produce([&]
+    {
+      m_mutex.lock(TPM);
+      T payload = tpTakeFirst(m_payloads);
+      m_mutex.unlock(TPM);
+      m_callback(payload);
+    }));
+  }
+
+  //################################################################################################
+  void call(const T& payload)
+  {
+    TP_MUTEX_LOCKER(m_mutex);
+    m_payloads.push_back(payload);
+  }
+
+  //################################################################################################
+  void operator()(const T& payload)
+  {
+    call(payload);
+  }
+};
 
 }
 
