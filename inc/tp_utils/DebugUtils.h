@@ -78,7 +78,7 @@ class TeeMessageHandler
 {
 public:
   //################################################################################################
-  TeeMessageHandler(const std::string& path);
+  TeeMessageHandler(const std::string& path, bool withTime=true);
 
   //################################################################################################
   ~TeeMessageHandler();

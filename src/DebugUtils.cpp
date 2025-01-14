@@ -127,11 +127,15 @@ void TP_UTILS_EXPORT installDateTimeMemoryMessageHandler()
 
 
 //##################################################################################################
-TeeMessageHandler::TeeMessageHandler(const std::string& path)
+TeeMessageHandler::TeeMessageHandler(const std::string& path, bool withTime)
 {
   auto closure = [=](tp_utils::MessageType type, const std::string& message)
   {
-    writeTextFile(path, getCurrentTimestamp() + message, TPAppend::Yes);
+    if(withTime)
+      writeTextFile(path, getCurrentTimestamp() + message, TPAppend::Yes);
+    else
+      writeTextFile(path, message, TPAppend::Yes);
+
     if(m_previous)
       m_previous(type, message);
   };
