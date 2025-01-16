@@ -132,8 +132,10 @@ public:
   //################################################################################################
   void call(const T& payload)
   {
-    TP_MUTEX_LOCKER(m_mutex);
+    m_mutex.lock(TPM);
     m_payloads.push_back(payload);
+    m_mutex.unlock(TPM);
+    (*m_crossThreadCallback)();
   }
 
   //################################################################################################
