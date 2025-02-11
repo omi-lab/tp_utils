@@ -7,6 +7,7 @@ namespace tp_utils
 {
 
 typedef void* WeakStringID;
+struct StaticStringID;
 
 //##################################################################################################
 //! A class that implements efficent string based identifiers
@@ -18,7 +19,10 @@ class  TP_UTILS_EXPORT StringID final
 {
   friend bool operator==(const StringID& a, const StringID& b);
   friend bool operator!=(const StringID& a, const StringID& b);
+  friend bool operator==(const StaticStringID& a, const StaticStringID& b);
+  friend bool operator!=(const StaticStringID& a, const StaticStringID& b);
   friend struct std::hash<tp_utils::StringID>;
+  friend struct std::hash<tp_utils::StaticStringID>;
 
 public:
   //################################################################################################
@@ -122,6 +126,12 @@ private:
   //################################################################################################
   void detach();
 
+  //################################################################################################
+  void silentDetach();
+
+  //################################################################################################
+  void silentDetachInternal();
+
   struct SharedData;
   SharedData* sd;
   friend struct SharedData;
@@ -129,6 +139,7 @@ private:
   struct StaticData;
   static StaticData& staticData(size_t hash);
   friend struct StaticData;
+  friend struct StaticStringID;
 };
 
 //##################################################################################################
@@ -171,6 +182,60 @@ std::string TP_UTILS_EXPORT join(const std::vector<StringID>& ids, const std::st
 //##################################################################################################
 std::string TP_UTILS_EXPORT join(const std::vector<std::string>& parts, const std::string& del);
 
+//##################################################################################################
+struct StaticStringID
+{
+  StringID sid;
+
+  //################################################################################################
+  StaticStringID() = default;
+
+  //################################################################################################
+  StaticStringID(const StaticStringID& other) = default;
+
+  //################################################################################################
+  //! Move another string id
+  StaticStringID(StaticStringID&& other) noexcept = default;
+
+  //################################################################################################
+  StaticStringID(const char* string):
+    sid(string)
+  {
+
+  }
+
+  //################################################################################################
+  StaticStringID(const std::string& string):
+    sid(string)
+  {
+
+  }
+
+  //################################################################################################
+  ~StaticStringID()
+  {
+    sid.silentDetach();
+  }
+
+  //################################################################################################
+  StaticStringID& operator=(const StaticStringID& other) = default;
+
+  //################################################################################################
+  StaticStringID& operator=(StaticStringID&& other) noexcept = default;
+};
+
+//##################################################################################################
+inline bool operator==(const StaticStringID& a, const StaticStringID& b)
+{
+  return (a.sid.sd == b.sid.sd);
+}
+
+//##################################################################################################
+inline bool operator!=(const StaticStringID& a, const StaticStringID& b)
+{
+  return (a.sid.sd != b.sid.sd);
+}
+
 }
 
 namespace std
@@ -181,6 +246,15 @@ struct hash<tp_utils::StringID>
   size_t operator()(const tp_utils::StringID& stringID) const
   {
     return hash<void*>()(stringID.sd);
+  }
+};
+
+template <>
+struct hash<tp_utils::StaticStringID>
+{
+  size_t operator()(const tp_utils::StaticStringID& stringID) const
+  {
+    return hash<void*>()(stringID.sid.sd);
   }
 };
 template <>
@@ -235,11 +309,11 @@ the first letter of each word, followed by SID at the end.
 \param methodName - The name to give the method that this macro will create.
 \param idString - The string that the method will return.
 */
-#define TP_DEFINE_ID(methodName, idString)      \
-  const tp_utils::StringID& methodName() {      \
-  static const tp_utils::StringID id(idString); \
-  return id;                                    \
-  }                                             \
+#define TP_DEFINE_ID(methodName, idString)            \
+  const tp_utils::StringID& methodName() {            \
+  static const tp_utils::StaticStringID id(idString); \
+  return id.sid;                                      \
+  }                                                   \
   void ANONYMOUS_FUNCTION()
 
 //##################################################################################################

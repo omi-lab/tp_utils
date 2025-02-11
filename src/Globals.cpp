@@ -241,6 +241,22 @@ std::wstring tpWStringFromUTF8(const std::string& source)
 namespace tp_utils
 {
 
+namespace detail
+{
+//##################################################################################################
+int& staticInit()
+{
+  static int staticInit=0;
+  return staticInit;
+}
+}
+
+//##################################################################################################
+int staticInit()
+{
+  return detail::staticInit();
+}
+
 //##################################################################################################
 void leftJustified(std::string& text, size_t maxLength, char padding)
 {

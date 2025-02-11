@@ -2,7 +2,6 @@
 #include "tp_utils/MutexUtils.h"
 #include "tp_utils/StackTrace.h"
 #include "tp_utils/FileUtils.h"
-#include "tp_utils/RefCount.h"
 #include "tp_utils/detail/log_stats/virtual_memory.h"
 
 #include "date/date.h"
@@ -25,8 +24,20 @@ namespace
 TPMutex debugMutex{TPM};
 std::function<void(MessageType, const std::string&)> debugCallback;
 std::function<void(const std::string&, DebugType, const std::string&)> tableCallback;
-std::unordered_map<std::string, std::unordered_map<int, bool>>& enabledDebugModeObjects(){static std::unordered_map<std::string, std::unordered_map<int, bool>> s; return s;}
-std::vector<DebugMode*>& debugModeObjects(){static std::vector<DebugMode*> s; return s;}
+
+//##################################################################################################
+std::unordered_map<std::string, std::unordered_map<int, bool>>& enabledDebugModeObjects()
+{
+  static std::unordered_map<std::string, std::unordered_map<int, bool>> s;
+  return s;
+}
+
+//##################################################################################################
+std::vector<DebugMode*>& debugModeObjects()
+{
+  static std::vector<DebugMode*> s;
+  return s;
+}
 
 //##################################################################################################
 void handleSignal(int signum)
@@ -115,7 +126,7 @@ void installDateTimeMessageHandler_notThreadSafe()
 }
 
 //##################################################################################################
-void TP_UTILS_EXPORT installDateTimeMemoryMessageHandler()
+void installDateTimeMemoryMessageHandler()
 {
   installMessageHandler([](tp_utils::MessageType, const std::string& message)
   {
@@ -152,7 +163,6 @@ TeeMessageHandler::~TeeMessageHandler()
 //##################################################################################################
 struct DebugMode::Private
 {
-  TP_REF_COUNT_OBJECTS("tp_utils::DebugMode::Private");
   TP_NONCOPYABLE(Private);
 
   const std::string& classPath;
@@ -295,7 +305,6 @@ std::ostream& Default::operator()()
 //##################################################################################################
 struct Manager::Private
 {
-  TP_REF_COUNT_OBJECTS("tp_utils::DBG::Manager::Private");
   TP_NONCOPYABLE(Private);
   Private() = default;
 

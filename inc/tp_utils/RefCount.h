@@ -43,7 +43,7 @@ public:
   \warning Don't call this directly, use TP_UNREF
   \param type - The type to increment
   */
-  static void ref(const tp_utils::StringID& type);
+  static void ref(const tp_utils::StaticStringID& type);
 
   //################################################################################################
   //! Decrements the count for type
@@ -51,7 +51,7 @@ public:
   \warning Don't call this directly, use TP_UNREF
   \param type - The type to decrement
   */
-  static void unref(const tp_utils::StringID& type);
+  static void unref(const tp_utils::StaticStringID& type);
 
   //################################################################################################
   //! Lock the instances hash
@@ -71,7 +71,7 @@ public:
   \warning you must lock before using this
   \return A hash of type to count
   */
-  static const std::unordered_map<tp_utils::StringID, InstanceDetails>& instances();
+  static const std::unordered_map<tp_utils::StaticStringID, InstanceDetails>& instances();
 
   //################################################################################################
   static std::vector<std::string> serialize();
@@ -89,12 +89,12 @@ public:
 #define TP_REF_COUNT_OBJECTS(type)\
   class _TP_REF_COUNT_OBJECT_\
   {\
-  static const tp_utils::StringID& getType()\
+  static const tp_utils::StaticStringID& getType()\
   {\
-  static const tp_utils::StringID typeSID(std::string(type)+__FILE__);\
+  static const tp_utils::StaticStringID typeSID(std::string(type)+__FILE__);\
   return typeSID;\
   }\
-  const tp_utils::StringID& m_type{getType()};\
+  const tp_utils::StaticStringID& m_type{getType()};\
   public:\
   _TP_REF_COUNT_OBJECT_ (){tp_utils::RefCount::ref  (m_type);}\
   _TP_REF_COUNT_OBJECT_ (const _TP_REF_COUNT_OBJECT_& other){TP_UNUSED(other);tp_utils::RefCount::ref  (m_type);}\
@@ -114,7 +114,7 @@ public:
 \param type - The type of the class to ref count as a string
 */
 #define TP_REF(type){\
-  static const tp_utils::StringID TP_REF_TYPE(type);\
+  static const tp_utils::StaticStringID TP_REF_TYPE(type);\
   tp_utils::RefCount::ref(TP_REF_TYPE);}do{}while(0)
 
 
@@ -125,7 +125,7 @@ public:
 \param type - The type of the class to ref count as a string
 */
 #define TP_UNREF(type){\
-  static const tp_utils::StringID TP_REF_TYPE(type);\
+  static const tp_utils::StaticStringID TP_REF_TYPE(type);\
   tp_utils::RefCount::unref(TP_REF_TYPE);}do{}while(0)
 
 #else

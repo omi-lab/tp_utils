@@ -2,6 +2,7 @@
 #include "tp_utils/DebugUtils.h"
 #include "tp_utils/MutexUtils.h"
 #include "tp_utils/detail/log_stats/virtual_memory.h"
+#include "tp_utils/detail/StaticState.h"
 
 #ifdef TP_ENABLE_TIME_SCOPE
 #include "tp_utils/FileUtils.h"
@@ -97,33 +98,31 @@ void ElapsedTimer::printTime(const char* msg)
 
 namespace
 {
-struct FunctionTimeStatsDetails_lt
+
+namespace
 {
-  int64_t count{0};
-  int64_t max{0};
-  int64_t total{0};
-  int64_t mainThreadTotal{0};
-};
+//##################################################################################################
+StaticState::FunctionTimeStats& functionTimeStats()
+{
+  auto i=StaticState::instance();
+  return i->functionTimeStats;
+}
+}
 
 const std::thread::id mainThreadId = std::this_thread::get_id();
 }
 
-//##################################################################################################
-struct FunctionTimeStats::Instance
-{
-  TPMutex mutex{TPM};
-  std::unordered_map<std::string, FunctionTimeStatsDetails_lt> stats;
-};
 
 //##################################################################################################
 void FunctionTimeStats::add(const std::vector<FunctionTimeReading>& readings)
 {
-  auto i = instance();
-  TP_MUTEX_LOCKER(i->mutex);
+  auto& instance = functionTimeStats();
+
+  TP_MUTEX_LOCKER(instance.mutex);
 
   for(const auto& reading : readings)
   {
-    auto& s = i->stats[reading.key];
+    auto& s = instance.stats[reading.key];
     s.count++;
     s.max = tpMax(s.max, reading.timeTaken);
     s.total += reading.timeTaken;
@@ -138,15 +137,16 @@ std::string FunctionTimeStats::takeResults()
 {
   std::string result;
 
-  auto i = instance();
-  TP_MUTEX_LOCKER(i->mutex);
+  auto& instance = functionTimeStats();
 
-  std::vector<std::pair<std::string, FunctionTimeStatsDetails_lt>> detailsList;
-  detailsList.reserve(i->stats.size());
-  for(const auto& it : i->stats)
+  TP_MUTEX_LOCKER(instance.mutex);
+
+  std::vector<std::pair<std::string, FunctionTimeStatsDetails>> detailsList;
+  detailsList.reserve(instance.stats.size());
+  for(const auto& it : instance.stats)
     detailsList.push_back({it.first, it.second});
 
-  std::sort(detailsList.begin(), detailsList.end(), [](const std::pair<std::string, FunctionTimeStatsDetails_lt>& a, const std::pair<std::string, FunctionTimeStatsDetails_lt>& b)
+  std::sort(detailsList.begin(), detailsList.end(), [](const std::pair<std::string, FunctionTimeStatsDetails>& a, const std::pair<std::string, FunctionTimeStatsDetails>& b)
   {
     return a.second.total > b.second.total;
   });
@@ -194,9 +194,10 @@ std::string FunctionTimeStats::takeResults()
 //##################################################################################################
 void FunctionTimeStats::reset()
 {
-  auto i = instance();
-  TP_MUTEX_LOCKER(i->mutex);
-  i->stats.clear();
+  auto& instance = functionTimeStats();
+
+  TP_MUTEX_LOCKER(instance.mutex);
+  instance.stats.clear();
 }
 
 //##################################################################################################
@@ -210,9 +211,10 @@ std::map<std::string, size_t> FunctionTimeStats::keyValueResults()
 {
   std::map<std::string, size_t> result;
 
-  auto i = instance();
-  TP_MUTEX_LOCKER(i->mutex);
-  for(const auto& it : i->stats)
+  auto& instance = functionTimeStats();
+
+  TP_MUTEX_LOCKER(instance.mutex);
+  for(const auto& it : instance.stats)
   {
     result[it.first+"_count"] = it.second.count;
     result[it.first+"_max"  ] = it.second.max;
@@ -223,15 +225,10 @@ std::map<std::string, size_t> FunctionTimeStats::keyValueResults()
   return result;
 }
 
-//##################################################################################################
-FunctionTimeStats::Instance* FunctionTimeStats::instance()
-{
-  static FunctionTimeStats::Instance instance;
-  return &instance;
-}
-
 namespace
 {
+
+//##################################################################################################
 struct Step_lt
 {
   size_t level{0};

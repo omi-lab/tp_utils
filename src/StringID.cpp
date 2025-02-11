@@ -264,34 +264,46 @@ void StringID::detach()
     // if(FunctionTimeStats::isMainThread())
     //   TP_COUNT_STACK_TRACE;
 
-    {
-      TP_MUTEX_LOCKER(sd->mutex);
-      if(sd->referenceCount>1)
-      {
-        sd->referenceCount--;
-        sd = nullptr;
-        return;
-      }
-    }
-
-    StaticData& staticData(StringID::staticData(sd->hash.hash));
-    TP_MUTEX_LOCKER(staticData.mutex);
-
-    sd->mutex.lock(TPM);
-    sd->referenceCount--;
-
-    //Delete unused shared data
-    if(!sd->referenceCount)
-    {
-      sd->mutex.unlock(TPM);
-      staticData.allKeys.erase(sd->hash);
-      delete sd;
-    }
-    else
-      sd->mutex.unlock(TPM);
-
-    sd = nullptr;
+    silentDetachInternal();
   }
+}
+
+//##################################################################################################
+void StringID::silentDetach()
+{
+  if(sd)
+    silentDetachInternal();
+}
+//##################################################################################################
+void StringID::silentDetachInternal()
+{
+  {
+    TP_MUTEX_LOCKER(sd->mutex);
+    if(sd->referenceCount>1)
+    {
+      sd->referenceCount--;
+      sd = nullptr;
+      return;
+    }
+  }
+
+  StaticData& staticData(StringID::staticData(sd->hash.hash));
+  TP_MUTEX_LOCKER(staticData.mutex);
+
+  sd->mutex.lock(TPM);
+  sd->referenceCount--;
+
+  //Delete unused shared data
+  if(!sd->referenceCount)
+  {
+    sd->mutex.unlock(TPM);
+    staticData.allKeys.erase(sd->hash);
+    delete sd;
+  }
+  else
+    sd->mutex.unlock(TPM);
+
+  sd = nullptr;
 }
 
 //##################################################################################################

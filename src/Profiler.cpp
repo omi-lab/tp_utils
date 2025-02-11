@@ -135,10 +135,6 @@ void Profiler::rangePop()
   progressEvent.end = tp_utils::currentTimeMS();
   progressEvent.active = false;
 
-#ifdef DANICAMBA_DEBUG
-  tpDebug() << "--- Profile :: " << progressEvent.name << " = " << (progressEvent.end - progressEvent.start) << " ms";
-#endif
-
   d->progressStore->updateProgressEvent(progressEvent);
   d->eventStack.pop();
 }

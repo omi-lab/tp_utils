@@ -1,5 +1,6 @@
 #include "tp_utils/Garbage.h"
 #include "tp_utils/MutexUtils.h"
+#include "tp_utils/detail/StaticState.h"
 
 #include "lib_platform/SetThreadName.h"
 
@@ -8,8 +9,17 @@
 
 namespace tp_utils
 {
-static TPMutex instanceMutex{TPM};
-static Garbage* instance{nullptr};
+
+#ifndef TP_NO_THREADS
+namespace
+{
+//##################################################################################################
+StaticState::Garbage& getStaticState()
+{
+  return StaticState::instance()->garbage;
+}
+}
+#endif
 
 //##################################################################################################
 struct Garbage::Private
@@ -25,11 +35,14 @@ struct Garbage::Private
 Garbage::Garbage():
   d(new Private)
 {
-  instanceMutex.locked(TPMc [&]
+#ifndef TP_NO_THREADS
+  auto& staticState = getStaticState();
+  staticState.instanceMutex.locked(TPMc [&]
   {
-    if(!instance)
-      instance = this;
+    if(!staticState.instance)
+      staticState.instance = this;
   });
+#endif
 
   for(size_t i=0; i<4; i++)
   {
@@ -58,7 +71,10 @@ Garbage::Garbage():
 //##################################################################################################
 Garbage::~Garbage()
 {
-  instanceMutex.locked(TPMc [&]{instance = nullptr;});
+#ifndef TP_NO_THREADS
+  auto& staticState = getStaticState();
+  staticState.instanceMutex.locked(TPMc [&]{staticState.instance = nullptr;});
+#endif
 
   d->mutex.locked(TPMc [&]{d->finish = true;});
   d->waitCondition.wakeAll();
@@ -83,11 +99,12 @@ void Garbage::garbage(const std::function<void()>& closure)
 void garbage(const std::function<void()>& closure)
 {
 #ifndef TP_NO_THREADS
+  auto& staticState = getStaticState();
   {
-    TP_MUTEX_LOCKER(instanceMutex);
-    if(instance)
+    TP_MUTEX_LOCKER(staticState.instanceMutex);
+    if(staticState.instance)
     {
-      instance->garbage(closure);
+      staticState.instance->garbage(closure);
       return;
     }
   }
