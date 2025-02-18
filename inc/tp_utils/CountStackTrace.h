@@ -21,10 +21,10 @@ struct TP_UTILS_EXPORT CountStackTrace
   static void print();
 };
 
-#define TP_COUNT_STACK_TRACE tp_utils::CountStackTrace::count();
+#define TP_COUNT_STACK_TRACE tp_utils::CountStackTrace::count()
 
 #else
-#define TP_COUNT_STACK_TRACE
+#define TP_COUNT_STACK_TRACE do{}while(false)
 #endif
 
 }

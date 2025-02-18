@@ -1,6 +1,7 @@
 #include "tp_utils/StringID.h"
 #include "tp_utils/MutexUtils.h"
 #include "tp_utils/TimeUtils.h"
+#include "tp_utils/CountStackTrace.h" // IWYU pragma: keep
 
 #include <unordered_map>
 #include <mutex>
@@ -219,6 +220,9 @@ void StringID::fromString(const std::string& string)
 
   if(string.empty())
     return;
+
+  // if(FunctionTimeStats::isMainThread())
+  //   TP_COUNT_STACK_TRACE;
 
   StringHash_lt hash;
   hash.string = string;

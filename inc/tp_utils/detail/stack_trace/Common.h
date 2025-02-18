@@ -28,6 +28,7 @@
 
 #endif
 
-#define MAX_LEVELS 100
+//#define MAX_LEVELS 100
+#define MAX_LEVELS 9
 
 #endif
