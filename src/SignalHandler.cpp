@@ -21,6 +21,7 @@
 #include <rtcapi.h>
 #include <shellapi.h>
 #include <DbgHelp.h>
+#include <eh.h>
 #endif
 
 namespace tp_utils
@@ -109,7 +110,11 @@ struct SignalHandler::Private
     _set_abort_behavior(_CALL_REPORTFAULT, _CALL_REPORTFAULT);
 
     set_terminate(terminateHandler);
+
+    //Deprecated MSVC from C++23 and not availabe in VC++ see <eh.h>
+#if __cplusplus <= 202002L
     set_unexpected(unexpectedHandler);
+#endif
   }
 
   //################################################################################################
@@ -153,11 +158,11 @@ struct SignalHandler::Private
                                               unsigned int line,
                                               uintptr_t pReserved)
   {
-    std::cout << "invalidParameterHandler()" << std::endl;
-    std::cout << "expression: " << expression << std::endl;
-    std::cout << "function  : " << function << std::endl;
-    std::cout << "file      : " << file << std::endl;
-    std::cout << "line      : " << line << std::endl;
+    std::wcout << "invalidParameterHandler()" << std::endl;
+    std::wcout << "expression: " << expression << std::endl;
+    std::wcout << "function  : " << function << std::endl;
+    std::wcout << "file      : " << file << std::endl;
+    std::wcout << "line      : " << line << std::endl;
 
     // Invalid parameter exception
     TP_UNUSED(pReserved);

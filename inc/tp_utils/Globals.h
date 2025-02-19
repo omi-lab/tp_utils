@@ -44,7 +44,7 @@
 
 //##################################################################################################
 //TP_DEPRECATED
-#if TP_CPP_VERSION>=14
+#if __cplusplus > 201402L
 #define TP_DEPRECATED(typ, func) [[deprecated]] typ func
 #else
 #ifdef __GNUC__
@@ -58,7 +58,7 @@
 
 
 //##################################################################################################
-#if TP_CPP_VERSION>=20
+#if __cplusplus >= 202002L
 #define TP_LIKELY(x)      (x)[[likely]]
 #define TP_UNLIKELY(x)    (x)[[unlikely]]
 #elif defined(__clang__) || defined(__GNUC__) || defined(__GNUG__)

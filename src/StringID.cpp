@@ -221,8 +221,8 @@ void StringID::fromString(const std::string& string)
   if(string.empty())
     return;
 
-  // if(FunctionTimeStats::isMainThread())
-  //   TP_COUNT_STACK_TRACE;
+  //if(FunctionTimeStats::isMainThread())
+  //  TP_COUNT_STACK_TRACE;
 
   StringHash_lt hash;
   hash.string = string;
@@ -264,8 +264,8 @@ void StringID::detach()
   {
     TP_FUNCTION_TIME("StringID::detach");
 
-    // if(FunctionTimeStats::isMainThread())
-    //   TP_COUNT_STACK_TRACE;
+    //if(FunctionTimeStats::isMainThread())
+    //  TP_COUNT_STACK_TRACE;
 
     silentDetachInternal();
   }
