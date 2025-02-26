@@ -252,14 +252,14 @@ int DebugBuffer::sync()
 {
   TP_MUTEX_LOCKER(debugMutex);
   if(debugCallback)
-    debugCallback(MessageType::Warning, str());
+    debugCallback(m_type, str());
   else
   {
     std::cout << str();
     std::cout.flush();
   }
 
-  DBG::Manager::instance().debugCallbacks(MessageType::Warning, str());
+  DBG::Manager::instance().debugCallbacks(m_type, str());
 
   str("");
   return 0;
@@ -273,7 +273,7 @@ struct Default : public Base
 {
   TP_NONCOPYABLE(Default);
 
-  Default();
+  Default(MessageType type);
   ~Default() override;
   std::ostream& operator()() override;
 
@@ -281,13 +281,35 @@ struct Default : public Base
   std::ostream m_stream;
 };
 
-using DefaultFactory = FactoryTemplate<Default>;
+//##################################################################################################
+struct DefaultWarning : public Default
+{
+  DefaultWarning():
+    Default(MessageType::Warning)
+  {
+
+  }
+};
 
 //##################################################################################################
-Default::Default():
+struct DefaultDebug : public Default
+{
+  DefaultDebug():
+    Default(MessageType::Debug)
+  {
+
+  }
+};
+
+//##################################################################################################
+using DefaultWarningFactory = FactoryTemplate<DefaultWarning>;
+using DefaultDebugFactory = FactoryTemplate<DefaultDebug>;
+
+//##################################################################################################
+Default::Default(MessageType type):
   m_stream(&m_buffer)
 {
-
+  m_buffer.m_type = type;
 }
 
 //##################################################################################################
@@ -309,8 +331,8 @@ struct Manager::Private
   Private() = default;
 
   std::mutex mutex;
-  std::unique_ptr<FactoryBase> warningFactory{new DefaultFactory()};
-  std::unique_ptr<FactoryBase> debugFactory{new DefaultFactory()};
+  std::unique_ptr<FactoryBase> warningFactory{new DefaultWarningFactory()};
+  std::unique_ptr<FactoryBase> debugFactory{new DefaultDebugFactory()};
 };
 
 //##################################################################################################

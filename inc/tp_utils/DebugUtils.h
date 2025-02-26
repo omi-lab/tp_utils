@@ -120,6 +120,8 @@ public:
 class TP_UTILS_EXPORT DebugBuffer : public std::stringbuf
 {
 public:
+  MessageType m_type{MessageType::Warning};
+
   //################################################################################################
     int sync() override;
 };
