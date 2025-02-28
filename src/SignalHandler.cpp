@@ -103,6 +103,10 @@ struct SignalHandler::Private
   // https://www.codeproject.com/Articles/207464/Exception-Handling-in-Visual-Cplusplus
   void setWindowsHandlers()
   {
+
+// remove setting error handling for RelWithDebInfo
+// setting it for release with debug info mode prevents to stop on crash in debugger
+#ifndef DEBUG_WITH_REL_INFO
     SetUnhandledExceptionFilter(sehHandler);
     _set_purecall_handler(pureCallHandler);
     _set_new_handler(newHandler);
@@ -114,6 +118,7 @@ struct SignalHandler::Private
     //Deprecated MSVC from C++23 and not availabe in VC++ see <eh.h>
 #if __cplusplus <= 202002L
     set_unexpected(unexpectedHandler);
+#endif
 #endif
   }
 
