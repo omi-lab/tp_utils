@@ -119,19 +119,19 @@ class CrossThreadCallbackWithPayload
   TPMutex m_mutex{TPM};
   std::vector<T> m_payloads;
   std::function<void(T)> m_callback;
-  std::unique_ptr<AbstractCrossThreadCallback> m_crossThreadCallback;
+  TPCrossThreadCallback m_crossThreadCallback;
 public:
   //################################################################################################
   CrossThreadCallbackWithPayload(AbstractCrossThreadCallbackFactory* factory, const std::function<void(T)>& callback):
     m_callback(callback)
   {
-    m_crossThreadCallback.reset(factory->produce([&]
+    m_crossThreadCallback = factory->produceP([&]
     {
       m_mutex.lock(TPM);
       T payload = tpTakeFirst(m_payloads);
       m_mutex.unlock(TPM);
       m_callback(payload);
-    }));
+    });
   }
 
   //################################################################################################
