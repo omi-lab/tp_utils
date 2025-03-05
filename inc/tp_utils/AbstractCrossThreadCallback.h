@@ -61,9 +61,11 @@ public:
   //################################################################################################
   virtual ~AbstractCrossThreadCallbackFactory();
 
+protected:
   //################################################################################################
   [[nodiscard]] virtual AbstractCrossThreadCallback* produce(const std::function<void()>& callback) const = 0;
 
+public:
   //################################################################################################
   [[nodiscard]] TPCrossThreadCallback produceP(const std::function<void()>& callback) const
   {
@@ -81,6 +83,7 @@ public:
 template<typename T>
 class CrossThreadCallbackFactoryTemplate : public AbstractCrossThreadCallbackFactory
 {
+protected:
   AbstractCrossThreadCallback* produce(const std::function<void()>& callback) const override
   {
     return new T(callback);
@@ -94,9 +97,11 @@ public:
   //################################################################################################
   PolledCrossThreadCallbackFactory();
 
+protected:
   //################################################################################################
   AbstractCrossThreadCallback* produce(const std::function<void()>& callback) const override;
 
+public:
   //################################################################################################
   Callback<void()> poll;
 

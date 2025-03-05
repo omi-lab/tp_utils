@@ -101,13 +101,13 @@ void blockingCrossThreadCall(AbstractCrossThreadCallbackFactory* factory, const 
   TPWaitCondition waitCondition;
   bool called{false};
 
-  std::unique_ptr<AbstractCrossThreadCallback> crossThreadCallback = std::unique_ptr<AbstractCrossThreadCallback>(factory->produce([&]
+  TPCrossThreadCallback crossThreadCallback = factory->produceP([&]
   {
     callback();
     TP_MUTEX_LOCKER(mutex);
     called = true;
     waitCondition.wakeAll();
-  }));
+  });
 
   (*crossThreadCallback)();
 

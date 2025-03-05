@@ -184,7 +184,7 @@ struct Progress::Private
   std::vector<ChildStep_lt> childSteps;
   bool shouldStop{false};
 
-  std::unique_ptr<AbstractCrossThreadCallback> crossThreadCallback;
+  TPCrossThreadCallback crossThreadCallback;
   std::function<bool()> poll;
   Progress* parent{nullptr};
 
@@ -307,7 +307,7 @@ Progress::Progress(AbstractCrossThreadCallbackFactory* crossThreadCallbackFactor
                    AbstractProgressStore* progressStore):
   d(new Private(this, progressStore, nullptr, message))
 {
-  d->crossThreadCallback.reset(crossThreadCallbackFactory->produce([&]{changed();}));
+  d->crossThreadCallback = crossThreadCallbackFactory->produceP([&]{changed();});
 }
 
 //##################################################################################################
