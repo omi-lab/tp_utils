@@ -18,6 +18,8 @@
 #define TPMc
 #define TPM_Ac
 #define TPM_Bc
+
+//#define TP_MUTEX_LOCKER(mutex)TPMutexLocker TP_CONCAT(locker, __LINE__)(mutex); TP_UNUSED(TP_CONCAT(locker, __LINE__))
 #define TP_MUTEX_LOCKER(m)std::lock_guard<std::mutex> TP_CONCAT(locker, __LINE__)(m); TP_UNUSED(TP_CONCAT(locker, __LINE__))
 #define TP_MUTEX_UNLOCKER(mutex)TPMutexUnlocker TP_CONCAT(locker, __LINE__)(&mutex); TP_UNUSED(TP_CONCAT(locker, __LINE__))
 

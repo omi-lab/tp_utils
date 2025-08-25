@@ -3,6 +3,8 @@
 
 #include "tp_utils/detail/stack_trace/Common.h" // IWYU pragma: keep
 
+#include "tp_utils/FileUtils.h"
+
 #ifdef GCC_STACKTRACE
 //This allows us to print a stack trace
 //This is gcc specific, and we may want to remove it from production code
@@ -17,6 +19,7 @@ namespace tp_utils
 //##################################################################################################
 static bool demangle(const char* symbol, std::string& output, std::string& offset)
 {
+  std::cout << "SSS: " << symbol << std::endl;
   std::unique_ptr<char, decltype(&free)> symbol2(strdup(symbol), &free);
 
   // find parentheses and +address offset surrounding the mangled name:
@@ -182,6 +185,10 @@ void printStackTrace()
   execAddr2Line();
 #endif
 
+#ifdef TP_EUADDR2LINE
+  execEUAddr2Line();
+#endif
+
 
 
   //Get the backtrace
@@ -206,7 +213,7 @@ void printStackTrace()
 #endif
   std::unique_ptr<char*, decltype(&free)> strings(backtrace_symbols(array.data(), size), &free);
   tpWarning() << "Stack frames: " << size - startOffset;
-  for(int i = startOffset; i < size; ++i)
+  for(int i = startOffset; i < size; i++)
   {
     const char* symbol = strings.get()[i];
 
@@ -246,7 +253,7 @@ std::vector<std::string> addr2Line()
   int size = backtrace(array.data(), MAX_LEVELS);
 #endif
   std::unique_ptr<char*, decltype(&free)> strings(backtrace_symbols(array.data(), size), &free);
-  for(int i = startOffset; i < size; ++i)
+  for(int i = startOffset; i < size; i++)
   {
     const char* symbol = strings.get()[i];
 
@@ -267,12 +274,23 @@ std::vector<std::string> addr2Line()
 
         if(!partsC.empty())
         {
-          std::string output;
-          output += " addr2line ";
-          output += offset;
-          output += " -f -C -e ";
-          output += partsA.front();
-          results.push_back(output);
+          if(offset.empty())
+          {
+            std::string output;
+            output += " echo '";
+            output += symbol;
+            output += "'";
+            results.push_back(output);
+          }
+          else
+          {
+            std::string output;
+            output += " addr2line ";
+            output += offset;
+            output += " -f -C -e ";
+            output += partsA.front();
+            results.push_back(output);
+          }
         }
       }
     }
@@ -303,6 +321,56 @@ void execAddr2Line()
 }
 
 //##################################################################################################
+void execEUAddr2Line()
+{
+  //Get the backtrace
+  std::array<void*, MAX_LEVELS> array = tpMakeArray<void*, MAX_LEVELS>(nullptr);
+
+  int startOffset = 1;
+  int size = backtrace(array.data(), MAX_LEVELS);
+  std::unique_ptr<char*, decltype(&free)> strings(backtrace_symbols(array.data(), size), &free);
+
+  for(int i=startOffset; i<size; i++)
+  {
+    std::cout << "=================================================================================" << std::endl;
+    const char* symbol = strings.get()[i];
+
+    std::string demangled;
+    std::string offset;
+    demangle(symbol, demangled, offset);
+
+    std::string directory;
+
+    std::vector<std::string> partsA;
+    tpSplit(partsA, symbol, '(', TPSplitBehavior::SkipEmptyParts);
+    if(partsA.size()==2)
+       directory = tp_utils::directoryName(partsA.front());
+
+    std::string command;
+
+    {
+      char syscom[1024];
+      syscom[0] = '\0';
+      snprintf(syscom, 1024, "eu-addr2line '%p'", array[i]);
+      command = std::string(syscom);
+    }
+
+    //command += " --pid=" + std::to_string(getpid());
+
+    if(!directory.empty())
+      command += " --debuginfo-path=$(realpath " + directory + ")";
+
+    if(system(command.c_str()) != 0)
+      fprintf(stderr, "eu-addr2line failed\n");
+
+    std::cout << "AAAAAAA: " << command << std::endl;
+    std::cout << "=================================================================================" << std::endl;
+  }
+
+
+}
+
+//##################################################################################################
 std::vector<std::string> stackTraceFrames()
 {
   //Get the backtrace
@@ -315,7 +383,7 @@ std::vector<std::string> stackTraceFrames()
   std::unique_ptr<char*, decltype(&free)> strings(backtrace_symbols(array.data(), size), &free);
 
   std::vector<std::string> results;
-  for(int i = startOffset; i < size; ++i)
+  for(int i = startOffset; i < size; i++)
     results.push_back(strings.get()[i]);
 
   return results;

@@ -66,6 +66,9 @@ std::string getCurrentTimestampPath()
 //##################################################################################################
 std::string getCurrentTimestamp_notThreadSafe()
 {
+#ifdef TP_WIN32
+  return getCurrentTimestamp();
+#else
   using std::chrono::system_clock;
   auto currentTime = std::chrono::system_clock::now();
 
@@ -88,6 +91,7 @@ std::string getCurrentTimestamp_notThreadSafe()
   snprintf(bufferB, sizeof(bufferB),  "%s:%03d] ", bufferA, int(millis));
 
   return std::string(bufferB);
+#endif
 }
 
 //##################################################################################################

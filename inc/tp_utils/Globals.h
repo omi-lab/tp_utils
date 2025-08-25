@@ -498,6 +498,14 @@ bool tpNumber(const std::string& s, T& n, T d=T())
   return false;
 }
 
+template<typename T, typename J>
+T tpConstructFromJSON(const J& j)
+{
+  T s;
+  s.loadState(j);
+  return s;
+}
+
 namespace detail
 {
 //##################################################################################################
@@ -581,6 +589,15 @@ std::string TP_UTILS_EXPORT fixedWidthKeepLeft(std::string data, size_t len, cha
 //##################################################################################################
 //! Replace key with value in result.
 void replace(std::string& result, const std::string& key, const std::string& value);
+
+//##################################################################################################
+std::string replaced(std::string input, const std::string& key, const std::string& value);
+
+//##################################################################################################
+std::string formatFloat(float value, int precision);
+
+//##################################################################################################
+std::string formatDouble(double value, int precision);
 
 //##################################################################################################
 //! Format a number as B, kB, MB, ...

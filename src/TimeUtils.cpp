@@ -90,7 +90,7 @@ void ElapsedTimer::printTime(const char* msg)
   if(e>d->smallTime){
     //tpWarning() << msg << " (" << e << ")";
     tp_utils::detail::VirtualMemory vm;
-    tpWarning() << std::format("({}MB) {} ({})", vm.VmHWM/1024, msg, e);
+    tpWarning() << lib_platform::format("({}MB) {} ({})", vm.VmHWM/1024, msg, e);
   }
 }
 
@@ -128,12 +128,20 @@ void FunctionTimeStats::add(const std::vector<FunctionTimeReading>& readings)
     s.total += reading.timeTaken;
 
     if(mainThreadId == std::this_thread::get_id())
+    {
       s.mainThreadTotal += reading.timeTaken;
+      s.mainThreadMax = tpMax(s.mainThreadMax, reading.timeTaken);
+#ifdef TP_PRINT_FUNCTION_TIME_OVER
+      auto timeTakenMilliseconds = reading.timeTaken/1000;
+      if(timeTakenMilliseconds>=TP_PRINT_FUNCTION_TIME_OVER)
+        tpWarning() << "(" << fixedWidthKeepRight(std::to_string(timeTakenMilliseconds), 6, ' ') << ") Function time over " << TP_PRINT_FUNCTION_TIME_OVER << "ms. " << reading.key;
+#endif
+    }
   }
 }
 
 //##################################################################################################
-std::string FunctionTimeStats::takeResults()
+std::string FunctionTimeStats::takeResults(bool reset)
 {
   std::string result;
 
@@ -145,6 +153,9 @@ std::string FunctionTimeStats::takeResults()
   detailsList.reserve(instance.stats.size());
   for(const auto& it : instance.stats)
     detailsList.push_back({it.first, it.second});
+
+  if(reset)
+    instance.stats.clear();
 
   std::sort(detailsList.begin(), detailsList.end(), [](const std::pair<std::string, FunctionTimeStatsDetails>& a, const std::pair<std::string, FunctionTimeStatsDetails>& b)
   {

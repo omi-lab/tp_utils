@@ -13,7 +13,7 @@ std::string TP_UTILS_EXPORT readTextFile(const std::string& filename)
 {
   try
   {
-    std::ifstream in(std::filesystem::u8path(filename));
+    std::ifstream in(tp_utils::u8path(filename));
     return std::string((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
   }
   catch(...)
@@ -27,7 +27,7 @@ std::string TP_UTILS_EXPORT readBinaryFile(const std::string& filename)
 {
   try
   {
-    std::ifstream in(std::filesystem::u8path(filename), std::ios::binary | std::ios::ate);
+    std::ifstream in(tp_utils::u8path(filename), std::ios::binary | std::ios::ate);
     std::string results;
     auto size = in.tellg();
     if(size>0)
@@ -62,9 +62,9 @@ bool TP_UTILS_EXPORT writeTextFile(const std::string& filename, const std::strin
     std::ofstream out;
 
     if(append == TPAppend::Yes)
-      out.open(std::filesystem::u8path(filename), std::ios_base::out | std::ios_base::app);
+      out.open(tp_utils::u8path(filename), std::ios_base::out | std::ios_base::app);
     else
-      out.open(std::filesystem::u8path(filename), std::ios_base::out | std::ios_base::trunc);
+      out.open(tp_utils::u8path(filename), std::ios_base::out | std::ios_base::trunc);
 
     out << textOutput;
     return true;
@@ -80,7 +80,8 @@ bool TP_UTILS_EXPORT writeBinaryFile(const std::string& filename, const std::str
 {
   try
   {
-    std::ofstream out(std::filesystem::u8path(filename), std::ios::binary);
+    std::ofstream out(tp_utils::u8path(filename), std::ios::binary);
+
     out << binaryOutput;
     return true;
   }
@@ -121,15 +122,7 @@ bool writeJSONFile(const std::string& filename, const nlohmann::json& j, int ind
 //##################################################################################################
 bool writePrettyJSONFile(const std::string& filename, const nlohmann::json& j)
 {
-  try
-  {
-    std::string s = j.dump(2);
-    return writeTextFile(filename, s);
-  }
-  catch(...)
-  {
-    return false;
-  }
+  return writeJSONFile(filename, j, 2);
 }
 
 //##################################################################################################
@@ -262,6 +255,18 @@ std::string filename(const std::string& path)
 
   tpSplit(results, s, '/', TPSplitBehavior::SkipEmptyParts);
   return results.empty()?"":results.back();
+}
+
+//##################################################################################################
+std::string removeExtension(const std::string& filename)
+{
+  return filename.substr(0, filename.find_last_of("."));
+}
+
+//##################################################################################################
+std::string extension(const std::string& filename)
+{
+  return filename.substr(filename.find_last_of("."));
 }
 
 //##################################################################################################

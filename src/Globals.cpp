@@ -313,6 +313,28 @@ void replace(std::string& result, const std::string& key, const std::string& val
   }
 }
 
+//##################################################################################################
+std::string replaced(std::string input, const std::string& key, const std::string& value)
+{
+  replace(input, key, value);
+  return input;
+}
+
+//##################################################################################################
+std::string formatFloat(float value, int precision)
+{
+  std::stringstream stream;
+  stream << std::fixed << std::setprecision(precision) << value;
+  return stream.str();
+}
+
+//##################################################################################################
+std::string formatDouble(double value, int precision)
+{
+  std::stringstream stream;
+  stream << std::fixed << std::setprecision(precision) << value;
+  return stream.str();
+}
 
 //##################################################################################################
 std::string formatSizeBytes(int64_t sizeInBytes, bool alignRight)

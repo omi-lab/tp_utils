@@ -15,6 +15,9 @@ HEADERS += inc/tp_utils/FileUtils.h
 SOURCES += src/JSONUtils.cpp
 HEADERS += inc/tp_utils/JSONUtils.h
 
+SOURCES += src/BinaryUtils.cpp
+HEADERS += inc/tp_utils/BinaryUtils.h
+
 SOURCES += src/StringID.cpp
 HEADERS += inc/tp_utils/StringID.h
 

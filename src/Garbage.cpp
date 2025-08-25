@@ -29,6 +29,37 @@ struct Garbage::Private
   bool finish{false};
   std::vector<std::thread*> threads;
   std::queue<std::function<void()>> queue;
+
+  //################################################################################################
+  void addThread()
+  {
+    threads.push_back(new std::thread([&]
+    {
+      lib_platform::setThreadName("Garbage");
+      TPMutexLocker lock(mutex);
+      while(!finish || !queue.empty())
+      {
+        if(queue.empty())
+          waitCondition.wait(TPMc lock);
+        else
+        {
+          auto closure = queue.front();
+          queue.pop();
+          {
+            TP_MUTEX_UNLOCKER(lock);
+            closure();
+          }
+        }
+      }
+    }));
+  }
+
+  //################################################################################################
+  void setThreads(size_t nThreads)
+  {
+    while(threads.size()<nThreads)
+      addThread();
+  }
 };
 
 //##################################################################################################
@@ -44,28 +75,7 @@ Garbage::Garbage():
   });
 #endif
 
-  for(size_t i=0; i<4; i++)
-  {
-    d->threads.push_back(new std::thread([&]
-    {
-      lib_platform::setThreadName("Garbage");
-      TPMutexLocker lock(d->mutex);
-      while(!d->finish || !d->queue.empty())
-      {
-        if(d->queue.empty())
-          d->waitCondition.wait(TPMc lock);
-        else
-        {
-          auto closure = d->queue.front();
-          d->queue.pop();
-          {
-            TP_MUTEX_UNLOCKER(lock);
-            closure();
-          }
-        }
-      }
-    }));
-  }
+  d->setThreads(4);
 }
 
 //##################################################################################################
@@ -93,6 +103,12 @@ void Garbage::garbage(const std::function<void()>& closure)
 {
   d->mutex.locked(TPMc [&]{d->queue.push(closure);});
   d->waitCondition.wakeOne();
+}
+
+//##################################################################################################
+void Garbage::increaseThreads(size_t nThreads)
+{
+  d->setThreads(nThreads);
 }
 
 //##################################################################################################

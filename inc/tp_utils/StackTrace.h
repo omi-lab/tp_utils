@@ -90,6 +90,9 @@ void TP_UTILS_EXPORT printAddr2Line();
 void TP_UTILS_EXPORT execAddr2Line();
 
 //##################################################################################################
+void TP_UTILS_EXPORT execEUAddr2Line();
+
+//##################################################################################################
 //! Returns a stack trace as a string
 std::string TP_UTILS_EXPORT formatStackTrace();
 

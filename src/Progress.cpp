@@ -177,6 +177,7 @@ struct Progress::Private
 
   Q* q;
   bool printToConsole{false};
+  std::string printToFile;
   size_t indentation{0};
 
   TPMutex mutex{TPM};
@@ -259,21 +260,39 @@ struct Progress::Private
   }
 
   //################################################################################################
-  void checkPrint(const std::string& text)
+  std::string formatText(const std::string& text)
   {
-    if(!printToConsole)
-      return;
-
     Progress* p=q;
     while(p->d->parent)
       p=p->d->parent;
 
     tp_utils::detail::VirtualMemory vm;
 
-    tpWarning() << std::format("({}MB, {}%) {}{}",
-                               int(vm.VmHWM/1024),
-                               int(p->progress()*100.1f),
-                               std::string(indentation, ' '), text);
+    return lib_platform::format("({}MB, {}%) {}{}",
+                                int(vm.VmHWM/1024),
+                                int(p->progress()*100.1f),
+                                std::string(indentation, ' '), text);
+  }
+
+  //################################################################################################
+  void checkPrintToConsole(const std::string& text)
+  {
+    if(printToConsole)
+      tpWarning() << formatText(text);
+  }
+
+  //################################################################################################
+  void checkPrintToFile(const std::string& text)
+  {
+    if(!printToFile.empty())
+      tp_utils::writeTextFile(printToFile, formatText(text), TPAppend::Yes);
+  }
+
+  //################################################################################################
+  void checkPrint(const std::string& text)
+  {
+    checkPrintToConsole(text);
+    checkPrintToFile(text);
   }
 
   //################################################################################################
@@ -325,6 +344,7 @@ Progress::Progress(Progress* parent, const std::string& message):
 {
   d->indentation = parent->d->indentation + 2;
   d->printToConsole = parent->d->printToConsole;
+  d->printToFile = parent->d->printToFile;
 }
 
 //##################################################################################################
@@ -340,6 +360,12 @@ void Progress::setPrintToConsole(bool printToConsole)
 }
 
 //##################################################################################################
+void Progress::setPrintToFile(const std::string& printToFile)
+{
+  d->printToFile = printToFile;
+}
+
+//##################################################################################################
 void Progress::setProgress(float fraction)
 {
   d->updateThis([&](ChildStep_lt& childStep)
@@ -352,17 +378,17 @@ void Progress::setProgress(float fraction)
 }
 
 //##################################################################################################
-void Progress::setProgress(float fraction, const std::string& description)
+void Progress::setProgress(float fraction, const std::string& message)
 {
   d->updateThis([&](ChildStep_lt& childStep)
   {
     childStep.fraction = fraction;
-    d->description = description;
+    childStep.messages.emplace_back(message, false, 0);
     d->updateProgressEventEnd(childStep, fraction<=0.99999f);
   });
 
-  d->checkPrint(description);
   callChanged();
+  d->checkPrint(message);
 }
 
 //##################################################################################################
@@ -674,8 +700,7 @@ ParrallelProgress::~ParrallelProgress()
     delete childStep.progress;
     delete childStep.store;
   }
-  d->progress->setProgress(1.0f);
-  d->progress->addMessage("Done.");
+  d->progress->setProgress(1.0f, "Done.");
   delete d;
 }
 

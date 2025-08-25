@@ -55,6 +55,17 @@ public:
   void printTime(const char* msg);
 };
 
+
+//##################################################################################################
+//! Run something if given milliseconds have elapsed.
+//! Useful for debug stuff triggered each frame.
+#define TP_DEBUG_RUN_SLOW(ms, callback) \
+static thread_local auto tpRunSlowVar = []() {  \
+    auto t = std::make_unique<tp_utils::ElapsedTimer>(); t->start(); return t; \
+}(); \
+if (tpRunSlowVar->elapsed() > ms) { callback(); tpRunSlowVar->restart(); }
+
+
 #ifdef TP_ENABLE_FUNCTION_TIME
 
 //##################################################################################################
@@ -71,6 +82,7 @@ struct FunctionTimeStatsDetails
   int64_t count{0};
   int64_t max{0};
   int64_t total{0};
+  int64_t mainThreadMax{0};
   int64_t mainThreadTotal{0};
 };
 
@@ -82,7 +94,7 @@ public:
   static void add(const std::vector<FunctionTimeReading>& readings);
 
   //################################################################################################
-  static std::string takeResults();
+  static std::string takeResults(bool reset=false);
 
   //################################################################################################
   static void reset();

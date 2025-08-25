@@ -183,7 +183,6 @@ bool StringID::isValid() const
 //##################################################################################################
 void StringID::reset()
 {
-  TP_FUNCTION_TIME("StringID::reset");
   detach();
 }
 
@@ -216,7 +215,7 @@ std::vector<StringID> StringID::fromStringList(const std::vector<std::string>& s
 //##################################################################################################
 void StringID::fromString(const std::string& string)
 {
-  TP_FUNCTION_TIME("StringID::fromString");
+  //TP_FUNCTION_TIME("StringID::fromString");
 
   if(string.empty())
     return;
@@ -262,7 +261,7 @@ void StringID::detach()
 {
   if(sd)
   {
-    TP_FUNCTION_TIME("StringID::detach");
+    //TP_FUNCTION_TIME("StringID::detach");
 
     //if(FunctionTimeStats::isMainThread())
     //  TP_COUNT_STACK_TRACE;
