@@ -106,9 +106,9 @@ std::vector<StringID> getJSONStringIDs(const nlohmann::json& j,
 }
 
 //##################################################################################################
-void getJSONStringIDs(const nlohmann::json& j,
-                      const std::string& key,
-                      std::vector<StringID>& stringIDs)
+void loadVectorOfStringIDsFromJSON(const nlohmann::json& j,
+                                   const std::string& key,
+                                   std::vector<StringID>& stringIDs)
 {
   stringIDs.clear();
   if(const auto& i = j.find(key); i != j.end() && !i->empty())
@@ -123,8 +123,8 @@ void getJSONStringIDs(const nlohmann::json& j,
 }
 
 //##################################################################################################
-void getJSONStringIDs(const nlohmann::json& j,
-                      std::vector<StringID>& stringIDs)
+void loadVectorOfStringIDsFromJSON(const nlohmann::json& j,
+                                   std::vector<StringID>& stringIDs)
 {
   stringIDs.clear();
   if(j.is_array())

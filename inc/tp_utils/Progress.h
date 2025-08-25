@@ -4,7 +4,7 @@
 #include "tp_utils/CallbackCollection.h"
 #include "tp_utils/TPPixel.h"
 
-#include "json.hpp"
+#include "json.hpp" // IWYU pragma: keep
 
 namespace tp_utils
 {
@@ -133,6 +133,9 @@ public:
 
   //################################################################################################
   void setPrintToConsole(bool printToConsole);
+
+  //################################################################################################
+  void setPrintToFile(const std::string& printToFile);
 
   //################################################################################################
   //! Set the progress

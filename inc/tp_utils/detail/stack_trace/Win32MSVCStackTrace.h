@@ -290,6 +290,9 @@ std::vector<std::string> TP_UTILS_EXPORT stackTraceFrames(EXCEPTION_POINTERS* pE
                     &SymGetModuleBase64,
                     nullptr))
   {
+    if(frameNumber>MAX_LEVELS)
+      break;
+
     auto& resultLine = result.emplace_back();
     resultLine += tp_utils::fixedWidthKeepRight(std::to_string(frameNumber), 3, '0') + ' ';
 

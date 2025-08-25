@@ -78,7 +78,7 @@ class TeeMessageHandler
 {
 public:
   //################################################################################################
-  TeeMessageHandler(const std::string& path);
+  TeeMessageHandler(const std::string& path, bool withTime=true);
 
   //################################################################################################
   ~TeeMessageHandler();
@@ -120,6 +120,8 @@ public:
 class TP_UTILS_EXPORT DebugBuffer : public std::stringbuf
 {
 public:
+  MessageType m_type{MessageType::Warning};
+
   //################################################################################################
     int sync() override;
 };

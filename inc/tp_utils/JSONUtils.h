@@ -1,16 +1,11 @@
-#ifndef tp_utils_JSONUtils_h
-#define tp_utils_JSONUtils_h
+#pragma once
 
 #include "tp_utils/StringID.h"
 
 #include "json.hpp"
 
 #include <vector>
-#include <list>
-#include <map>
-#include <set>
 #include <unordered_map>
-#include <unordered_set>
 #include <optional>
 
 
@@ -84,13 +79,13 @@ void TP_UTILS_EXPORT getJSONStringList(const nlohmann::json& j,
                                                                      const std::string& key);
 
 //##################################################################################################
-void TP_UTILS_EXPORT getJSONStringIDs(const nlohmann::json& j,
-                                      const std::string& key,
-                                      std::vector<StringID>& stringIDs);
+void TP_UTILS_EXPORT loadVectorOfStringIDsFromJSON(const nlohmann::json& j,
+                                                   const std::string& key,
+                                                   std::vector<StringID>& stringIDs);
 
 //##################################################################################################
-void getJSONStringIDs(const nlohmann::json& j,
-                      std::vector<StringID>& stringIDs);
+void loadVectorOfStringIDsFromJSON(const nlohmann::json& j,
+                                   std::vector<StringID>& stringIDs);
 
 //##################################################################################################
 [[nodiscard]] nlohmann::json stringIDsToJSON(const std::vector<StringID>& stringIDs);
@@ -151,6 +146,16 @@ void loadObjectFromJSON(const nlohmann::json& j, const char* key, T& object)
 }
 
 //##################################################################################################
+template<typename T, typename... Args, typename = std::enable_if_t<!std::is_pointer<T>::value>>
+void loadObjectFromJSONArgs(const nlohmann::json& j, const char* key, T& object, Args... args)
+{
+  if(auto i=j.find(key); i!=j.end())
+    object.loadState(*i, args...);
+  else
+    object = T();
+}
+
+//##################################################################################################
 template<typename T, typename = std::enable_if_t<std::is_pointer<T>::value>>
 void loadObjectFromJSON(const nlohmann::json& j, const char* key, T object)
 {
@@ -194,6 +199,20 @@ void saveVectorOfValuesToJSON(nlohmann::json& j, const T& vector)
 
 //##################################################################################################
 template<typename T>
+void loadVectorOfNumbersFromJSON(const nlohmann::json& j, const std::string& key, T& vector)
+{
+  vector.clear();
+  if(auto i=j.find(key); i!=j.end() && i->is_array())
+  {
+    vector.reserve(i->size());
+    for(const auto& v : *i)
+      if(v.is_number())
+        vector.emplace_back(v.get<typename T::value_type>());
+  }
+}
+
+//##################################################################################################
+template<typename T>
 void saveVectorOfObjectsToJSON(nlohmann::json& j, const T& vector)
 {
   j = nlohmann::json::array();
@@ -228,6 +247,32 @@ void loadVectorOfObjectsFromJSON(const nlohmann::json& j, K key, T& vector)
     vector.reserve(i->size());
     for(const auto& v : *i)
       vector.emplace_back().loadState(v);
+  }
+}
+
+//##################################################################################################
+template<typename T, typename... Args>
+void loadVectorOfObjectsFromJSONArgs(const nlohmann::json& j, std::vector<T>& vector, Args... args)
+{
+  vector.clear();
+  if(j.is_array())
+  {
+    vector.reserve(j.size());
+    for(const auto& v : j)
+      vector.emplace_back().loadState(v, args...);
+  }
+}
+
+//##################################################################################################
+template<typename T, typename K, typename... Args>
+void loadVectorOfObjectsFromJSONArgs(const nlohmann::json& j, K key, std::vector<T>& vector, Args... args)
+{
+  vector.clear();
+  if(auto i=j.find(key); i!=j.end() && i->is_array())
+  {
+    vector.reserve(i->size());
+    for(const auto& v : *i)
+      vector.emplace_back().loadState(v, args...);
   }
 }
 
@@ -267,6 +312,3 @@ void loadMapOfObjectsFromJSON(const nlohmann::json& j, K key, T& map)
 }
 
 }
-
-
-#endif

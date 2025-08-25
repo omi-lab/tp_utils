@@ -20,7 +20,7 @@ class StaticDetails_lt
 {
 public:
   std::mutex mutex;
-  std::unordered_map<tp_utils::StringID, InstanceDetails> instances;
+  std::unordered_map<tp_utils::StaticStringID, InstanceDetails> instances;
 
   //################################################################################################
   std::vector<std::string> serialize()
@@ -35,7 +35,7 @@ public:
 
     for(const auto& i : instances)
     {
-      maxLength = tpMax(maxLength, i.first.toString().size());
+      maxLength = tpMax(maxLength, i.first.sid.toString().size());
       maxDigits = tpMax(maxDigits, std::to_string(i.second.total).size());
     }
 
@@ -53,7 +53,7 @@ public:
 
     for(const auto& i : instances)
     {
-      title = i.first.toString();
+      title = i.first.sid.toString();
       std::string count = std::to_string(i.second.count);
       std::string total = std::to_string(i.second.total);
 
@@ -83,7 +83,7 @@ public:
     mutex.lock();
     for(const auto& i : instances)
     {
-      auto title = i.first.toString();
+      auto title = i.first.sid.toString();
       result[title+"_count"] = i.second.count;
       result[title+"_total"] = i.second.total;
     }
@@ -97,7 +97,7 @@ public:
 StaticDetails_lt& staticDetails()
 {
   // Force order of static init. As StaticDetails_lt relies on the static data of StringID.
-  static StringID refCount("Ref count");
+  static StaticStringID refCount("Ref count");
   static StaticDetails_lt staticDetails;
   return staticDetails;
 }
@@ -105,7 +105,7 @@ StaticDetails_lt& staticDetails()
 }
 
 //##################################################################################################
-void RefCount::ref(const tp_utils::StringID& type)
+void RefCount::ref(const tp_utils::StaticStringID& type)
 {
   StaticDetails_lt& sd(staticDetails());
   sd.mutex.lock();
@@ -116,7 +116,7 @@ void RefCount::ref(const tp_utils::StringID& type)
 }
 
 //##################################################################################################
-void RefCount::unref(const tp_utils::StringID& type)
+void RefCount::unref(const tp_utils::StaticStringID& type)
 {
   StaticDetails_lt& sd(staticDetails());
   sd.mutex.lock();
@@ -124,7 +124,7 @@ void RefCount::unref(const tp_utils::StringID& type)
   instanceDetails.count--;
   if(instanceDetails.count<0)
   {
-    tpWarning() << "RefCount::unref, error! Type: " << type.toString().data();
+    tpWarning() << "RefCount::unref, error! Type: " << type.sid.toString().data();
     printStackTrace();
     abort();
   }
@@ -144,7 +144,7 @@ void RefCount::unlock()
 }
 
 //##################################################################################################
-const std::unordered_map<tp_utils::StringID, InstanceDetails>& RefCount::instances()
+const std::unordered_map<tp_utils::StaticStringID, InstanceDetails>& RefCount::instances()
 {
   if(staticDetails().mutex.try_lock())
   {

@@ -1,7 +1,5 @@
 #include "tp_utils/CountStackTrace.h"
-#include "tp_utils/StackTrace.h" // IWYU pragma: keep
-#include "tp_utils/MutexUtils.h" // IWYU pragma: keep
-#include "tp_utils/DebugUtils.h" // IWYU pragma: keep
+#include "tp_utils/detail/StaticState.h"// IWYU pragma: keep
 
 #include <map>
 
@@ -12,17 +10,10 @@ namespace tp_utils
 namespace
 {
 //##################################################################################################
-struct CountStackTraceStats
+StaticState::CountStackTraceStats& countStackTraceStats()
 {
-  TPMutex mutex{TPM};
-  std::unordered_map<StackTrace, size_t> counts;
-};
-
-//##################################################################################################
-CountStackTraceStats& countStackTraceStats()
-{
-  static CountStackTraceStats countStackTraceStats;
-  return countStackTraceStats;
+  auto i=StaticState::instance();
+  return i->countStackTraceStats;
 }
 }
 

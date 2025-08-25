@@ -19,7 +19,7 @@ struct TP_UTILS_EXPORT _LogStatsTimer
   //################################################################################################
   _LogStatsTimer(const std::string& path, int64_t intervalMS, const std::function<std::string()>& take, TPAppend append=TPAppend::No)
   {
-    m_thread = std::thread([=]
+    m_thread = std::thread([this, path, take, append, intervalMS]
     {
       TPMutexLocker lock(m_mutex);
       while(!m_finish)
@@ -37,7 +37,7 @@ struct TP_UTILS_EXPORT _LogStatsTimer
   //################################################################################################
   _LogStatsTimer(int64_t intervalMS, const std::function<std::string()>& take)
   {
-    m_thread = std::thread([=]
+    m_thread = std::thread([this, intervalMS, take]
     {
       TPMutexLocker lock(m_mutex);
       while(!m_finish)

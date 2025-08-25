@@ -6,11 +6,17 @@ DEFINES += TP_UTILS_LIBRARY
 SOURCES += src/Globals.cpp
 HEADERS += inc/tp_utils/Globals.h
 
+SOURCES += src/detail/StaticState.cpp
+HEADERS += inc/tp_utils/detail/StaticState.h
+
 SOURCES += src/FileUtils.cpp
 HEADERS += inc/tp_utils/FileUtils.h
 
 SOURCES += src/JSONUtils.cpp
 HEADERS += inc/tp_utils/JSONUtils.h
+
+SOURCES += src/BinaryUtils.cpp
+HEADERS += inc/tp_utils/BinaryUtils.h
 
 SOURCES += src/StringID.cpp
 HEADERS += inc/tp_utils/StringID.h

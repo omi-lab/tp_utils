@@ -5,6 +5,8 @@
 #include "tp_utils/TimeUtils.h"
 #include "tp_utils/ProfilerController.h"
 
+#include "tp_utils/DebugUtils.h"
+
 #include <memory>
 #include <sstream>
 #include <stack>
@@ -81,9 +83,9 @@ void Profiler::setName(const std::string& name)
           std::string n=p->name();
           if(p->name().size()>3)
           {
-            if(std::isdigit(n.at(n.size()-1)) and
-               std::isdigit(n.at(n.size()-2)) and
-               std::isdigit(n.at(n.size()-3)) and
+            if(std::isdigit(n.at(n.size()-1)) &&
+               std::isdigit(n.at(n.size()-2)) &&
+               std::isdigit(n.at(n.size()-3)) &&
                n.at(n.size()-4) == ' ')
               n.resize(p->name().size()-4);
           }
@@ -104,7 +106,7 @@ void Profiler::setName(const std::string& name)
 }
 
 //##################################################################################################
-void Profiler::rangePush(const std::string& label, TPPixel colour)
+void Profiler::rangePush(const std::string& label, TPPixel color)
 {
   if(!d->recording)
     return;
@@ -119,7 +121,7 @@ void Profiler::rangePush(const std::string& label, TPPixel colour)
   progressEvent.start = tp_utils::currentTimeMS();
   progressEvent.end = tp_utils::currentTimeMS();
   progressEvent.active = true;
-  progressEvent.color = colour;
+  progressEvent.color = color;
   d->progressStore->initProgressEvent(progressEvent);
 }
 
@@ -132,6 +134,7 @@ void Profiler::rangePop()
   auto& progressEvent = d->eventStack.top();
   progressEvent.end = tp_utils::currentTimeMS();
   progressEvent.active = false;
+
   d->progressStore->updateProgressEvent(progressEvent);
   d->eventStack.pop();
 }

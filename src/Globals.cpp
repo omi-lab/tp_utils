@@ -211,12 +211,12 @@ std::u16string tpFromUTF8(const std::string& source)
 #if defined(TP_WIN32) && (defined(_MSC_VER) && (_MSC_VER >= 1900))
   int len = MultiByteToWideChar(CP_UTF8, 0, source.c_str(), -1, nullptr, 0);
   if(len == 0)
-    return nullptr;
+    return {};
 
   std::wstring wstr(size_t(len), 0);
   int result = MultiByteToWideChar(CP_UTF8, 0, source.c_str(), -1, &wstr[0], len);
   if(result == 0)
-    return nullptr;
+    return {};
 
   wstr.resize(source.size());
   return std::u16string(reinterpret_cast<const char16_t*>(wstr.c_str()));
@@ -240,6 +240,22 @@ std::wstring tpWStringFromUTF8(const std::string& source)
 
 namespace tp_utils
 {
+
+namespace detail
+{
+//##################################################################################################
+int& staticInit()
+{
+  static int staticInit=0;
+  return staticInit;
+}
+}
+
+//##################################################################################################
+int staticInit()
+{
+  return detail::staticInit();
+}
 
 //##################################################################################################
 void leftJustified(std::string& text, size_t maxLength, char padding)
@@ -297,6 +313,28 @@ void replace(std::string& result, const std::string& key, const std::string& val
   }
 }
 
+//##################################################################################################
+std::string replaced(std::string input, const std::string& key, const std::string& value)
+{
+  replace(input, key, value);
+  return input;
+}
+
+//##################################################################################################
+std::string formatFloat(float value, int precision)
+{
+  std::stringstream stream;
+  stream << std::fixed << std::setprecision(precision) << value;
+  return stream.str();
+}
+
+//##################################################################################################
+std::string formatDouble(double value, int precision)
+{
+  std::stringstream stream;
+  stream << std::fixed << std::setprecision(precision) << value;
+  return stream.str();
+}
 
 //##################################################################################################
 std::string formatSizeBytes(int64_t sizeInBytes, bool alignRight)

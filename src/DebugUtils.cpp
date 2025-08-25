@@ -2,7 +2,6 @@
 #include "tp_utils/MutexUtils.h"
 #include "tp_utils/StackTrace.h"
 #include "tp_utils/FileUtils.h"
-#include "tp_utils/RefCount.h"
 #include "tp_utils/detail/log_stats/virtual_memory.h"
 
 #include "date/date.h"
@@ -25,8 +24,20 @@ namespace
 TPMutex debugMutex{TPM};
 std::function<void(MessageType, const std::string&)> debugCallback;
 std::function<void(const std::string&, DebugType, const std::string&)> tableCallback;
-std::unordered_map<std::string, std::unordered_map<int, bool>>& enabledDebugModeObjects(){static std::unordered_map<std::string, std::unordered_map<int, bool>> s; return s;}
-std::vector<DebugMode*>& debugModeObjects(){static std::vector<DebugMode*> s; return s;}
+
+//##################################################################################################
+std::unordered_map<std::string, std::unordered_map<int, bool>>& enabledDebugModeObjects()
+{
+  static std::unordered_map<std::string, std::unordered_map<int, bool>> s;
+  return s;
+}
+
+//##################################################################################################
+std::vector<DebugMode*>& debugModeObjects()
+{
+  static std::vector<DebugMode*> s;
+  return s;
+}
 
 //##################################################################################################
 void handleSignal(int signum)
@@ -55,6 +66,9 @@ std::string getCurrentTimestampPath()
 //##################################################################################################
 std::string getCurrentTimestamp_notThreadSafe()
 {
+#ifdef TP_WIN32
+  return getCurrentTimestamp();
+#else
   using std::chrono::system_clock;
   auto currentTime = std::chrono::system_clock::now();
 
@@ -77,6 +91,7 @@ std::string getCurrentTimestamp_notThreadSafe()
   snprintf(bufferB, sizeof(bufferB),  "%s:%03d] ", bufferA, int(millis));
 
   return std::string(bufferB);
+#endif
 }
 
 //##################################################################################################
@@ -115,7 +130,7 @@ void installDateTimeMessageHandler_notThreadSafe()
 }
 
 //##################################################################################################
-void TP_UTILS_EXPORT installDateTimeMemoryMessageHandler()
+void installDateTimeMemoryMessageHandler()
 {
   installMessageHandler([](tp_utils::MessageType, const std::string& message)
   {
@@ -127,11 +142,15 @@ void TP_UTILS_EXPORT installDateTimeMemoryMessageHandler()
 
 
 //##################################################################################################
-TeeMessageHandler::TeeMessageHandler(const std::string& path)
+TeeMessageHandler::TeeMessageHandler(const std::string& path, bool withTime)
 {
-  auto closure = [=](tp_utils::MessageType type, const std::string& message)
+  auto closure = [this, withTime, path](tp_utils::MessageType type, const std::string& message)
   {
-    writeTextFile(path, getCurrentTimestamp() + message, TPAppend::Yes);
+    if(withTime)
+      writeTextFile(path, getCurrentTimestamp() + message, TPAppend::Yes);
+    else
+      writeTextFile(path, message, TPAppend::Yes);
+
     if(m_previous)
       m_previous(type, message);
   };
@@ -148,7 +167,6 @@ TeeMessageHandler::~TeeMessageHandler()
 //##################################################################################################
 struct DebugMode::Private
 {
-  TP_REF_COUNT_OBJECTS("tp_utils::DebugMode::Private");
   TP_NONCOPYABLE(Private);
 
   const std::string& classPath;
@@ -238,14 +256,14 @@ int DebugBuffer::sync()
 {
   TP_MUTEX_LOCKER(debugMutex);
   if(debugCallback)
-    debugCallback(MessageType::Warning, str());
+    debugCallback(m_type, str());
   else
   {
     std::cout << str();
     std::cout.flush();
   }
 
-  DBG::Manager::instance().debugCallbacks(MessageType::Warning, str());
+  DBG::Manager::instance().debugCallbacks(m_type, str());
 
   str("");
   return 0;
@@ -259,7 +277,7 @@ struct Default : public Base
 {
   TP_NONCOPYABLE(Default);
 
-  Default();
+  Default(MessageType type);
   ~Default() override;
   std::ostream& operator()() override;
 
@@ -267,13 +285,35 @@ struct Default : public Base
   std::ostream m_stream;
 };
 
-using DefaultFactory = FactoryTemplate<Default>;
+//##################################################################################################
+struct DefaultWarning : public Default
+{
+  DefaultWarning():
+    Default(MessageType::Warning)
+  {
+
+  }
+};
 
 //##################################################################################################
-Default::Default():
+struct DefaultDebug : public Default
+{
+  DefaultDebug():
+    Default(MessageType::Debug)
+  {
+
+  }
+};
+
+//##################################################################################################
+using DefaultWarningFactory = FactoryTemplate<DefaultWarning>;
+using DefaultDebugFactory = FactoryTemplate<DefaultDebug>;
+
+//##################################################################################################
+Default::Default(MessageType type):
   m_stream(&m_buffer)
 {
-
+  m_buffer.m_type = type;
 }
 
 //##################################################################################################
@@ -291,13 +331,12 @@ std::ostream& Default::operator()()
 //##################################################################################################
 struct Manager::Private
 {
-  TP_REF_COUNT_OBJECTS("tp_utils::DBG::Manager::Private");
   TP_NONCOPYABLE(Private);
   Private() = default;
 
   std::mutex mutex;
-  std::unique_ptr<FactoryBase> warningFactory{new DefaultFactory()};
-  std::unique_ptr<FactoryBase> debugFactory{new DefaultFactory()};
+  std::unique_ptr<FactoryBase> warningFactory{new DefaultWarningFactory()};
+  std::unique_ptr<FactoryBase> debugFactory{new DefaultDebugFactory()};
 };
 
 //##################################################################################################

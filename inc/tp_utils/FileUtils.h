@@ -117,7 +117,20 @@ enum perms : unsigned
 bool TP_UTILS_EXPORT setPermissions(const std::string& path, unsigned permissions);
 
 //##################################################################################################
+inline bool chmod(const std::string& path, unsigned permissions)
+{
+  return setPermissions(path, permissions);
+}
+
+
+//##################################################################################################
 [[nodiscard]]std::string TP_UTILS_EXPORT filename(const std::string& path);
+
+//##################################################################################################
+[[nodiscard]]std::string TP_UTILS_EXPORT removeExtension(const std::string& filename);
+
+//##################################################################################################
+[[nodiscard]]std::string TP_UTILS_EXPORT extension(const std::string& filename);
 
 //##################################################################################################
 [[nodiscard]]std::string TP_UTILS_EXPORT directoryName(const std::string& path);
@@ -142,6 +155,20 @@ extern size_t TP_UTILS_EXPORT (*fileSizeCallback)(const std::string& path);
 extern bool TP_UTILS_EXPORT (*setCWDCallback)(const std::string& path);
 extern std::string TP_UTILS_EXPORT (*cwdCallback)();
 extern bool TP_UTILS_EXPORT (*setPermissionsCallback)(const std::string& path, unsigned permissionsh);
+
+#if __cplusplus >= 202002L
+inline std::filesystem::path u8path(std::string const& filename)
+{
+    return std::filesystem::path(reinterpret_cast<const char8_t*>(filename.c_str()));
+}
+
+#else
+inline std::filesystem::path u8path(std::string const& filename)
+{
+    return std::filesystem::u8path(filename);
+}
+#endif
+
 
 }
 

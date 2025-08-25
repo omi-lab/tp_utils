@@ -44,7 +44,7 @@
 
 //##################################################################################################
 //TP_DEPRECATED
-#if TP_CPP_VERSION>=14
+#if __cplusplus > 201402L
 #define TP_DEPRECATED(typ, func) [[deprecated]] typ func
 #else
 #ifdef __GNUC__
@@ -58,7 +58,7 @@
 
 
 //##################################################################################################
-#if TP_CPP_VERSION>=20
+#if __cplusplus >= 202002L
 #define TP_LIKELY(x)      (x)[[likely]]
 #define TP_UNLIKELY(x)    (x)[[unlikely]]
 #elif defined(__clang__) || defined(__GNUC__) || defined(__GNUG__)
@@ -498,6 +498,14 @@ bool tpNumber(const std::string& s, T& n, T d=T())
   return false;
 }
 
+template<typename T, typename J>
+T tpConstructFromJSON(const J& j)
+{
+  T s;
+  s.loadState(j);
+  return s;
+}
+
 namespace detail
 {
 //##################################################################################################
@@ -558,6 +566,14 @@ This module provides a set of general purpose classes that form the core of tp T
 */
 namespace tp_utils
 {
+namespace detail
+{
+//##################################################################################################
+int& staticInit();
+}
+//##################################################################################################
+int staticInit();
+
 //##################################################################################################
 void TP_UTILS_EXPORT leftJustified(std::string& text, size_t maxLength, char padding=' ');
 
@@ -573,6 +589,15 @@ std::string TP_UTILS_EXPORT fixedWidthKeepLeft(std::string data, size_t len, cha
 //##################################################################################################
 //! Replace key with value in result.
 void replace(std::string& result, const std::string& key, const std::string& value);
+
+//##################################################################################################
+std::string replaced(std::string input, const std::string& key, const std::string& value);
+
+//##################################################################################################
+std::string formatFloat(float value, int precision);
+
+//##################################################################################################
+std::string formatDouble(double value, int precision);
 
 //##################################################################################################
 //! Format a number as B, kB, MB, ...
