@@ -122,6 +122,12 @@ union TPPixel
     return {conv(v[0]), conv(v[1]), conv(v[2]), conv(v[3])};
   }
 
+  template<typename T>
+  T to() const
+  {
+    return {r, g, b, a};
+  }
+
   uint32_t i;
   uint8_t v[4];
 #ifndef TP_WIN32
